@@ -95,15 +95,31 @@
   @keyframes quake{20%{translate:-6px 3px}40%{translate:5px -4px}60%{translate:-4px 2px}80%{translate:3px -1px}}
   .msg,.bx{z-index:3}
   .skip{z-index:4;position:absolute;right:5%;bottom:5%;font-size:10px;color:var(--muted);font-weight:600}
+  @media (max-width:420px){
+    .bx{width:42%;padding:3px 6px;border-width:1px;font-size:10px}
+    .bx .nm{font-size:11px}
+    .bx .row{margin-top:2px;font-size:9px}
+    .bar2{height:5px}
+    .bx .num{display:none}
+    .bx.top{top:4%}
+    .bx.bot{bottom:24%}
+  }
 
   /* ── panel & menu ── */
   .panel{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:14px}
-  .info{min-height:40px}
+  .info{min-height:66px}
   .info b{font-size:15px}
   .stats{color:var(--muted);font-size:12px;margin-top:2px}
-  .menu{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-  .menu:empty{display:none}
+  /* fixed-ish heights so the panel (and the iframe around it) doesn't jump as the menu changes */
+  .menu{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;min-height:152px;align-content:start}
   .menu .hint{grid-column:1/-1;font-size:12px;color:var(--muted)}
+  .menu .aux{padding:6px 12px;font-size:12px}
+  @media (max-width:420px){
+    .menu{gap:6px;min-height:140px}
+    button.mv{padding:6px 8px;border-left-width:4px}
+    button.mv b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    button.mv small{font-size:10px;line-height:1.3}
+  }
   .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
   button{font:inherit;font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;text-align:left}
   button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -115,7 +131,7 @@
   button.mv b{display:block;font-size:14px}
   button.mv small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:2px}
   button:disabled{opacity:.4;cursor:default}
-  .log{margin-top:10px;font-size:12px;color:var(--muted);max-height:66px;overflow:auto;line-height:1.5}
+  .log{margin-top:10px;font-size:12px;color:var(--muted);height:66px;overflow:auto;line-height:1.5}
   .snd{padding:3px 8px;font-size:14px;line-height:1}
   .toggle{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;cursor:pointer}
   .overlay{position:absolute;inset:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;gap:8px}
@@ -149,7 +165,7 @@
     </div>
     <div class="overlay" id="overlay">
       <h2>The suits are coming</h2>
-      <p>They want to turn your café into a co-working chain.<br>Tap a hero → tap a <b style="color:var(--hero)">blue</b> tile to move → pick <b style="color:var(--fight)">Fight</b> or <b style="color:var(--magic)">Magic</b> → tap a target. Magic costs MP but ignores armour.</p>
+      <p>They want to turn your café into a co-working chain.<br>Tap a hero → tap a <b style="color:var(--hero)">blue</b> tile to move → pick a <b style="color:var(--fight)">⚔️ fight</b> or <b style="color:var(--magic)">✨ magic</b> move → tap a target. Magic costs MP but ignores armour.<br><br>You're outnumbered. Hold the line. Help is on the way.</p>
       <button class="primary" id="start">Defend the café ♪</button>
     </div>
   </div>
@@ -215,7 +231,7 @@
       {name:"Reply-All",    kind:"fight", type:"dmg", pow:10, rng:[1,1]},
       {name:"Micromanage",  kind:"magic", type:"dmg", pow:4,  rng:[1,2], mp:3, color:"#34507a", stun:50},
      ]},
-    {name:"The CEO", spr:"ceo", team:"foe", hp:28, mp:10, def:4, mov:2,
+    {name:"The CEO", spr:"ceo", team:"foe", hp:32, mp:10, def:4, mov:2,
      blurb:"Slow, tough, golden parachute.",
      moves:[
       {name:"Golden Parachute", kind:"fight", type:"dmg", pow:11, rng:[1,1]},
@@ -227,8 +243,26 @@
       {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
       {name:"Synergy Beam",    kind:"magic", type:"dmg", pow:9, rng:[2,3], mp:4, color:"#6fb6d9"},
      ]},
+    {name:"Consultant", spr:"consult", team:"foe", hp:15, mp:8, def:1, mov:2,
+     blurb:"Bills by the hour. Attacks from range.",
+     moves:[
+      {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
+      {name:"Synergy Beam",    kind:"magic", type:"dmg", pow:9, rng:[2,3], mp:4, color:"#6fb6d9"},
+     ]},
   ];
-  const STARTS = [[1,2],[0,1],[0,3],[6,1],[6,4],[7,2],[7,3]];
+  const STARTS = [[1,2],[0,1],[0,3],[6,1],[6,4],[7,2],[7,3],[7,5]];
+
+  // ── BACKUP ── joins the heroes mid-battle: at the start of turn 3, or sooner if a hero falls.
+  // Move names are placeholders — rename them after real services.
+  const BACKUP = {name:"Matthew", spr:"matthew", team:"hero", hp:30, mp:12, def:4, mov:4, backup:true,
+    blurb:"Designer. Builds with AI. Handles the boring stuff.",
+    moves:[
+      {name:"Ship It",     kind:"fight", type:"dmg",  pow:13, rng:[1,1]},
+      {name:"Scope Cut",   kind:"fight", type:"dmg",  pow:8,  rng:[1,2], stun:40},
+      {name:"Automate It", kind:"magic", type:"dmg",  pow:12, rng:[2,3], mp:4, color:"#8fd3ff"},
+      {name:"Clear Brief", kind:"magic", type:"heal", pow:12, rng:[0,3], mp:3, color:"#74b383"},
+    ]};
+  const RALLY_HEAL = 8;
 
   // ── SPRITES: 16×16 pixel art. Each letter = a colour in 'pal', '.' = transparent. Edit freely.
   const SPRITES = {
@@ -346,6 +380,25 @@
         "....kuuk.kuuk...",
         "...kkkk...kkkk..",
       ]},
+    matthew: {pal:{"k": "#1e1612", "h": "#1b1b1f", "H": "#3a3a42", "s": "#a0694a", "d": "#6e4430", "m": "#4a2419", "e": "#1e1612", "u": "#e0782b", "U": "#b35a1c", "y": "#f4ede4", "c": "#2a2a30", "l": "#b7c0c9", "L": "#8fd3ff"},
+      rows:[
+        "................",
+        ".....kkkkkk.....",
+        "....khHhhhhk....",
+        "...khhhhhhhhk...",
+        "...kssssssssk...",
+        "...ksessssesk...",
+        "...kssssssssk...",
+        "...kddsmmsddk...",
+        "....kddddddk....",
+        "...kkuyuuyukk...",
+        "..kuuuyuuyuuuk..",
+        ".kuuUkuuuukLLLk.",
+        ".kskUuuuuukllllk",
+        "...kuuuuuuuuk...",
+        "....kcck.kcck...",
+        "...kkkk...kkkk..",
+      ]},
   };
 
   const SPRITE_URL = {};
@@ -362,7 +415,8 @@
   const board=$("board"), fx=$("fx"), overlay=$("overlay"), info=$("info"), menu=$("menu"), logEl=$("log");
   const K = (x,y) => x+","+y;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-  const wait = ms => sleep(S.fast ? ms/4 : ms);
+  const speed = () => S.fast ? 4 : (S.speed || 1);   // enemy scenes run a bit quicker
+  const wait = ms => sleep(ms / speed());
   const md = (a,b) => Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
   const inR = (d,r) => d>=r[0] && d<=r[1];
   const rngTxt = r => r[0]===r[1] ? r[0] : r[0]+"–"+r[1];
@@ -372,7 +426,8 @@
     S = {
       units: DEFS.map((d,i)=>({...d, id:i, maxHp:d.hp, maxMp:d.mp, x:STARTS[i][0], y:STARTS[i][1], alive:true, acted:false, stun:false})),
       phase:"player", turn:1, sel:null, mode:null, origin:null, move:null, kind:null,
-      moveSet:new Map(), targets:new Map(), danger:new Set(), range:new Set(), hit:new Set(), busy:false, fast:false
+      moveSet:new Map(), targets:new Map(), danger:new Set(), range:new Set(), hit:new Set(), busy:false, fast:false,
+      backupIn:false, backupDmg:0, backupHeal:0
     };
     logEl.innerHTML=""; log("The suits have arrived in Nørrebro. To arms!");
     info.innerHTML="Pick a hero to begin.";
@@ -416,7 +471,7 @@
   function showInfo(u){
     info.innerHTML=`<img src="${SPRITE_URL[u.spr]}" style="width:32px;height:32px;image-rendering:pixelated;vertical-align:middle;margin-right:6px"><b>${u.name}</b> · HP ${u.hp}/${u.maxHp} · MP ${u.mp}/${u.maxMp}${u.stun?" · 💤 stunned":""}
       <div class="stats">DEF ${u.def} · MOVE ${u.mov} · ${u.blurb}</div>
-      <div class="stats">${u.moves.map(m=>`${m.kind==="magic"?"✨":"⚔️"} ${m.name}`).join(" · ")}</div>`;
+      ${u.team==="foe" ? `<div class="stats">${u.moves.map(m=>`${m.kind==="magic"?"✨":"⚔️"} ${m.name}`).join(" · ")}</div>` : ""}`;
   }
 
   function renderBoard(){
@@ -443,7 +498,8 @@
     const ph=$("phase"); ph.textContent=S.phase==="enemy"?"Enemy turn":"Your turn"; ph.classList.toggle("enemy",S.phase==="enemy");
     $("end").disabled = S.phase!=="player" || S.busy;
   }
-  function render(){ renderBoard(); renderMenu(); }
+  let fitFrame = () => {};   // set at the bottom when the game is inside an iframe
+  function render(){ renderBoard(); renderMenu(); fitFrame(); }
 
   function btn(html, cls, onclick, disabled){
     const b=document.createElement("button"); b.className=cls; b.innerHTML=html; b.disabled=!!disabled; b.onclick=e=>{ Sound.sfx(/Back|Undo/.test(html)?"back":"blip"); onclick(e); }; menu.appendChild(b); return b;
@@ -453,25 +509,22 @@
     menu.innerHTML="";
     const u=S.sel; if(!u || S.busy || S.phase!=="player") return;
     if(S.mode==="menu"){
-      const usable = kind => u.moves.some(m=>m.kind===kind && canUse(u,m) && targetsFor(u,m).length);
-      btn("⚔️ Fight","cmd fight",()=>{S.mode="moves";S.kind="fight";render();}, !usable("fight"));
-      btn("✨ Magic","cmd magic",()=>{S.mode="moves";S.kind="magic";render();}, !usable("magic"));
-      btn("Wait","", ()=>{ log(`${u.name} holds position.`); finish(u); });
-      btn("↩ Undo move","", ()=>{ [u.x,u.y]=S.origin; select(u); });
-      if(!usable("fight") && !usable("magic")){ const h=document.createElement("div"); h.className="hint"; h.textContent="Nothing in range from here — Wait, or undo and move closer."; menu.appendChild(h); }
-    } else if(S.mode==="moves"){
-      for(const m of u.moves.filter(m=>m.kind===S.kind)){
-        const tg=targetsFor(u,m), ok=canUse(u,m)&&tg.length;
+      // one list: fight moves (orange) and magic moves (purple) together
+      let any=false;
+      for(const m of u.moves){
+        const tg=targetsFor(u,m), ok=canUse(u,m)&&tg.length; if(ok) any=true;
         const eff = m.type==="heal" ? `HEAL ${m.pow}` : m.type==="stun" ? `STUN ${m.stun}%` : `PWR ${m.pow}${m.stun?` · STUN ${m.stun}%`:""}`;
-        const b=btn(`<b>${m.name}</b><small>${eff} · RNG ${rngTxt(m.rng)}${m.mp?` · ${m.mp} MP`:""}${!canUse(u,m)?" · not enough MP":!tg.length?" · no target in range":""}</small>`,
+        const b=btn(`<b>${m.kind==="magic"?"✨":"⚔️"} ${m.name}</b><small>${eff} · RNG ${rngTxt(m.rng)}${m.mp?` · ${m.mp} MP`:""}${!canUse(u,m)?" · low MP":!tg.length?" · out of range":""}</small>`,
           "mv "+m.kind, ()=>pickMove(m), !ok);
         b.onmouseenter=()=>{ S.range=rangeTiles(u,m); renderBoard(); };
         b.onmouseleave=()=>{ S.range=new Set(); renderBoard(); };
       }
-      btn("← Back","",()=>{S.mode="menu";S.range=new Set();render();});
+      btn("Wait","aux", ()=>{ log(`${u.name} holds position.`); finish(u); });
+      btn("↩ Undo move","aux", ()=>{ [u.x,u.y]=S.origin; select(u); });
+      if(!any){ const h=document.createElement("div"); h.className="hint"; h.textContent="Nothing in range from here. Wait, or undo and move closer."; menu.appendChild(h); }
     } else if(S.mode==="target"){
       const h=document.createElement("div"); h.className="hint"; h.textContent=`${S.move.name}: tap a highlighted target.`; menu.appendChild(h);
-      btn("← Back","",()=>{S.mode="moves";S.targets=new Map();render();});
+      btn("← Back","aux",()=>{S.mode="menu";S.targets=new Map();S.range=new Set();render();});
     }
   }
 
@@ -623,6 +676,7 @@
       slides:t=>{ [0,0.12,0.24].forEach(d=>noise(t+d,0.18,0.25,fx,"bandpass",1500,3000)); noise(t+0.5,0.1,0.3,fx,"lowpass",1200); },
       beam:  t=>{ tone("sine",200,t,0.3,0.15,fx,1200); tone("sawtooth",880,t+0.3,0.6,0.07,fx,660); tone("square",886,t+0.3,0.6,0.05,fx,664); },
       stun:  t=>{ for(let i=0;i<5;i++) tone("sine",i%2?1200:900,t+i*0.06,0.06,0.08,fx); },
+      arrive:t=>{ [392,523,659,784].forEach((f,i)=>tone("square",f,t+i*0.1,0.12,0.1,fx)); tone("square",1047,t+0.4,0.5,0.12,fx); tone("triangle",523,t+0.4,0.5,0.2,fx); },
     };
     function sfx(name){ if(!ctx||!on) return; const f=SFX[name]; if(f) f(ctx.currentTime+0.01); }
     function setOn(v){ on=v; try{ localStorage.setItem("cg-sound", v?"on":"off"); }catch(e){}
@@ -637,6 +691,7 @@
     "Portafilter Whack":"whack", "Pour-Over":"pourover", "Espresso Bolt":"lightning", "Oat Milk Fog":"fog",
     "Reply-All":"email", "Micromanage":"micro", "Golden Parachute":"coins", "Hostile Takeover":"takeover",
     "Slide Deck Toss":"slides", "Synergy Beam":"beam",
+    "Ship It":"bash", "Scope Cut":"slash", "Automate It":"lightning", "Clear Brief":"heal",
   };
   const lerp=(a,b,t)=>a+(b-a)*t, clamp=t=>Math.max(0,Math.min(1,t)), rnd=(a,b)=>a+Math.random()*(b-a);
   const easeOut=t=>{ t=clamp(t); return 1-(1-t)*(1-t); };
@@ -766,7 +821,7 @@
       if(fx.shake){ bt.classList.remove("quake"); void bt.offsetWidth; setTimeout(()=>bt.classList.add("quake"), fx.dur*.5); }
       let t=0, last=performance.now();
       (function frame(now){
-        t = Math.max(0, t + Math.max(0, now-last)/fx.dur*(S.fast?4:1)); last=Math.max(last,now);
+        t = Math.max(0, t + Math.max(0, now-last)/fx.dur*speed()); last=Math.max(last,now);
         ctx.clearRect(0,0,W,H);
         if(t>=1){ return res(); }
         try { ctx.save(); fx.draw(ctx,t); }
@@ -785,7 +840,7 @@
       <div class="num">${hp}/${u.maxHp}</div>`;
   }
 
-  async function typeMsg(text){ $("msg").textContent=text; await wait(850); }
+  async function typeMsg(text, ms=850){ $("msg").textContent=text; await wait(ms); }
 
   async function battleScene(a,t,m){
     // hero side bottom-left, the other unit top-right (self-heals show only the caster)
@@ -801,7 +856,8 @@
     const aPlat = a===heroBottom ? pBot : pTop, tPlat = t===heroBottom ? pBot : pTop;
     const aBox = a===heroBottom ? bBot : bTop, tBox = t===heroBottom ? bBot : bTop;
 
-    await typeMsg(`${a.name} used ${m.name}!`);
+    S.speed = a.team==="foe" ? 1.6 : 1;
+    await typeMsg(`${a.name} used ${m.name}!`, 350);
     const r = resolve(a,t,m);
     aBox.querySelector(".mpb i").style.width=(a.mp/a.maxMp*100)+"%";
     if(!self && m.kind==="fight"){ aPlat.classList.add(a===heroBottom?"lunge-up":"lunge-down"); await wait(150); }
@@ -810,7 +866,7 @@
     tBox.querySelector(".hpb i").style.width=(t.hp/t.maxHp*100)+"%";
     tBox.querySelector(".hpb").classList.toggle("low", t.hp/t.maxHp<.3);
     tBox.querySelector(".num").textContent=`${t.hp}/${t.maxHp}`;
-    await wait(500);
+    await wait(250);
 
     const lines=[];
     if(r.crit) lines.push("A critical hit!");
@@ -822,7 +878,7 @@
     for(const l of lines){
       if(l.includes("defeated")||l.includes("out of the fight")){ tPlat.classList.add("faint"); Sound.sfx("ko"); }
       if(l.includes("stunned!")) Sound.sfx("stun");
-      await typeMsg(l);
+      await typeMsg(l, 650);
     }
     bt.classList.add("hidden");
     S.fast=false;
@@ -839,6 +895,7 @@
     if(r.dmg!=null) float(t,(r.crit?"CRIT ":"")+"-"+r.dmg,"var(--enemy)");
     if(r.heal) float(t,"+"+r.heal,"var(--heal)");
     if(r.stunned) setTimeout(()=>float(t,"💤","var(--magic)"),200);
+    if(a.backup){ S.backupDmg+=r.dmg||0; S.backupHeal+=r.heal||0; }
     log(`${a.name} used ${m.name}` + (r.dmg!=null?` → ${t.name} −${r.dmg}${r.crit?" (crit)":""}`:"") + (r.heal!=null?` → ${t.name} +${r.heal}`:"") + (r.stunned?` · ${t.name} stunned`:"") + (r.ko?` · ${t.name} ${t.team==="foe"?"defeated":"down"}!`:""));
     render();
     return r;
@@ -866,12 +923,45 @@
   function gameOver(win){
     S.phase="over"; clearSel(); render();
     info.innerHTML = win ? "<b>Victory.</b>" : "<b>Defeat.</b>";
+    const cta = `<a href="/#sec-contact" target="_top">Let's talk →</a>`;
+    const assist = S.backupIn ? ` Matthew chipped in ${S.backupDmg} damage${S.backupHeal?` and ${S.backupHeal} HP of healing`:""}.` : "";
     overlay.innerHTML = win
-      ? `<h2>The suits retreat ☕</h2><p>Won in ${S.turn} turn${S.turn>1?"s":""}. The café stays independent.</p><p>Running your own thing and want the boring stuff handled? <a href="/#sec-contact" target="_top">Let's talk →</a></p><button class="primary" id="again">Play again</button>`
-      : `<h2>Acquired.</h2><p>The café is now a co-working chain with a kombucha tap. Regroup and go again.</p><button class="primary" id="again">Try again</button>`;
+      ? `<h2>Better with backup ☕</h2><p>Won in ${S.turn} turn${S.turn>1?"s":""}. The café stays independent.${assist}</p><p>Running your own thing? You don't have to hold the line alone. ${cta}</p><button class="primary" id="again">Play again</button>`
+      : `<h2>Acquired.</h2><p>The café is now a co-working chain with a kombucha tap.</p><p>Some fights need a plan, not just backup. ${cta}</p><button class="primary" id="again">Try again</button>`;
     overlay.classList.remove("hidden");
     Sound.play(win?"victory":"defeat");
     $("again").onclick=()=>{ overlay.classList.add("hidden"); reset(); Sound.play("battle"); };
+  }
+
+  // ── backup arrives ──
+  async function callBackup(){
+    S.backupIn=true;
+    const heroes=alive("hero");
+    let spot=null, best=Infinity;   // free tile near the heroes, biased to the home (left) side
+    for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+      if(blocked(x,y) || unitAt(x,y)) continue;
+      const s=Math.min(...heroes.map(h=>Math.abs(x-h.x)+Math.abs(y-h.y))) + x*2;
+      if(s<best){ best=s; spot=[x,y]; }
+    }
+    if(!spot) return;
+    const u={...BACKUP, id:S.units.length, maxHp:BACKUP.hp, maxMp:BACKUP.mp, x:spot[0], y:spot[1], alive:true, acted:false, stun:false};
+    S.units.push(u); info.innerHTML="<b>Reinforcements incoming…</b>"; render();
+    Sound.sfx("arrive");
+    const healed=[];
+    for(const h of heroes){ const amt=Math.min(RALLY_HEAL, h.maxHp-h.hp); h.hp+=amt; if(amt) healed.push([h,amt]); }
+    if($("scenes").checked){
+      const bt=$("battle"), pBot=$("pBot");
+      $("pTop").className="plat top hidden"; $("bTop").classList.add("hidden"); pBot.className="plat bot"; bt.classList.remove("quake");
+      pBot.querySelector("img").src=SPRITE_URL[u.spr]; $("bBot").innerHTML=boxHTML(u,u.hp);
+      S.fast=false; S.speed=1; bt.classList.remove("hidden");
+      await typeMsg("Reinforcements have arrived!");
+      await playFx("heal", pBot, pBot);
+      await typeMsg(`${u.name} joins the party. Everyone recovers ${RALLY_HEAL} HP.`);
+      bt.classList.add("hidden"); S.fast=false;
+    } else await sleep(400);
+    for(const [h,amt] of healed) float(h,"+"+amt,"var(--heal)");
+    log(`Reinforcements! ${u.name} joins the party. Everyone +${RALLY_HEAL} HP.`);
+    render();
   }
 
   // ── enemy AI ──
@@ -902,21 +992,23 @@
     S.phase="enemy"; S.busy=true; clearSel(); render();
     info.innerHTML="<b>Enemy turn…</b>";
     for(const e of alive("foe")) e.mp=Math.min(e.maxMp,e.mp+1);
-    await sleep(500);
+    await sleep(300);
     for(const e of alive("foe")){
       if(!alive("hero").length) break;
       if(e.stun){ e.stun=false; log(`${e.name} is stunned and loses a turn.`); float(e,"💤","var(--magic)"); render(); await sleep(500); continue; }
       const p=planEnemy(e);
-      if(p && (p.x!==e.x||p.y!==e.y)){ e.x=p.x; e.y=p.y; render(); await sleep(400); }
-      if(p && p.t){ await perform(e,p.t,p.m); await sleep(250); }
+      if(p && (p.x!==e.x||p.y!==e.y)){ e.x=p.x; e.y=p.y; render(); await sleep(250); }
+      if(p && p.t){ await perform(e,p.t,p.m); await sleep(120); }
       if(checkEnd()){ S.busy=false; return; }
     }
-    S.turn++; S.phase="player"; S.busy=false;
+    S.turn++; S.phase="player";
     const stunned=[];
     for(const h of alive("hero")){
       h.mp=Math.min(h.maxMp,h.mp+1); h.acted=false;
       if(h.stun){ h.stun=false; h.acted=true; stunned.push(h.name); log(`${h.name} is stunned and loses a turn.`); }
     }
+    if(!S.backupIn && (S.turn>=3 || S.units.some(h=>h.team==="hero" && !h.alive))) await callBackup();
+    S.busy=false;
     info.innerHTML = stunned.length ? `${stunned.join(" & ")} ${stunned.length>1?"are":"is"} stunned this turn. Pick another hero.` : "Your turn. Pick a hero.";
     render();
     if(alive("hero").every(h=>h.acted)) enemyPhase();
@@ -929,8 +1021,13 @@
   const sndBtn=$("snd"); const paintSnd=()=>{ sndBtn.textContent=Sound.on?"🔊":"🔇"; }; paintSnd();
   sndBtn.onclick=()=>{ Sound.init(); Sound.setOn(!Sound.on); paintSnd(); };
 
+  // Size the parent iframe to fit the game. Grow-only, so the page doesn't jump as panels change.
+  // Runs after every render, plus a ResizeObserver for anything else (fonts, rotation).
+  try { const fe = window.frameElement; if (fe) { let h = 0;
+    fitFrame = () => { const n = Math.ceil(document.body.getBoundingClientRect().height); if (n > h) { h = n; fe.style.height = h + "px"; } };
+    new ResizeObserver(() => setTimeout(fitFrame)).observe(document.body); } } catch(e) {}
+
   reset();
-  try { const fe = window.frameElement; if (fe) { const fit = () => { fe.style.height = Math.ceil(document.body.getBoundingClientRect().height) + "px"; }; new ResizeObserver(fit).observe(document.body); fit(); } } catch(e) {}
 })();
 </script>
 </body>
