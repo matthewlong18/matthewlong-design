@@ -416,6 +416,7 @@
   const K = (x,y) => x+","+y;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const speed = () => S.fast ? 4 : (S.speed || 1);   // enemy scenes run a bit quicker
+  const FX_RATE = 1.35;   // attack animations play this much faster than their listed durations
   const wait = ms => sleep(ms / speed());
   const md = (a,b) => Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
   const inR = (d,r) => d>=r[0] && d<=r[1];
@@ -818,10 +819,10 @@
       const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
       const ctr=el=>{ const r=el.getBoundingClientRect(); return {x:r.left-br.left+r.width/2, y:r.top-br.top+r.height*.55}; };
       const A=ctr(fromEl), T=ctr(toEl), fx=make(A,T,W,H);
-      if(fx.shake){ bt.classList.remove("quake"); void bt.offsetWidth; setTimeout(()=>bt.classList.add("quake"), fx.dur*.5); }
+      if(fx.shake){ bt.classList.remove("quake"); void bt.offsetWidth; setTimeout(()=>bt.classList.add("quake"), fx.dur*.5/(speed()*FX_RATE)); }
       let t=0, last=performance.now();
       (function frame(now){
-        t = Math.max(0, t + Math.max(0, now-last)/fx.dur*speed()); last=Math.max(last,now);
+        t = Math.max(0, t + Math.max(0, now-last)/fx.dur*speed()*FX_RATE); last=Math.max(last,now);
         ctx.clearRect(0,0,W,H);
         if(t>=1){ return res(); }
         try { ctx.save(); fx.draw(ctx,t); }
@@ -857,16 +858,16 @@
     const aBox = a===heroBottom ? bBot : bTop, tBox = t===heroBottom ? bBot : bTop;
 
     S.speed = a.team==="foe" ? 1.6 : 1;
-    await typeMsg(`${a.name} used ${m.name}!`, 350);
+    await typeMsg(`${a.name} used ${m.name}!`, 120);
     const r = resolve(a,t,m);
     aBox.querySelector(".mpb i").style.width=(a.mp/a.maxMp*100)+"%";
-    if(!self && m.kind==="fight"){ aPlat.classList.add(a===heroBottom?"lunge-up":"lunge-down"); await wait(150); }
+    if(!self && m.kind==="fight"){ aPlat.classList.add(a===heroBottom?"lunge-up":"lunge-down"); await wait(100); }
     await playFx(MOVE_FX[m.name], aPlat, tPlat);
     if(r.dmg){ tPlat.classList.add("hurt"); Sound.sfx("hit"); }
     tBox.querySelector(".hpb i").style.width=(t.hp/t.maxHp*100)+"%";
     tBox.querySelector(".hpb").classList.toggle("low", t.hp/t.maxHp<.3);
     tBox.querySelector(".num").textContent=`${t.hp}/${t.maxHp}`;
-    await wait(250);
+    await wait(80);
 
     const lines=[];
     if(r.crit) lines.push("A critical hit!");
@@ -878,7 +879,7 @@
     for(const l of lines){
       if(l.includes("defeated")||l.includes("out of the fight")){ tPlat.classList.add("faint"); Sound.sfx("ko"); }
       if(l.includes("stunned!")) Sound.sfx("stun");
-      await typeMsg(l, 650);
+      await typeMsg(l, 500);
     }
     bt.classList.add("hidden");
     S.fast=false;
