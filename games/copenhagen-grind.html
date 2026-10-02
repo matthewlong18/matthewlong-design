@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copenhagen Grind</title>
+<title>Super Start-up Adventure Time</title>
 <style>
   :root{
     --bg:#f4ede4; --panel:#fffaf3; --ink:#3b2a20; --muted:#8a7565;
@@ -155,8 +155,8 @@
     background:linear-gradient(var(--sky) 0 58%,var(--ground) 58%)}
   .logo{display:flex;flex-direction:column;align-items:center;line-height:.92;font-family:ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--fight);
     text-shadow:3px 3px 0 var(--ink),-1px -1px 0 var(--ink),1px -1px 0 var(--ink),-1px 1px 0 var(--ink)}
-  .logo span:first-child{font-size:clamp(26px,7vw,40px)}
-  .logo span:last-child{font-size:clamp(44px,13vw,76px);color:var(--panel)}
+  .logo span:first-child{font-size:clamp(22px,6vw,34px)}
+  .logo span:last-child{font-size:clamp(28px,7.8vw,48px);color:var(--panel)}
   .tag{margin:12px 0 0;font-size:13px;font-weight:700;color:var(--ink)}
   .lineup{display:flex;justify-content:center;align-items:flex-end;gap:2px;margin:18px 0 6px}
   .lineup img{width:clamp(40px,11vw,60px);image-rendering:pixelated;image-rendering:crisp-edges;animation:bob 1.2s steps(2) infinite}
@@ -190,32 +190,33 @@
   .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
   .cr-go{margin-top:16px;width:100%;padding:12px;font-size:15px;text-align:center}
 
-  /* ── town ── */
-  .town{position:absolute;inset:0;z-index:3;display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:var(--cell);background:var(--grass)}
-  .tt{position:relative;display:flex;align-items:center;justify-content:center;font-size:calc(var(--cell)*.55);cursor:pointer;user-select:none;background:var(--grass)}
-  .tt.alt{background:var(--grass2)}
-  .tt.path{background:var(--cobble)}
-  .tt.canal{background:var(--water)}
-  .tt.pub{background:var(--counter)}
-  .tt .lbl{position:absolute;left:50%;bottom:2px;translate:-50% 0;font-size:9px;font-weight:800;line-height:1.3;white-space:nowrap;padding:0 4px;border-radius:4px;background:var(--panel);color:var(--ink)}
-  .tt.pub .lbl{background:var(--fight);color:#fff}
-  .walker{position:absolute;z-index:2;width:var(--cell);height:var(--cell);display:flex;align-items:flex-end;justify-content:center;pointer-events:none;transition:left .12s linear,top .12s linear}
-  .walker::before{content:"";position:absolute;bottom:8%;left:24%;right:24%;height:14%;border-radius:50%;background:color-mix(in srgb,#000 22%,transparent)}
-  .walker img{position:relative;width:84%;margin-bottom:10%;image-rendering:pixelated;image-rendering:crisp-edges;animation:bob 1.2s steps(2) infinite}
-  .walker.flip img{transform:scaleX(-1)}
+  /* ── town (Canggu): a pixel-art canvas with a scrolling camera ── */
+  #cg[data-screen="town"] .wrap{height:calc(var(--cell)*8)}   /* square view while exploring */
+  .town{position:absolute;inset:0;z-index:3;overflow:hidden;background:#78b350}
+  #townCv{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;touch-action:manipulation}
+  .tlabels{position:absolute;inset:0;pointer-events:none}
+  .tlbl{position:absolute;translate:-50% -100%;font-size:10px;font-weight:800;line-height:1.4;padding:0 6px;border-radius:5px;white-space:nowrap;background:rgba(255,250,243,.92);color:#3b2a20;box-shadow:0 1px 0 rgba(0,0,0,.25)}
+  .tlbl.main{background:#e0782b;color:#fff}
+  .hud{position:absolute;right:6px;top:6px;z-index:1;display:flex;gap:4px;pointer-events:none}
+  .hud span{font-size:12px;font-weight:800;padding:2px 6px;border-radius:6px;background:rgba(30,22,18,.72);color:#fff}
+  .hud span.zero{opacity:.45}
+  .talk{position:absolute;left:6px;right:6px;bottom:6px;z-index:4;padding:8px 26px 8px 10px;border:3px double #3b2a20;border-radius:8px;background:#fffaf3;color:#3b2a20;font-size:13px;line-height:1.4;cursor:pointer;user-select:none}
+  .talk b{display:block;margin-bottom:2px;font-size:12px;color:#a8391a}
+  .talk .more{position:absolute;right:8px;bottom:5px;font-size:11px;animation:blink 1s steps(2) infinite}
+  button.mv.item{border-left-color:var(--heal)}
 </style>
 </head>
 <body>
 <div class="cg" id="cg" data-screen="title">
-  <section class="title" id="title" aria-label="Copenhagen Grind">
-    <div class="logo"><span>Copenhagen</span><span>Grind</span></div>
-    <p class="tag">Medieval hipsters vs. the suits</p>
+  <section class="title" id="title" aria-label="Super Start-up Adventure Time">
+    <div class="logo"><span>Super Start-up</span><span>Adventure Time</span></div>
+    <p class="tag">Digital nomads vs. the suits · Canggu, Bali</p>
     <div class="lineup" id="lineup" aria-hidden="true"></div>
     <button class="primary start" id="tStart">▶ Press start</button>
-    <p class="tiny">A tiny tactics game · about 3 minutes · sound on 🔊</p>
+    <p class="tiny">A tiny tactics adventure · about 5 minutes · sound on 🔊</p>
   </section>
-  <h1>☕ Copenhagen Grind</h1>
-  <p class="sub">Medieval hipsters vs. the suits. Make a hero, then save the pub.</p>
+  <h1>🌴 Super Start-up Adventure Time</h1>
+  <p class="sub">Digital nomads vs. the suits. Explore Canggu, then save The Sloppy Sloth.</p>
   <section class="creator" id="creator" aria-label="Make your hero">
     <div class="cr-top">
       <canvas id="crPrev" width="16" height="16" role="img" aria-label="Your hero"></canvas>
@@ -226,7 +227,7 @@
       </div>
     </div>
     <div id="crRows"></div>
-    <button class="primary cr-go" id="crGo">Head into town →</button>
+    <button class="primary cr-go" id="crGo">Head to Canggu →</button>
   </section>
   <div class="bar">
     <span id="turn">Turn 1</span>
@@ -235,7 +236,7 @@
   </div>
   <div class="wrap">
     <div class="board" id="board"></div>
-    <div class="town" id="town"></div>
+    <div class="town" id="town"><canvas id="townCv" aria-label="Canggu town map"></canvas><div class="tlabels" id="tlabels"></div><div class="hud" id="hud"></div><div class="talk hidden" id="talk" role="status"></div></div>
     <div class="fx" id="fx"></div>
     <div class="battle hidden" id="battle">
       <div class="plat top" id="pTop"><img alt=""></div>
@@ -262,7 +263,7 @@
 <script>
 (() => {
   const COLS = 8, ROWS = 6;
-  const MAP = [            // the pub interior: "~" = bar counter, "#" = barrel
+  const MAP = [            // inside The Sloppy Sloth: "~" = bamboo bar counter, "#" = potted palm
     "....~~..",
     "........",
     "..#.....",
@@ -276,7 +277,7 @@
   //             area: 1 = also hits the 4 squares around the target square (a "+" shape)
   // Your hero: built from the character creator (name + look), stats below.
   const heroDef = () => ({name:P.name || "You", spr:"player", team:"hero", hp:40, mp:12, def:4, mov:3,
-    blurb:"Regular at Ye Olde Bodega. Not leaving.",
+    blurb:"Regular at The Sloppy Sloth. Not leaving.",
     moves:[
       {name:"Haymaker",     kind:"fight", type:"dmg",  pow:12, rng:[1,1]},
       {name:"Pint Toss",    kind:"fight", type:"dmg",  pow:8,  rng:[2,3]},
@@ -460,7 +461,7 @@
   const shade = (hex, f) => "#" + [1,3,5].map(i => Math.round(parseInt(hex.slice(i,i+2),16)*f).toString(16).padStart(2,"0")).join("");
 
   // Builds the 16×16 sprite for your hero from the creator choices (" " in an overlay = keep the pixel underneath).
-  function playerSprite(){
+  function playerSprite(L = P){   // L = a look (your hero by default; townspeople pass their own)
     const rows = [
       "................", "................", "................", "................",
       "...kssssssssk...", "...kswesswesk...", "...kssssssssk...", "....kssmmssk....",
@@ -468,7 +469,7 @@
       ".kskUuuuuuuUksk.", "...kuuuuuuuuk...", "....kcck.kcck...", "...kkkk...kkkk..",
     ].map(r => r.split(""));
     const put = (y, str) => [...str].forEach((ch, x) => { if (ch !== " ") rows[y][x] = ch; });
-    const hair = LOOK.hair.opts[P.hair];
+    const hair = LOOK.hair.opts[L.hair];
     if (hair === "Short" || hair === "Long" || hair === "Bun") {
       put(1,"     kkkkkk     "); put(2,"    khhhhhhk    "); put(3,"   khhhhhhhhk   "); put(4,"   kh      hk   ");
       if (hair === "Bun") put(0,"      khhk      ");
@@ -477,27 +478,27 @@
       put(0,"    kkkkkkkk    "); put(1,"   khhhhhhhhk   "); put(2,"  khhhhhhhhhhk  "); put(3,"  khhhhhhhhhhk  "); put(4,"  khh      hhk  "); put(5,"  kh        hk  ");
     } else if (hair === "Buzz") { put(2,"    kkkkkkkk    "); put(3,"   khhhhhhhhk   "); }
     else { put(2,"    kkkkkkkk    "); put(3,"   kssssssssk   "); }   // Bald
-    const face = LOOK.facial.opts[P.facial];
+    const face = LOOK.facial.opts[L.facial];
     if (face === "Stubble") { put(7,"    kdsmmsdk    "); put(8,"     kddddk     "); }
     if (face === "Beard")   { put(6,"   kh      hk   "); put(7,"    khsmmshk    "); put(8,"     khhhhk     "); }
     if (face === "Moustache") put(7,"    kshhhhsk    ");
-    const outfit = LOOK.outfit.opts[P.outfit];
+    const outfit = LOOK.outfit.opts[L.outfit];
     if (outfit === "Hoodie") { put(9,"   kkuyuuyukk   "); put(10,"  kuuuyuuyuuuk  "); }
     if (outfit === "Tee")    put(9,"   kkuussuukk   ");
     if (outfit === "Tunic")  put(13,"   kggggggggk   ");
     if (outfit === "Dress")  { put(9,"   kkussssukk   "); put(13,"  kuuuuuuuuuuk  "); put(14," kUuuuuuuuuuuUk "); put(15,"...kkk....kkk..."); }
-    const hat = LOOK.hat.opts[P.hat];
+    const hat = LOOK.hat.opts[L.hat];
     if (hat === "Beanie") { put(0,"       bb       "); put(1,"     kbbbbk     "); put(2,"    kbbbbbbk    "); put(3,"   kBBBBBBBBk   "); }
     if (hat === "Cap")    { put(1,"     kkkkkk     "); put(2,"    kbbbbbbk    "); put(3,"   kbbbbbbbbbbk "); }
     if (hat === "Crown")  { put(0,"    g  gg  g    "); put(1,"    gggggggg    "); }
     if (hat === "Flower") { rows[1][11] = "p"; rows[2][10] = "p"; rows[2][11] = "g"; rows[2][12] = "p"; rows[3][11] = "p"; }
-    const eyes = LOOK.eyes.opts[P.eyes];
+    const eyes = LOOK.eyes.opts[L.eyes];
     if (eyes === "Glasses") put(5,"   kkwkkkkwkk   ");
     if (eyes === "Shades")  put(5,"   kkKKkkKKkk   ");
     if (eyes === "Red shades") put(5,"   kkRRkkRRkk   ");
-    const skin = LOOK.skin.colors[P.skin], oc = LOOK.outfitColor.colors[P.outfitColor];
+    const skin = LOOK.skin.colors[L.skin], oc = LOOK.outfitColor.colors[L.outfitColor];
     return { rows: rows.map(r => r.join("")), pal: {
-      k:"#1e1612", e:"#1e1612", s:skin, d:shade(skin,.72), m:shade(skin,.45), h:LOOK.hairColor.colors[P.hairColor],
+      k:"#1e1612", e:"#1e1612", s:skin, d:shade(skin,.72), m:shade(skin,.45), h:LOOK.hairColor.colors[L.hairColor],
       u:oc, U:shade(oc,.75), y: oc === "#f4ede4" ? "#3b2a20" : "#f4ede4", g:"#e5b340", c:"#2a2a30",
       b: hat === "Cap" ? "#3a6ea5" : "#c23b30", B:"#7c2320", p:"#e58fb1", w:"#dff3ff", K:"#141414", R:"#d1352b" } };
   }
@@ -534,9 +535,10 @@
       phase:"player", turn:1, sel:null, mode:null, origin:null, move:null, kind:null,
       moveSet:new Map(), targets:new Map(), danger:new Set(), range:new Set(), hit:new Set(), busy:false, fast:false,
       backupIn:false, backupDmg:0, backupHeal:0, claudeIn:false, claudeDmg:0,
+      inv:{...INV},   // snacks found in town (a retry gets them all back)
       blast:new Set(), boom:new Set(), aoeAt:null
     };
-    logEl.innerHTML=""; log("The suits have taken over Ye Olde Bodega. You're on your own.");
+    logEl.innerHTML=""; log("The suits have taken over The Sloppy Sloth. You're on your own.");
     info.innerHTML=`Tap <b>${S.units[0].name}</b> to begin.`;
     render();
   }
@@ -593,7 +595,7 @@
   }
 
   function showInfo(u){
-    info.innerHTML=`<img src="${SPRITE_URL[u.spr]}" style="width:32px;height:32px;image-rendering:pixelated;vertical-align:middle;margin-right:6px"><b>${u.name}</b> · HP ${u.hp}/${u.maxHp} · MP ${u.mp}/${u.maxMp}${u.stun?" · 💤 stunned":""}
+    info.innerHTML=`<img src="${SPRITE_URL[u.spr]}" style="width:32px;height:32px;image-rendering:pixelated;vertical-align:middle;margin-right:6px"><b>${u.name}</b> · HP ${u.hp}/${u.maxHp} · MP ${u.mp}/${u.maxMp}${u.boost?` · 🍺 +${u.boost} ATK`:""}${u.stun?" · 💤 stunned":""}
       <div class="stats">DEF ${u.def} · MOVE ${u.mov} · ${u.blurb}</div>
       ${u.team==="foe" ? `<div class="stats">${u.moves.map(m=>`${m.kind==="magic"?"✨":"⚔️"} ${m.name}`).join(" · ")}</div>` : ""}`;
   }
@@ -603,7 +605,7 @@
     for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
       const c=document.createElement("div"), t=terrain(x,y), k=K(x,y);
       c.className="tile"+((x+y)%2?" alt":"")+(t==="~"?" counter":"")+(t==="#"?" rack":"");
-      if(t==="#") c.textContent="🛢️";
+      if(t==="#") c.textContent="🪴";
       if(S.mode==="move" && S.moveSet.has(k)) c.classList.add("move");
       if(S.danger.has(k)) c.classList.add("danger");
       if(S.range.has(k)) c.classList.add("range");
@@ -650,6 +652,8 @@
         b.onmouseenter=()=>{ S.range=rangeTiles(u,m); renderBoard(); };
         b.onmouseleave=()=>{ S.range=new Set(); renderBoard(); };
       }
+      for(const [k,it] of Object.entries(ITEMS)) if(S.inv[k]>0)
+        btn(`<b>${it.icon} ${it.name} ×${S.inv[k]}</b><small>ITEM · ${it.desc}</small>`, "mv item", ()=>useItem(u,k));
       btn("Wait","aux", ()=>{ log(`${u.name} holds position.`); finish(u); });
       btn("↩ Undo move","aux", ()=>{ [u.x,u.y]=S.origin; select(u); });
       if(!any){ const h=document.createElement("div"); h.className="hint"; h.textContent="Nothing in range from here. Wait, or undo and move closer."; menu.appendChild(h); }
@@ -700,7 +704,7 @@
     a.mp -= (m.mp||0);
     if(m.type==="heal"){ r.heal=Math.min(m.pow, t.maxHp-t.hp); t.hp+=r.heal; return r; }
     if(m.pow){
-      let dmg = m.kind==="magic" ? m.pow + Math.floor(Math.random()*3) - 1 : Math.max(1, m.pow - t.def + Math.floor(Math.random()*3));
+      let dmg = m.kind==="magic" ? m.pow + Math.floor(Math.random()*3) - 1 : Math.max(1, m.pow + (a.boost||0) - t.def + Math.floor(Math.random()*3));
       if(m.kind==="fight" && Math.random()<0.1){ r.crit=true; dmg=Math.round(dmg*1.5); }
       r.dmg=dmg; t.hp=Math.max(0,t.hp-dmg);
     }
@@ -1081,12 +1085,22 @@
     const assist = S.backupIn ? ` Matt dealt ${S.backupDmg} damage${S.claudeIn?`, Claude ${S.claudeDmg}`:""}.` : "";
     const btns = `<div class="row2"><button class="primary" id="again">${win?"Play again":"Try again"}</button><button id="newHero">New hero</button></div>`;
     overlay.innerHTML = win
-      ? `<h2>Pub saved 🍺</h2><p>Won in ${S.turn} turn${S.turn>1?"s":""}. Ye Olde Bodega stays weird.${assist}</p><p>Running your own thing? You don't have to hold the line alone. ${cta}</p>${btns}`
-      : `<h2>Acquired.</h2><p>The Bodega is now a co-working space with a kombucha tap.</p><p>Some fights need a plan, not just backup. ${cta}</p>${btns}`;
+      ? `<h2>Sloth saved 🦥</h2><p>Won in ${S.turn} turn${S.turn>1?"s":""}. The Sloppy Sloth stays sloppy.${assist}</p><p>Running your own thing? You don't have to hold the line alone. ${cta}</p>${btns}`
+      : `<h2>Acquired.</h2><p>The Sloppy Sloth is now a co-working space with a kombucha tap.</p><p>Some fights need a plan, not just backup. ${cta}</p>${btns}`;
     overlay.classList.remove("hidden");
     Sound.play(win?"victory":"defeat");
     $("again").onclick=()=>{ overlay.classList.add("hidden"); reset(); Sound.play("battle"); };
     $("newHero").onclick=()=>{ Sound.stop(); showCreator(); };
+  }
+
+  // ── items (snacks found in town) ── using one takes the hero's turn
+  async function useItem(u,k){
+    S.busy=true; S.inv[k]--; render();
+    if(k==="coffee"){ u.mp+=5; u.maxMp=Math.max(u.maxMp,u.mp); u.mov+=1; float(u,"+5 MP","var(--magic)"); }
+    if(k==="beer"){ u.boost=(u.boost||0)+3; float(u,"+3 ATK","var(--fight)"); }
+    if(k==="tacos"){ const amt=Math.min(16,u.maxHp-u.hp); u.hp+=amt; float(u,"+"+amt,"var(--heal)"); }
+    Sound.sfx("heal"); log(`${u.name} used ${ITEMS[k].name} ${ITEMS[k].icon}`);
+    await sleep(500); S.busy=false; finish(u);
   }
 
   // ── area magic: hits every enemy inside the "+" ──
@@ -1219,7 +1233,7 @@
   $("battle").onclick=()=>{ S.fast=true; };
   $("end").onclick=()=>{ if(S.phase==="player"&&!S.busy){ alive("hero").forEach(h=>h.acted=true); clearSel(); enemyPhase(); } };
   $("restart").onclick=()=>{ if(S.busy) return; overlay.classList.add("hidden"); reset(); Sound.play("battle"); };
-  // ── SCREENS ── create a hero → walk through town → fight in the pub
+  // ── SCREENS ── title → create a hero → explore Canggu → fight in The Sloppy Sloth
   function setScreen(s){ $("cg").dataset.screen=s; overlay.classList.add("hidden"); fitFrame(); }
 
   // character creator
@@ -1264,91 +1278,327 @@
     refreshPlayer(); Sound.init(); enterTown();
   };
 
-  // ── TOWN ── tap to walk (or arrow keys); walk into the pub to start the fight. Edit the map freely.
-  const TOWN = [
-    "TH,,HTPT",
-    ",.....,.",
-    "C......B",
-    "~~~..~~~",
-    ",,.....,",
-    "TH,,TBHT",
+  // ── TOWN: Canggu, Bali ── a small map to explore. Tap to walk (arrow keys / WASD work too).
+  // Ground letters: g grass · p path · s sand · w water · r rice paddy · f temple stone.
+  // Edit the ground rects, TOWN_OBJS (buildings & props), PEOPLE (who says what) and PICKUPS (hidden items) freely.
+  const TW=30, TH=22, TS=16;   // map size in tiles; each tile is 16×16 art pixels
+  const GROUND=Array.from({length:TH},()=>Array(TW).fill("g"));
+  const fillG=(x,y,w,h,c)=>{ for(let j=y;j<y+h;j++) for(let i=x;i<x+w;i++) if(j>=0&&j<TH&&i>=0&&i<TW) GROUND[j][i]=c; };
+  fillG(0,0,11,6,"r");                        // rice terraces
+  fillG(5,0,1,9,"p");                         // path through the rice
+  fillG(13,0,6,4,"f"); fillG(15,4,2,5,"p");   // temple plaza + path
+  fillG(0,9,TW,2,"p");                        // main street
+  fillG(8,11,2,5,"p"); fillG(24,11,2,5,"p");  // lanes down to the beach
+  fillG(0,16,TW,3,"s"); fillG(0,19,TW,3,"w"); // beach + ocean
+  fillG(25,2,3,2,"w");                        // villa pool
+
+  const TOWN_OBJS=[
+    {k:"bld", x:1, y:6, w:4,h:3, style:"warung", label:"Warung Ibu Ketut", door:[2,8], say:"Closed for lunch. Ibu Ketut is out front."},
+    {k:"bld", x:10,y:6, w:4,h:3, style:"cafe",   label:"Kopi Kita", door:[11,8], say:"Kopi Kita. Sold out of kopi! …maybe there's one stashed round the back?"},
+    {k:"bld", x:23,y:5, w:5,h:3, style:"villa",  label:"Villa Santai", door:[25,7], say:"A fancy villa. Nobody's home. The pool is round the back."},
+    {k:"bld", x:11,y:12,w:4,h:3, style:"surf",   label:"Swell Surf", door:[12,14], say:"Swell Surf. The sign says: GONE SURFING 🏄"},
+    {k:"bld", x:2, y:12,w:4,h:3, style:"shala",  label:"Yoga Shala", say:"An open-air yoga shala. It smells like incense and ambition."},
+    {k:"bld", x:18,y:12,w:6,h:4, style:"sloth",  label:"The Sloppy Sloth", door:[20,15], enter:true},
+    {k:"gate", x:14,y:0, say:"A temple gate. Beautiful, very old, and strictly no suits."},
+    {k:"gate", x:17,y:0, say:"A temple gate. Beautiful, very old, and strictly no suits."},
+    {k:"palm",x:7,y:7},{k:"palm",x:19,y:6},{k:"palm",x:21,y:7},{k:"palm",x:0,y:11},{k:"palm",x:6,y:14},{k:"palm",x:16,y:13},{k:"palm",x:28,y:12},
+    {k:"palm",x:27,y:14},{k:"palm",x:2,y:16},{k:"palm",x:7,y:16},{k:"palm",x:15,y:16},{k:"palm",x:28,y:16},{k:"palm",x:12,y:1},
+    {k:"bush",x:11,y:5},{k:"bush",x:13,y:5},{k:"bush",x:13,y:4},{k:"bush",x:8,y:7},{k:"bush",x:22,y:8},{k:"bush",x:29,y:6},{k:"bush",x:17,y:14},{k:"bush",x:0,y:15},
+    {k:"scooter",x:3,y:11},{k:"scooter",x:4,y:11},{k:"scooter",x:27,y:8},
+    {k:"umbrella",x:4,y:17},{k:"lounger",x:5,y:17},{k:"umbrella",x:17,y:17},{k:"lounger",x:18,y:17},
+    {k:"rack",x:15,y:12, say:"Surfboards for rent. The shop's closed, so… no."},
+    {k:"rock",x:0,y:17},{k:"rock",x:2,y:18},
+    {k:"sign",x:7,y:11, say:"⬆ Temple & rice fields · ⬇ Beach · ➡ The Sloppy Sloth (on the beach)"},
+    {k:"offering",x:6,y:9},{k:"offering",x:16,y:10},{k:"offering",x:21,y:16},
   ];
-  const TOWN_TILES = {
-    "T":{emoji:"🌳", say:"A tree. Very hygge."},
-    "H":{emoji:"🏠", say:"Someone's flat. The candles are already lit."},
-    "C":{emoji:"☕", cls:"path", label:"Café", say:"Your café. Still independent. For now."},
-    "B":{emoji:"🚲", cls:"path", say:"A bike. In Copenhagen? Shocking."},
-    "~":{cls:"canal", say:"The canal. Far too cold for a swim."},
-    "P":{emoji:"🍺", cls:"pub", label:"PUB"},
-    ".":{cls:"path"}, ",":{},
+
+  const PEOPLE=[
+    {name:"Ibu Ketut", x:4, y:9, look:{skin:3,hair:2,hairColor:0,facial:0,outfit:2,outfitColor:2,hat:0,eyes:0},
+      lines:["Selamat datang! The suits came by this morning.","They want to turn The Sloppy Sloth into a co-working space. Over my dead nasi goreng.","Psst… the villa people left a cold craft beer by their pool. They won't miss it."]},
+    {name:"Nick the Nomad", x:13, y:9, look:{skin:0,hair:0,hairColor:3,facial:1,outfit:1,outfitColor:7,hat:2,eyes:2},
+      lines:["I'm building an AI for dog yoga. Pre-revenue. Very pre.","Kopi Kita sold out, but I swear there's a kopi susu behind the café. Go round by the temple."]},
+    {name:"Made", x:12, y:17, look:{skin:4,hair:1,hairColor:0,facial:0,outfit:1,outfitColor:1,hat:0,eyes:0},
+      lines:["Waves are pumping today! 🏄","Fighting suits? Grab the fish tacos by the rocks on the west beach. Brain food."]},
+    {name:"Saffron", x:4, y:15, look:{skin:1,hair:2,hairColor:6,facial:0,outfit:3,outfitColor:4,hat:4,eyes:0},
+      lines:["Breathe in… breathe out…","…now go punch a consultant. Namaste. 🙏"]},
+    {name:"Matt", x:23, y:17, spr:"matthew",
+      lines:["Hey, it's Matt. The suits are inside The Sloppy Sloth.","Go in, I'll be right behind you. I've got someone to call. 🍁"]},
+  ];
+
+  // ── ITEMS ── hidden around town; carried into battle and used from a hero's move list (uses their turn)
+  const ITEMS={
+    coffee:{icon:"☕", name:"Kopi Susu",  desc:"+5 MP · +1 MOVE", found:"Iced kopi susu. Sweet, strong, very Bali. Use it in battle for +5 MP and +1 move."},
+    beer:  {icon:"🍺", name:"Craft IPA",  desc:"+3 fight power",  found:"A cold craft IPA. Use it in battle for +3 power on fight moves."},
+    tacos: {icon:"🌮", name:"Fish Tacos", desc:"Heal 16 HP",       found:"Beach-shack fish tacos. Use them in battle to heal 16 HP."},
   };
-  const me = {x:1, y:2, walking:false};
-  const walkable = (x,y) => ".,P".includes(TOWN[y][x]);
-  function renderTown(){
-    const town=$("town"); town.innerHTML="";
-    for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
-      const d=TOWN_TILES[TOWN[y][x]]||{}, c=document.createElement("div");
-      c.className="tt"+((x+y)%2?" alt":"")+(d.cls?" "+d.cls:"");
-      if(d.emoji) c.textContent=d.emoji;
-      if(d.label){ const l=document.createElement("span"); l.className="lbl"; l.textContent=d.label; c.appendChild(l); }
-      c.onclick=()=>townTap(x,y);
-      town.appendChild(c);
-    }
-    const w=document.createElement("div"); w.className="walker"; w.id="walker";
-    w.innerHTML=`<img src="${SPRITE_URL.player}" alt="${P.name||"You"}">`; town.appendChild(w); placeWalker();
+  const PICKUPS=[{item:"coffee",x:12,y:5},{item:"beer",x:28,y:3},{item:"tacos",x:1,y:17}];
+  const INV={coffee:0, beer:0, tacos:0};
+
+  const TOWN={x:1,y:9,px:1,py:9,dir:1,path:[],onArrive:null,taken:new Set(),talk:null,raf:0,last:0,now:0,frame:0,dirty:true,
+    cam:{x:0,y:0}, vw:176, vh:132, cv:$("townCv"), ctx:null, labels:[]};
+  TOWN.ctx=TOWN.cv.getContext("2d");
+  const SPR_CV={};   // sprite canvases for drawing in town
+  const hsh=(x,y,n=0)=>{ const s=Math.sin(x*127.1+y*311.7+n*74.7)*43758.5453; return s-Math.floor(s); };
+
+  const SOLID=Array.from({length:TH},(_,y)=>Array.from({length:TW},(_,x)=>"wr".includes(GROUND[y][x])));
+  for(const o of TOWN_OBJS){
+    if(o.k==="bld"){ for(let j=o.y;j<o.y+o.h;j++) for(let i=o.x;i<o.x+o.w;i++) SOLID[j][i]=true; if(o.enter) SOLID[o.door[1]][o.door[0]]=false; }
+    else if(o.k==="gate"){ for(let j=o.y;j<o.y+3;j++) SOLID[j][o.x]=true; }
+    else if(o.k!=="offering") SOLID[o.y][o.x]=true;
   }
-  function placeWalker(){ const w=$("walker"); w.style.left=(me.x/COLS*100)+"%"; w.style.top=(me.y/ROWS*100)+"%"; }
-  function townPath(tx,ty){   // shortest walk to (tx,ty); never cuts through the pub on the way
-    const prev=new Map([[K(me.x,me.y),null]]), q=[[me.x,me.y]];
+  const isDoor=(x,y)=>TOWN_OBJS.some(o=>o.enter && o.door[0]===x && o.door[1]===y);
+  const personAt=(x,y)=>PEOPLE.find(p=>p.x===x && p.y===y);
+  const objAt=(x,y)=>TOWN_OBJS.find(o=> o.k==="bld" ? x>=o.x&&x<o.x+o.w&&y>=o.y&&y<o.y+o.h : o.k==="gate" ? x===o.x&&y>=o.y&&y<o.y+3 : o.k!=="offering"&&o.x===x&&o.y===y);
+  const pickupAt=(x,y)=>PICKUPS.find(p=>p.x===x && p.y===y && !TOWN.taken.has(p.item));
+  const canWalk=(x,y)=>x>=0&&y>=0&&x<TW&&y<TH&&!SOLID[y][x]&&!personAt(x,y);
+
+  function findPath(goal){   // shortest walk from the player to the first tile where goal(x,y) is true
+    const sx=TOWN.x, sy=TOWN.y, prev=new Map([[K(sx,sy),null]]), q=[[sx,sy]];
     while(q.length){
-      const [x,y]=q.shift(); if(x===tx && y===ty) break;
+      const [x,y]=q.shift();
+      if(goal(x,y)){ const path=[]; let c=[x,y]; while(c && !(c[0]===sx&&c[1]===sy)){ path.unshift(c); c=prev.get(K(c[0],c[1])); } return path; }
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
         const nx=x+dx, ny=y+dy;
-        if(nx<0||ny<0||nx>=COLS||ny>=ROWS||!walkable(nx,ny)||prev.has(K(nx,ny))) continue;
-        if(TOWN[ny][nx]==="P" && !(nx===tx && ny===ty)) continue;
+        if(!canWalk(nx,ny) || prev.has(K(nx,ny)) || (isDoor(nx,ny) && !goal(nx,ny))) continue;
         prev.set(K(nx,ny),[x,y]); q.push([nx,ny]);
       }
     }
-    if(!prev.has(K(tx,ty))) return null;
-    const path=[]; let cur=[tx,ty];
-    while(cur && !(cur[0]===me.x && cur[1]===me.y)){ path.unshift(cur); cur=prev.get(K(cur[0],cur[1])); }
-    return path;
+    return null;
   }
-  async function townTap(x,y){
-    if(me.walking) return;
-    if(!walkable(x,y)){ const d=TOWN_TILES[TOWN[y][x]]; if(d && d.say) info.textContent=d.say; return; }
-    const path=townPath(x,y); if(!path || !path.length) return;
-    me.walking=true;
-    for(const [nx,ny] of path){
-      $("walker").classList.toggle("flip", nx<me.x);
-      me.x=nx; me.y=ny; placeWalker(); Sound.sfx("step"); await sleep(130);
+
+  function townTap(tx,ty){
+    if(TOWN.talk || !overlay.classList.contains("hidden")) return;
+    const adj=(x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1;
+    const person=personAt(tx,ty), obj=objAt(tx,ty);
+    let path=null, then=null;
+    if(person){ path=findPath(adj); then=()=>{ person.dir = TOWN.x<person.x?-1:1; talk(person.name, person.lines); }; }
+    else if(obj && obj.enter) path=findPath(isDoor);
+    else if(obj && obj.say){
+      const near = obj.k==="bld" ? (x,y)=>x>=obj.x-1&&x<=obj.x+obj.w&&y>=obj.y-1&&y<=obj.y+obj.h
+                 : obj.k==="gate" ? (x,y)=>(Math.abs(x-obj.x)===1&&y>=obj.y&&y<=obj.y+3) || (x===obj.x&&y===obj.y+3) : adj;
+      path=findPath(near); then=()=>talk(obj.label||"", [obj.say]);
     }
-    me.walking=false;
-    if(TOWN[me.y][me.x]==="P") pubPrompt();
+    else if(canWalk(tx,ty)) path=findPath((x,y)=>x===tx&&y===ty);
+    if(!path) return;
+    TOWN.path=path; TOWN.onArrive=then; TOWN.dirty=true;
+    if(!path.length && then){ TOWN.onArrive=null; then(); }
   }
+
+  function arriveTile(){
+    const p=pickupAt(TOWN.x,TOWN.y);
+    if(p){ TOWN.taken.add(p.item); INV[p.item]++; Sound.sfx("heal"); renderHud(); TOWN.path=[]; TOWN.onArrive=null;
+      const it=ITEMS[p.item]; talk(`You found ${it.name}! ${it.icon}`, [it.found]); return; }
+    if(isDoor(TOWN.x,TOWN.y)){ TOWN.path=[]; TOWN.onArrive=null; slothPrompt(); }
+  }
+
+  function townUpdate(dt){
+    if(!TOWN.path.length) return false;
+    const [nx,ny]=TOWN.path[0];
+    if(!canWalk(nx,ny)){ TOWN.path=[]; return true; }
+    if(nx!==Math.round(TOWN.px)) TOWN.dir = nx<TOWN.px?-1:1;
+    const step=6*dt/1000, dx=nx-TOWN.px, dy=ny-TOWN.py, d=Math.hypot(dx,dy);
+    if(d<=step){
+      TOWN.px=TOWN.x=nx; TOWN.py=TOWN.y=ny; TOWN.path.shift(); Sound.sfx("step"); arriveTile();
+      if(!TOWN.path.length && TOWN.onArrive){ const f=TOWN.onArrive; TOWN.onArrive=null; f(); }
+    } else { TOWN.px+=dx/d*step; TOWN.py+=dy/d*step; }
+    return true;
+  }
+
+  function townCam(){
+    const c=TOWN.cam;
+    c.x=Math.round(Math.max(0,Math.min(TW*TS-TOWN.vw, TOWN.px*TS+8-TOWN.vw/2)));
+    c.y=Math.round(Math.max(0,Math.min(TH*TS-TOWN.vh, TOWN.py*TS+8-TOWN.vh/2)));
+  }
+
+  // ground tiles, drawn as little pixel-art squares
+  function drawGround(c,x,y){
+    const g=GROUND[y][x], px=x*TS, py=y*TS, R=(col,a,b,w,h)=>{ c.fillStyle=col; c.fillRect(px+a,py+b,w,h); };
+    const nb=(dx,dy)=>{ const xx=x+dx, yy=y+dy; return yy<0||yy>=TH||xx<0||xx>=TW ? g : GROUND[yy][xx]; };
+    if(g==="g"){ R("#78b350",0,0,16,16); for(let i=0;i<5;i++) R(i%2?"#68a344":"#8cc45e", Math.floor(hsh(x,y,i)*15), Math.floor(hsh(x,y,i+9)*14), 1,2);
+      if(hsh(x,y,30)>.8){ const fx=2+Math.floor(hsh(x,y,31)*11), fy=2+Math.floor(hsh(x,y,32)*11); R(["#fff3a6","#f7b6d2","#ffffff"][Math.floor(hsh(x,y,33)*3)],fx,fy,2,2); R("#e0a43a",fx,fy,1,1); } }
+    else if(g==="p"){ R("#d9bc8c",0,0,16,16); for(let i=0;i<4;i++) R(i%2?"#c4a272":"#ead3ab", Math.floor(hsh(x,y,i)*14), Math.floor(hsh(x,y,i+5)*15), 2,1);
+      if(nb(0,-1)==="g") R("#8cc45e",0,0,16,1); if(nb(0,1)==="g") R("#b9965f",0,15,16,1); if(nb(-1,0)==="g") R("#8cc45e",0,0,1,16); if(nb(1,0)==="g") R("#b9965f",15,0,1,16); }
+    else if(g==="s"){ R("#f2dda5",0,0,16,16); for(let i=0;i<4;i++) R("#e3c585", Math.floor(hsh(x,y,i)*15), Math.floor(hsh(x,y,i+7)*15), 1,1);
+      if("gp".includes(nb(0,-1))) R("#e3c585",0,0,16,1); }
+    else if(g==="w"){ const f=TOWN.frame; R("#3a9fd0",0,0,16,16); R("#3594c4",0,11,16,5);
+      for(let k=0;k<3;k++) R("#7fd0ee", (Math.floor(hsh(x,y,k)*16)+f*2+k*5)%13, 2+k*5, 4,1);
+      if(nb(0,-1)==="s"){ R("#ffffff",0,f%2,16,2); R("#bfe8f6",0,2+f%2,16,1); }
+      if(nb(0,-1)==="g") R("#e8f4f8",0,0,16,2); if(nb(0,1)==="g") R("#e8f4f8",0,14,16,2); if(nb(-1,0)==="g") R("#e8f4f8",0,0,2,16); if(nb(1,0)==="g") R("#e8f4f8",14,0,2,16); }
+    else if(g==="r"){ R("#7fc24a",0,0,16,16); R("#5d9a35",0,0,16,1); R("#9fd6e6",0,8,16,1); for(let i=1;i<16;i+=3){ R("#5f9c2e",i,2,1,4); R("#5f9c2e",(i+1)%16,10,1,4); } }
+    else if(g==="f"){ R("#cfc6b6",0,0,16,16); R("#b3a998",0,0,16,1); R("#b3a998",0,8,16,1); R("#b3a998",y%2?0:8,0,1,8); R("#b3a998",y%2?8:0,8,1,8);
+      if(hsh(x,y,3)>.7) R("#7fa35a",Math.floor(hsh(x,y,4)*14),Math.floor(hsh(x,y,5)*14),2,1); }
+  }
+
+  const BLD={
+    warung:{roof:"#c0563a", roof2:"#9c4029", wall:"#f3e6cf", trim:"#8a5a32", win:"#9fd3e8"},
+    cafe:  {roof:"#c9a25b", roof2:"#a8803f", wall:"#8a5a3c", trim:"#5a3a22", win:"#f5d68a"},
+    villa: {roof:"#3d4f5c", roof2:"#2e3d48", wall:"#fbf8f1", trim:"#b9a98f", win:"#9fd3e8"},
+    surf:  {roof:"#e8d9b5", roof2:"#cdbb92", wall:"#4aa3c4", trim:"#2f7fa0", win:"#f4ede4"},
+    shala: {roof:"#c9a25b", roof2:"#a8803f", wall:null,      trim:"#8a5a32"},
+    sloth: {roof:"#c9a25b", roof2:"#a8803f", wall:"#d8b56a", trim:"#8a5a32", win:"#f5d68a"},
+  };
+  function drawBld(c,o){
+    const s=BLD[o.style], px=o.x*TS, py=o.y*TS, W=o.w*TS, H=o.h*TS, roofH=Math.round(H*.5);
+    const R=(col,a,b,w,h)=>{ c.fillStyle=col; c.fillRect(px+a,py+b,w,h); };
+    R("rgba(0,0,0,.18)",2,H,W,3);
+    if(s.wall){
+      R(s.wall,0,roofH-2,W,H-roofH+2);
+      if(o.style==="sloth"||o.style==="cafe") for(let i=2;i<W;i+=4) R("rgba(0,0,0,.12)",i,roofH,1,H-roofH);   // bamboo / wood slats
+      for(let i=0;i<o.w;i++){ if(o.door && o.x+i===o.door[0]) continue; R(s.trim,i*16+3,roofH+3,10,8); R(s.win,i*16+4,roofH+4,8,6); R("rgba(255,255,255,.5)",i*16+5,roofH+5,2,2); }
+      if(o.door){ const dx=(o.door[0]-o.x)*16; R(s.trim,dx+3,H-13,10,13); R(o.enter?"#3b2a20":"#6b4a2e",dx+4,H-12,8,12); R("#e5b340",dx+10,H-6,1,1); }
+    } else {   // open pavilion: platform, posts, yoga mats
+      R("#c9a77a",0,H-6,W,6); R("#a8875a",0,H-2,W,2); for(const a of [1,W-4]) R(s.trim,a,roofH-2,3,H-roofH-4);
+      R("#7fb3c9",8,H-9,12,3); R("#d96fa8",W-22,H-9,12,3);
+    }
+    R(s.roof,-2,0,W+4,roofH); for(let b=3;b<roofH;b+=4) R(s.roof2,-2,b,W+4,1); R(s.roof2,0,0,W,2); R("rgba(0,0,0,.22)",-2,roofH,W+4,2);
+    if(o.style==="sloth"){   // the sign: a sleepy sloth face
+      const sx=Math.round(W/2)-12, sy=roofH-9; R("#5a3a22",sx,sy,24,12); R("#f4ede4",sx+1,sy+1,22,10);
+      R("#8a6a45",sx+7,sy+2,10,8); R("#d8b88a",sx+8,sy+4,8,5); R("#3b2a20",sx+9,sy+5,2,1); R("#3b2a20",sx+13,sy+5,2,1); R("#1e1612",sx+11,sy+7,2,1);
+      R("#e0782b",sx+2,sy+4,3,2); R("#e0782b",sx+19,sy+4,3,2);
+    }
+  }
+
+  function drawObj(c,o){
+    const px=o.x*TS, py=o.y*TS, R=(col,a,b,w,h)=>{ c.fillStyle=col; c.fillRect(px+a,py+b,w,h); };
+    switch(o.k){
+      case "bld": drawBld(c,o); break;
+      case "palm": {
+        R("rgba(0,0,0,.18)",3,13,10,3);
+        for(let i=0;i<22;i++) R(i%4===0?"#6f5235":"#8f6c45", 7+Math.round(Math.sin(i/7)*2), 14-i, 3,1);
+        const tx=px+8+Math.round(Math.sin(3)*2), ty=py-8;
+        for(const [dx,dy] of [[-1,-.35],[1,-.35],[-1,.45],[1,.45],[-.3,-1],[.4,-1]]) for(let s=0;s<9;s++){ c.fillStyle=s%3===2?"#3f8f3a":"#58b04a"; c.fillRect(Math.round(tx+dx*s), Math.round(ty+dy*s+s*s/14), 2, s<6?2:1); }
+        c.fillStyle="#6b4a2e"; c.fillRect(tx-2,ty+1,2,2); c.fillRect(tx+1,ty+2,2,2); break; }
+      case "bush": R("rgba(0,0,0,.15)",2,12,12,3); R("#3f8a3a",2,4,12,10); R("#4fa24a",3,3,10,9); R("#62b85a",5,4,5,4);
+        for(let i=0;i<4;i++){ const fx=3+Math.floor(hsh(o.x,o.y,i)*9), fy=4+Math.floor(hsh(o.x,o.y,i+4)*7); R("#ffffff",fx,fy,2,2); R("#f5c84a",fx,fy,1,1); } break;
+      case "scooter": R("rgba(0,0,0,.18)",1,13,14,2); R("#1e1612",2,10,4,4); R("#1e1612",10,10,4,4); R("#666",3,11,2,2); R("#666",11,11,2,2);
+        R(o.x%2?"#d9452b":"#3a8fd0",4,6,8,5); R("#f4ede4",5,7,3,2); R("#1e1612",11,3,1,4); R("#1e1612",10,3,3,1); break;
+      case "umbrella": R("rgba(0,0,0,.12)",2,13,12,3); R("#d9c39a",7,4,2,12); for(let i=0;i<7;i++) R(i%2?"#f4ede4":"#e0782b",1+i*2,2,2,4); R("#e0782b",3,1,10,1); R("#c25e22",1,6,14,1); break;
+      case "lounger": R("rgba(0,0,0,.12)",1,12,14,3); R("#f4ede4",1,8,14,4); R("#3a8fd0",1,8,14,1); R("#3a8fd0",1,10,14,1); R("#b38f45",2,12,1,3); R("#b38f45",13,12,1,3); break;
+      case "rack": R("#8a5a32",1,13,14,2); ["#e0782b","#3a8fd0","#f4ede4","#4f8a5b"].forEach((col,i)=>{ R(col,1+i*4,1,3,12); R("rgba(0,0,0,.35)",2+i*4,2,1,10); }); break;
+      case "rock": R("rgba(0,0,0,.15)",2,12,12,3); R("#8d8a84",2,6,12,8); R("#a9a6a0",3,5,9,5); R("#c2bfb9",5,6,3,2); break;
+      case "sign": R("#8a5a32",7,8,2,8); R("#c9a25b",2,3,12,7); R("#8a5a32",2,3,12,1); R("#8a5a32",2,9,12,1); R("#5a3a22",4,5,8,1); R("#5a3a22",4,7,6,1); break;
+      case "offering": R("#5aa83a",5,6,6,6); R("#3f8a3a",5,11,6,1); R("#f5c84a",6,7,2,2); R("#d9452b",9,7,2,2); R("#ffffff",7,9,2,2); break;
+      case "gate": R("rgba(0,0,0,.15)",0,45,16,3);
+        for(const [a,b,w,h] of [[0,38,16,10],[1,28,14,10],[2,18,12,10],[3,9,10,9],[5,2,6,7]]){ R("#8d8478",a,b,w,h); R("#a69d90",a,b,w,2); R("#6e665b",a+w-2,b,2,h); }
+        R("#6a8f4a",2,36,2,1); R("#6a8f4a",10,24,2,1); R("#e0b84f",6,2,4,2); break;
+    }
+  }
+
+  function drawPickup(c,p){
+    const px=p.x*TS, py=p.y*TS-(Math.floor(TOWN.now/400)%2), R=(col,a,b,w,h)=>{ c.fillStyle=col; c.fillRect(px+a,py+b,w,h); };
+    R("rgba(0,0,0,.18)",4,13,8,2);
+    if(p.item==="coffee"){ R("#ffffff",5,6,6,7); R("#7a4a26",6,6,4,2); R("#ffffff",11,8,2,3); R("#c9a77a",5,12,6,1); }
+    if(p.item==="beer"){ R("#b0702a",6,4,4,9); R("#b0702a",7,1,2,3); R("#f4ede4",6,7,4,3); R("#e0782b",7,8,2,1); }
+    if(p.item==="tacos"){ R("#e8b84a",3,8,10,5); R("#5aa83a",4,7,8,2); R("#d9452b",5,6,2,1); R("#f4ede4",9,6,2,1); R("#c99a35",3,12,10,1); }
+    if(Math.floor(TOWN.now/250)%3===0){ R("#fff6c2",13,1,1,3); R("#fff6c2",12,2,3,1); }   // sparkle
+  }
+
+  function drawChar(c,key,x,y,dir,walking){
+    const cv=SPR_CV[key]; if(!cv) return;
+    const px=Math.round(x*TS), py=Math.round(y*TS), bob=walking ? Math.floor(TOWN.now/110)%2 : Math.floor(TOWN.now/700)%2;
+    c.fillStyle="rgba(0,0,0,.2)"; c.fillRect(px+4,py+13,8,2);
+    if(dir<0){ c.save(); c.translate(px+16,0); c.scale(-1,1); c.drawImage(cv,0,py-4-bob); c.restore(); }
+    else c.drawImage(cv,px,py-4-bob);
+  }
+
+  function townDraw(){
+    const c=TOWN.ctx, cam=TOWN.cam;
+    c.setTransform(1,0,0,1,-cam.x,-cam.y);
+    const x0=Math.floor(cam.x/TS), y0=Math.floor(cam.y/TS), x1=Math.min(TW-1,x0+Math.ceil(TOWN.vw/TS)), y1=Math.min(TH-1,y0+Math.ceil(TOWN.vh/TS));
+    for(let y=y0;y<=y1;y++) for(let x=x0;x<=x1;x++) drawGround(c,x,y);
+    const things=[];   // y-sorted so things lower on the map draw in front
+    for(const o of TOWN_OBJS) things.push({by:o.k==="bld"?o.y+o.h-1 : o.k==="gate"?o.y+2 : o.y, z:o.k==="offering"?-1:0, draw:()=>drawObj(c,o)});
+    for(const p of PICKUPS) if(!TOWN.taken.has(p.item)) things.push({by:p.y, z:0, draw:()=>drawPickup(c,p)});
+    for(const p of PEOPLE) things.push({by:p.y, z:1, draw:()=>drawChar(c, p.spr||"npc:"+p.name, p.x, p.y, p.dir||1, false)});
+    things.push({by:TOWN.py, z:2, draw:()=>drawChar(c,"player",TOWN.px,TOWN.py,TOWN.dir,TOWN.path.length>0)});
+    things.sort((a,b)=>a.by-b.by || a.z-b.z).forEach(t=>t.draw());
+    c.setTransform(1,0,0,1,0,0);
+    placeLabels();
+  }
+
+  function buildLabels(){
+    const box=$("tlabels"); box.innerHTML=""; TOWN.labels=[];
+    for(const o of TOWN_OBJS) if(o.k==="bld"){ const l=document.createElement("span"); l.className="tlbl"+(o.enter?" main":""); l.textContent=o.label; box.appendChild(l); TOWN.labels.push([l,o]); }
+  }
+  function placeLabels(){
+    for(const [l,o] of TOWN.labels){
+      const x=(o.x*TS+o.w*TS/2-TOWN.cam.x)/TOWN.vw*100, y=(o.y*TS-3-TOWN.cam.y)/TOWN.vh*100;
+      l.style.left=x+"%"; l.style.top=y+"%"; l.hidden = x<-20||x>120||y<-10||y>100;
+    }
+  }
+  function renderHud(){
+    $("hud").innerHTML=Object.entries(ITEMS).map(([k,it])=>`<span class="${INV[k]?"":"zero"}" title="${it.name}">${it.icon} ${INV[k]}</span>`).join("");
+  }
+
+  // dialogue box (people, signs, found items)
+  function talk(name, lines, done){ TOWN.talk={name, lines:[...lines], i:0, done}; showTalk(); }
+  function showTalk(){
+    const t=TOWN.talk, el=$("talk");
+    if(!t){ el.classList.add("hidden"); return; }
+    el.innerHTML=""; const b=document.createElement("b"); b.textContent=t.name; const p=document.createElement("div"); p.textContent=t.lines[t.i];
+    const m=document.createElement("span"); m.className="more"; m.textContent=t.i<t.lines.length-1?"▼":"✕";
+    if(t.name) el.append(b); el.append(p,m); el.classList.remove("hidden");
+  }
+  function advanceTalk(){
+    const t=TOWN.talk; if(!t) return; Sound.sfx("blip");
+    if(++t.i>=t.lines.length){ TOWN.talk=null; showTalk(); if(t.done) t.done(); } else showTalk();
+  }
+  $("talk").onclick=advanceTalk;
+
+  TOWN.cv.onclick=e=>{
+    const r=TOWN.cv.getBoundingClientRect();
+    townTap(Math.floor(((e.clientX-r.left)/r.width*TOWN.vw+TOWN.cam.x)/TS), Math.floor(((e.clientY-r.top)/r.height*TOWN.vh+TOWN.cam.y)/TS));
+  };
   document.addEventListener("keydown", e=>{
-    if($("cg").dataset.screen!=="town" || me.walking || !overlay.classList.contains("hidden")) return;
-    const d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key]; if(!d) return;
-    e.preventDefault(); const nx=me.x+d[0], ny=me.y+d[1];
-    if(nx>=0 && ny>=0 && nx<COLS && ny<ROWS) townTap(nx,ny);
+    if($("cg").dataset.screen!=="town" || !overlay.classList.contains("hidden")) return;
+    if(TOWN.talk){ if(["Enter"," ","Escape","e","E"].includes(e.key)){ e.preventDefault(); advanceTalk(); } return; }
+    const d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]}[e.key];
+    if(!d || TOWN.path.length) return;
+    e.preventDefault();
+    const nx=TOWN.x+d[0], ny=TOWN.y+d[1]; if(d[0]) TOWN.dir=d[0];
+    if(personAt(nx,ny) || objAt(nx,ny)) townTap(nx,ny); else if(canWalk(nx,ny)) TOWN.path=[[nx,ny]];
+    TOWN.dirty=true;
   });
-  function enterTown(){
-    setScreen("town"); me.x=1; me.y=2; me.walking=false; renderTown();
-    info.innerHTML=`<b>${P.name||"You"}</b>, the suits have taken over the pub. Tap the map to walk there 🍺`;
-    Sound.play("cafe");
+
+  function townLoop(now){
+    if($("cg").dataset.screen!=="town"){ TOWN.raf=0; return; }
+    const dt=Math.min(50, now-(TOWN.last||now)); TOWN.last=now; TOWN.now=now;
+    const moved=townUpdate(dt), f=Math.floor(now/350);
+    if(f!==TOWN.frame){ TOWN.frame=f; TOWN.dirty=true; }
+    if(moved || TOWN.dirty){ townCam(); townDraw(); TOWN.dirty=false; }
+    TOWN.raf=requestAnimationFrame(townLoop);
   }
-  function pubPrompt(){
-    overlay.innerHTML=`<h2>Ye Olde Bodega 🍺</h2><p>Loud music, cheap beer… and a room full of suits. They want to turn it into a co-working space.</p><div class="row2"><button class="primary" id="goIn">Go in</button><button id="notYet">Not yet</button></div>`;
+
+  function enterTown(){
+    setScreen("town");
+    for(const k in INV) INV[k]=0; TOWN.taken.clear();
+    Object.assign(TOWN,{x:1,y:9,px:1,py:9,dir:1,path:[],onArrive:null,talk:null}); showTalk();
+    SPR_CV.player=drawSprite(playerSprite());
+    const box=$("town").getBoundingClientRect();
+    TOWN.vh=Math.max(96, Math.round(TOWN.vw*box.height/Math.max(1,box.width))); TOWN.cv.width=TOWN.vw; TOWN.cv.height=TOWN.vh;
+    buildLabels(); renderHud(); townCam(); TOWN.dirty=true;
+    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap to walk (arrow keys work too). Talk to people, find hidden snacks, then head to The Sloppy Sloth on the beach.</div>`;
+    if(!TOWN.raf){ TOWN.last=0; TOWN.raf=requestAnimationFrame(townLoop); }
+    Sound.play("cafe");
+    talk("Canggu, Bali 🌴", [`Welcome, ${P.name||"friend"}! The suits have taken over The Sloppy Sloth, the beach bar.`, "Explore, talk to people and find snacks for the fight. Then head to the Sloth, down on the beach."]);
+  }
+  const itemsLine=()=>{ const have=Object.entries(ITEMS).filter(([k])=>INV[k]).map(([k,it])=>`${it.icon} ${it.name}`); return have.length ? have.join(", ") : "nothing yet. Snacks are hidden around town!"; };
+  function slothPrompt(){
+    overlay.innerHTML=`<h2>The Sloppy Sloth 🦥</h2><p>Cold beer, loud reggae… and a room full of suits. They want to turn it into a co-working space.</p><p>You're carrying: ${itemsLine()}</p><div class="row2"><button class="primary" id="goIn">Go in</button><button id="notYet">Not yet</button></div>`;
     overlay.classList.remove("hidden");
     $("goIn").onclick=()=>{ Sound.sfx("select"); startBattle(); };
-    $("notYet").onclick=()=>{ overlay.classList.add("hidden"); me.y+=1; placeWalker(); };
+    $("notYet").onclick=()=>{ overlay.classList.add("hidden"); Object.assign(TOWN,{x:20,y:16,px:20,py:16}); TOWN.dirty=true; };
   }
   function startBattle(){
     setScreen("battle"); reset();
-    overlay.innerHTML=`<h2>Inside the Bodega</h2><p>Tap <b>${S.units[0].name}</b> → tap a <b style="color:var(--hero)">blue</b> tile to move → pick a <b style="color:var(--fight)">⚔️ fight</b> or <b style="color:var(--magic)">✨ magic</b> move → tap a target.<br><br>You're on your own. Hold the line. Help is on the way.</p><button class="primary" id="fight">Fight ♪</button>`;
+    overlay.innerHTML=`<h2>Inside The Sloppy Sloth</h2><p>Tap <b>${S.units[0].name}</b> → tap a <b style="color:var(--hero)">blue</b> tile to move → pick a <b style="color:var(--fight)">⚔️ fight</b> or <b style="color:var(--magic)">✨ magic</b> move → tap a target. Snacks you found are in the move list.<br><br>You're on your own. Hold the line. Help is on the way.</p><button class="primary" id="fight">Fight ♪</button>`;
     overlay.classList.remove("hidden");
     $("fight").onclick=()=>{ overlay.classList.add("hidden"); Sound.play("battle"); Sound.sfx("select"); };
   }
+
+  // NPC sprites, built with the same generator as your hero
+  SPR_CV.matthew=drawSprite(SPRITES.matthew);
+  for(const p of PEOPLE) if(p.look) SPR_CV["npc:"+p.name]=drawSprite(playerSprite(p.look));
 
   const sndBtn=$("snd"); const paintSnd=()=>{ sndBtn.textContent=Sound.on?"🔊":"🔇"; }; paintSnd();
   sndBtn.onclick=()=>{ Sound.init(); Sound.setOn(!Sound.on); paintSnd(); };

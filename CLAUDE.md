@@ -11,11 +11,11 @@ Matthew's personal portfolio. Matthew is a beginner: explain changes simply, kee
 - Sections, in order: sec-hero, sec-journey, sec-work, sec-now, sec-cafe, sec-play (game), sec-contact.
 
 ## The game
-- `games/copenhagen-grind.html` is a self-contained tactics RPG (pixel sprites, battle scenes, synth audio). Embedded in `#sec-play` via an iframe.
+- `games/copenhagen-grind.html` is "Super Start-up Adventure Time", a self-contained tactics RPG set in Canggu, Bali (pixel art, battle scenes, synth audio). Embedded in `#sec-play` via an iframe. (The file name is left over from the old title.)
 - The iframe resizes itself (script at the end of the game file). Keep that.
 - The win-screen link is `href="/#sec-contact" target="_top"`. Keep `target="_top"`.
-- Flow: title screen → character creator → town (walk to the pub) → battle. You start alone; Matt joins on turn 2 and can summon Claude once.
-- Easy edits inside the game: `heroDef` (your hero's stats and moves), `FOES` (the suits), `BACKUP` (Matt), `CLAUDE` (the summon), `LOOK` (creator options), `TOWN` (town map), `SPRITES` (16x16 pixel art as letter grids), `MOVE_FX` (which animation a move uses), `SONGS` (music, one note per 8th).
+- Flow: title screen → character creator (default hero: Rikke) → explore Canggu (find snacks) → battle inside The Sloppy Sloth. You start alone; Matt joins on turn 2 and can summon Claude once.
+- Easy edits inside the game: `heroDef` (your hero's stats and moves), `FOES` (the suits), `BACKUP` (Matt), `CLAUDE` (the summon), `LOOK` + `P` (creator options and the default hero), `fillG` rects / `TOWN_OBJS` / `PEOPLE` / `PICKUPS` (the town map, buildings, who says what, hidden snacks), `ITEMS` (snack effects), `SPRITES` (16x16 pixel art as letter grids), `MOVE_FX` (which animation a move uses), `SONGS` (music, one note per 8th).
 - Moves with `area:1` hit a "+" shape (the target square and the 4 around it).
 
 ## Workflow
