@@ -1266,7 +1266,9 @@
     {k:"palm",x:27,y:14},{k:"palm",x:2,y:16},{k:"palm",x:7,y:16},{k:"palm",x:15,y:16},{k:"palm",x:28,y:16},{k:"palm",x:12,y:1},
     {k:"bush",x:11,y:5},{k:"bush",x:13,y:5},{k:"bush",x:13,y:4},{k:"bush",x:22,y:8},{k:"bush",x:29,y:6},{k:"bush",x:17,y:14},{k:"bush",x:0,y:15},
     {k:"scooter",x:3,y:11},{k:"scooter",x:4,y:11},{k:"scooter",x:27,y:8},
-    {k:"umbrella",x:4,y:17},{k:"lounger",x:5,y:17},{k:"umbrella",x:17,y:17},{k:"lounger",x:18,y:17},
+    {k:"umbrella",x:4,y:17},{k:"lounger",x:5,y:17},{k:"umbrella",x:9,y:17},{k:"lounger",x:10,y:17},
+    {k:"bartable",x:18,y:16, say:"Outdoor seating at The Sloppy Sloth. Someone left half a coconut."},
+    {k:"bartable",x:22,y:16, say:"Best seat in Canggu. Sunset view, guaranteed."},
     {k:"rack",x:15,y:12, say:"Surfboards for rent. The shop's closed, so… no."},
     {k:"rock",x:0,y:17},{k:"rock",x:2,y:18},
     {k:"sign",x:7,y:11, say:"⬆ Temple & rice fields · ⬇ Beach · ➡ The Sloppy Sloth (on the beach)"},
@@ -1388,19 +1390,38 @@
     if(isDoor(TOWN.x,TOWN.y)){ TOWN.path=[]; TOWN.onArrive=null; fightScene(); }
   }
 
+  // Movement runs on a fixed 60-per-second tick and moves whole pixels in an even 1-1-2 rhythm (80px/s = 5 tiles/s),
+  // so steps look the same on every screen, at any frame rate. Holding a direction key keeps walking without pausing.
+  const TICK=1000/60, STEP=[1,1,2];
+  const HELD=[];   // direction keys currently held, most recent last
+  const heldDir=()=>HELD.length ? HELD[HELD.length-1] : null;
   function townUpdate(dt){
-    if(!TOWN.path.length) return false;
+    if(!TOWN.path.length){ TOWN.acc=0; return false; }
+    TOWN.acc=(TOWN.acc||0)+dt;
+    while(TOWN.acc>=TICK && TOWN.path.length){ TOWN.acc-=TICK; stepTick(); }
+    return true;
+  }
+  function stepTick(){
     const [nx,ny]=TOWN.path[0];
-    if(!canWalk(nx,ny)){ TOWN.path=[]; updateAct(); return true; }
+    if(!canWalk(nx,ny)){ TOWN.path=[]; updateAct(); return; }
     TOWN.face=[Math.sign(nx-TOWN.x), Math.sign(ny-TOWN.y)];
     if(TOWN.face[0]) TOWN.dir=TOWN.face[0];
-    const step=5*dt/1000, dx=nx-TOWN.px, dy=ny-TOWN.py, d=Math.hypot(dx,dy);
-    TOWN.walk+=Math.min(step,d);
-    if(d<=step){
-      TOWN.px=TOWN.x=nx; TOWN.py=TOWN.y=ny; TOWN.path.shift(); Sound.sfx("step"); arriveTile();
-      if(!TOWN.path.length){ if(TOWN.onArrive){ const f=TOWN.onArrive; TOWN.onArrive=null; f(); } updateAct(); }
-    } else { TOWN.px+=dx/d*step; TOWN.py+=dy/d*step; }
-    return true;
+    let ppx=Math.round(TOWN.px*TS), ppy=Math.round(TOWN.py*TS);
+    const tx=nx*TS, ty=ny*TS, left=Math.abs(tx-ppx)+Math.abs(ty-ppy);
+    const s=Math.min(STEP[TOWN.tick=((TOWN.tick||0)+1)%3], left);
+    ppx+=Math.sign(tx-ppx)*s; ppy+=Math.sign(ty-ppy)*s; TOWN.walk+=s/TS;
+    TOWN.px=ppx/TS; TOWN.py=ppy/TS;
+    if(ppx!==tx || ppy!==ty) return;
+    TOWN.x=nx; TOWN.y=ny; TOWN.path.shift(); Sound.sfx("step"); arriveTile();
+    if(TOWN.path.length) return;
+    const d=heldDir();   // still holding a direction? carry straight on
+    if(d && !TOWN.cut && !TOWN.talk && overlay.classList.contains("hidden")){
+      const hx=TOWN.x+d[0], hy=TOWN.y+d[1];
+      if(canWalk(hx,hy)){ TOWN.path=[[hx,hy]]; return; }
+      faceTo(hx,hy);
+    }
+    if(TOWN.onArrive){ const f=TOWN.onArrive; TOWN.onArrive=null; f(); }
+    updateAct();
   }
 
   // the camera follows the player's *pixel* position, so the player never wobbles against the map
@@ -1524,19 +1545,30 @@
         if(o.door){ const dx=2+(o.door[0]-o.x)*16; rect(dx+3,H-13,10,13,"trim"); rect(dx+4,H-12,8,12,"door"); }
       } else { rect(0,H-6,W,6,"plat"); rect(2,roofH-2,3,H-roofH-4,"post"); rect(W-5,roofH-2,3,H-roofH-4,"post"); rect(10,H-9,12,3,"mat1"); rect(W-24,H-9,12,3,"mat2"); }
       for(let y=0;y<roofH;y++){ const inset=Math.max(0,Math.round((4-y)*1.2)); span(y,inset,W-1-inset,"roof"); }   // rounded ridge, full-width eaves
-      if(o.style==="sloth"){ const sx=Math.round(W/2)-13, sy=roofH-10; rect(sx,sy,26,13,"sign"); rect(sx+1,sy+1,24,11,"board"); }
+      if(o.style==="sloth"){ const sx=Math.round(W/2)-15, sy=roofH-14; rect(sx,sy,30,16,"sign"); rect(sx+1,sy+1,28,14,"board"); }
       // details painted after shading
       const R=ramp(s.roof);
       for(let y=4;y<roofH-1;y+=4) for(let x=2;x<W-2;x++){ px(x,y,R.sh); if(!thatch && x%6===(y/4%2)*3) px(x,y-1,R.sh); }   // roof courses / tiles
       if(thatch) for(let x=3;x<W-3;x+=3) px(x,roofH-1,R.sh);                                                           // thatch fringe
-      if(s.wall){ const Wr=ramp(s.wall); for(let x=2;x<W-2;x++){ px(x,roofH-1,Wr.sh); px(x,roofH,Wr.sh); }                // eave shadow
+      if(s.wall){ const Wr=ramp(s.wall); for(let x=2;x<W-2;x++){ if(o.style==="sloth" && Math.abs(x-W/2)<=15) continue; px(x,roofH-1,Wr.sh); px(x,roofH,Wr.sh); }   // eave shadow (not over the sign)
         if(s.bamboo) for(let x=4;x<W-3;x+=4) for(let y=roofH+1;y<H-1;y++) if(y%7) px(x,y,Wr.sh);
         if(s.planks) for(let y=roofH+3;y<H-1;y+=3) for(let x=3;x<W-3;x++) if((x+y)%9) px(x,y,Wr.sh);
         if(s.wave) for(let x=3;x<W-3;x++) px(x,H-4+Math.round(Math.sin(x/3)),"#f4ede4");
         for(let i=0;i<o.w;i++){ if(o.door && o.x+i===o.door[0]) continue; px(2+i*16+5,roofH+5,"#ffffff"); px(2+i*16+6,roofH+5,"#ffffff"); px(2+i*16+5,roofH+6,"#ffffff"); } }
       if(o.door){ const dx=2+(o.door[0]-o.x)*16; px(dx+10,H-6,"#e5b340"); }
-      if(o.style==="sloth"){ const sx=Math.round(W/2)-13, sy=roofH-10, B=(x,y,c2,w=1,h=1)=>{ for(let j=0;j<h;j++) for(let i=0;i<w;i++) px(sx+x+i,sy+y+j,c2); };
-        B(8,2,"#8a6a45",10,9); B(9,4,"#d8b88a",8,5); B(10,5,"#3b2a20",2,1); B(14,5,"#3b2a20",2,1); B(12,7,"#1e1612",2,1); B(3,4,"#e0782b",3,2); B(20,4,"#e0782b",3,2); }
+      if(o.style==="sloth"){   // the sign: a happy sloth raising a pint
+        const bx=Math.round(W/2)-14, by=roofH-13, B=(x,y,c2,w=1,h=1)=>{ for(let j=0;j<h;j++) for(let i=0;i<w;i++) px(bx+x+i,by+y+j,c2); };
+        const fur="#8a6a45", furS="#6b4f33", mask="#ead2a4", patch="#4a3020";
+        B(7,1,fur,5); B(5,2,fur,9); for(let y=3;y<=9;y++) B(4,y,fur,11); B(5,10,fur,9); B(7,11,fur,5); B(13,4,furS,1,6); B(12,10,furS,2);   // head
+        B(7,3,mask,5); for(let y=4;y<=8;y++) B(6,y,mask,7); B(7,9,mask,5);                                                                  // face
+        B(5,5,patch,3,2); B(11,5,patch,3,2); B(6,5,"#141010"); B(12,5,"#141010");                                                            // eye patches
+        B(9,7,"#2a1a14",1); B(8,8,"#6b3a2a"); B(10,8,"#6b3a2a"); B(9,9,"#6b3a2a");                                                         // nose, smile
+        B(13,9,fur,2); B(15,8,fur,2); B(16,7,fur,1); B(17,7,mask,1,2);                                                                       // arm + claw
+        B(18,2,"#fff8e8",5); B(17,3,"#fff8e8",7);                                                                                            // foam
+        B(17,4,"#d9e6ea",1,8); B(23,4,"#d9e6ea",1,8); B(17,12,"#d9e6ea",7); B(24,5,"#d9e6ea",1); B(25,6,"#d9e6ea",1,3); B(24,9,"#d9e6ea",1);  // glass + handle
+        B(18,4,"#e5b340",5,8); B(21,4,"#c98f22",2,8); B(19,6,"#fff3b0"); B(20,9,"#fff3b0");                                                // beer + bubbles
+        for(let x=4;x<W-4;x+=3) px(x,roofH+1+((x/3)%2|0),["#ffd65a","#ff7a59","#7fd3ff","#a3e36a"][(x/3|0)%4]);                             // fairy lights
+      }
     });
     BLD_ART.set(o,art); return art;
   }
@@ -1565,6 +1597,12 @@
         rect(0,13,16,2,"wood"); ["a","b","c","d"].forEach((m,i)=>rect(1+i*4,1,3,12,m)); }), 0, 0];
     if(k==="sign") out=[shadeArt(16,16,{post:RP("#7a5a3a"),board:RP("#c9a25b",{tex:4})},({rect,px})=>{ rect(7,8,2,8,"post"); rect(1,2,14,7,"board"); for(const y of [4,6]) for(let x=3;x<12-(y===6?3:0);x++) px(x,y,"#5a3a22"); }), 0, 0];
     if(k==="offering") out=[shadeArt(12,8,{tray:RP("#5aa83a")},({rect,px})=>{ rect(1,2,10,5,"tray"); px(3,3,"#f5c84a"); px(4,3,"#f5c84a"); px(7,3,"#d9452b"); px(8,3,"#d9452b"); px(5,5,"#ffffff"); px(6,5,"#ffffff"); px(9,5,"#f7b6d2"); }), 2, 5];
+    if(k==="bartable") out=[shadeArt(22,27,{thatch:RP("#c9a25b",{streak:5}),pole:RP("#8a6a45"),top:RP("#b8874a"),stool:RP("#7a5233")},({span,rect,px})=>{
+        for(let y=0;y<7;y++){ const w=Math.min(10,2+y*2); span(y,11-w,10+w,"thatch"); }                          // thatched parasol
+        rect(10,7,2,10,"pole"); rect(3,16,16,3,"top"); rect(10,19,2,4,"pole");                                   // pole, table
+        rect(0,19,3,2,"stool"); rect(1,21,1,3,"stool"); rect(19,19,3,2,"stool"); rect(20,21,1,3,"stool");         // stools
+        for(let x=1;x<21;x+=2) px(x,6,"#a8803f");                                                                  // fringe
+        px(6,14,"#fff8e8"); px(6,15,"#e5b340"); px(7,15,"#e5b340"); px(14,14,"#5aa83a"); px(15,14,"#5aa83a"); px(14,15,"#7a5230"); px(15,15,"#f4ede4"); }), -3, -11];   // a beer and a coconut
     if(k==="gate") out=[shadeArt(18,49,{stone:RP("#8f877b",{tex:13}),gold:RP("#e0b84f")},({rect,px})=>{
         for(const [a,b,w,h] of [[1,39,16,10],[2,29,14,10],[3,19,12,10],[4,10,10,9],[6,3,6,7]]) rect(a,b,w,h,"stone");
         rect(7,1,4,2,"gold"); px(3,37,"#6a8f4a"); px(4,37,"#6a8f4a"); px(11,25,"#6a8f4a"); px(12,26,"#6a8f4a"); }), -1, 0];
@@ -1613,7 +1651,7 @@
     const base=SPR_CV[key]; if(!base) return;
     const px=Math.round(x*TS), py=Math.round(y*TS);
     let img=base, lift=0;
-    if(walk!=null){ const stride=Math.floor(walk*4)%2===1; img = stride ? strideFrame(base) : base; lift = stride ? 0 : 1; }   // 2 steps per tile; idle = stand still
+    if(walk!=null){ const stride=Math.floor(walk*4)%2===1; img = stride ? strideFrame(base) : base; }   // 2 steps per tile; idle = stand still
     c.fillStyle="rgba(0,0,0,.2)"; c.fillRect(px+3,py+12,10,3);   // characters are 24px tall: feet near the bottom of their tile
     const top=py-10-lift-(key==="player" ? TOWN.hopLift||0 : 0);
     if(dir<0){ c.save(); c.translate(px+8,0); c.scale(-1,1); c.drawImage(img,-12,top); c.restore(); }
@@ -1677,13 +1715,18 @@
     if($("cg").dataset.screen!=="town" || !overlay.classList.contains("hidden")) return;
     if([" ","Enter","e","E","z","Z"].includes(e.key)){ e.preventDefault(); doAction(); return; }   // the A button
     if(TOWN.talk || TOWN.cut) return;
-    const d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]}[e.key];
-    if(!d || TOWN.path.length) return;
+    const d=DIRS[e.key];
+    if(!d) return;
     e.preventDefault();
+    if(!HELD.includes(d)) HELD.push(d);
+    if(TOWN.path.length) return;   // already walking: the held key carries on at the next tile
     const nx=TOWN.x+d[0], ny=TOWN.y+d[1];
-    if(canWalk(nx,ny)){ TOWN.path=[[nx,ny]]; updateAct(); } else faceTo(nx,ny);   // blocked: just turn to face it
+    if(canWalk(nx,ny)){ TOWN.path=[[nx,ny]]; TOWN.onArrive=null; updateAct(); } else faceTo(nx,ny);   // blocked: just turn to face it
     TOWN.dirty=true;
   });
+  const DIRS={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
+  document.addEventListener("keyup", e=>{ const d=DIRS[e.key]; if(d){ const i=HELD.indexOf(d); if(i>=0) HELD.splice(i,1); } });
+  addEventListener("blur", ()=>{ HELD.length=0; });
 
   function townLoop(now){
     if($("cg").dataset.screen!=="town"){ TOWN.raf=0; return; }
