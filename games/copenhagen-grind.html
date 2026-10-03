@@ -679,6 +679,12 @@
       bass:`A2 A2 A3 A2 A2 A2 A3 A2  F2 F2 F3 F2 F2 F2 F3 F2  A2 A2 A3 A2 A2 A2 A3 A2  E2 E2 E3 E2 E2 E2 E3 E2
             F2 F2 F3 F2 F2 F2 F3 F2  C3 C3 C4 C3 C3 C3 C4 C3  D3 D3 D4 D3 E2 E2 E3 E2  A2 A2 A3 A2 A2 A2 A3 A2`,
       drums:"k.s.kks.".repeat(7)+"k.s.s.ss", hats:true },
+    morning: { bpm:88, loop:true, wave:"triangle", leadVol:0.12,   // the wake-up scene: soft, bell-like, pentatonic
+      lead:`D5 - A5 - G5 - E5 -  D5 - E5 G5 A5 - - -  C6 - A5 - G5 - E5 -  G5 - - - . . . .
+            D5 - A5 - G5 - E5 -  D5 - E5 G5 A5 - C6 -  D6 - C6 A5 G5 - E5 -  D5 - - - . . . .`,
+      bass:`D3 . . . A2 . . .  G2 . . . D3 . . .  C3 . . . G2 . . .  A2 . . . D3 . . .
+            D3 . . . A2 . . .  G2 . . . D3 . . .  C3 . . . G2 . . .  A2 . . . D3 . . .`,
+      drums:"", hats:false },
     cafe: { bpm:112, loop:true,
       lead:`D5 - F#5 A5 B5 A5 F#5 D5  E5 - F#5 G5 F#5 E5 D5 -  B4 - D5 F#5 G5 F#5 E5 D5  C#5 D5 E5 - A4 - . .
             D5 - F#5 A5 D6 - C#6 B5  A5 - G5 F#5 G5 A5 B5 -  G5 F#5 E5 D5 E5 F#5 E5 C#5  D5 - - - . . A4 .`,
@@ -728,7 +734,7 @@
       if(!song) return; const sd=60/song.bpm/2;
       while(nextT < ctx.currentTime+0.15){
         const L=events.lead[step], B=events.bass[step], D=song.drums[step % (song.drums.length||1)];
-        if(L) { tone("square",L.f,nextT,L.len*sd*0.92,0.07,music); tone("square",L.f*1.004,nextT+0.012,L.len*sd*0.8,0.025,music); }
+        if(L) { const lw=song.wave||"square", lv=song.leadVol||0.07; tone(lw,L.f,nextT,L.len*sd*0.92,lv,music); tone(lw,L.f*1.004,nextT+0.012,L.len*sd*0.8,lv*.35,music); }
         if(B) tone("triangle",B.f,nextT,B.len*sd*0.85,0.22,music);
         if(D==="k") tone("sine",150,nextT,0.13,0.5,music,40);
         if(D==="s") noise(nextT,0.09,0.18,music,"highpass",1800);
@@ -777,6 +783,8 @@
       pint:  t=>{ noise(t,0.3,0.15,fx,"bandpass",800,2000); tone("triangle",2093,t+0.5,0.15,0.12,fx); tone("triangle",2637,t+0.56,0.2,0.1,fx); },
       puck:  t=>{ noise(t,0.05,0.5,fx,"highpass",2000); tone("square",120,t,0.08,0.3,fx,60); noise(t+0.42,0.1,0.4,fx,"lowpass",1500); },
       step:  t=>tone("triangle",180,t,0.04,0.05,fx,140),
+      rooster:t=>{ const v=0.075; tone("sawtooth",520,t,0.12,v,fx,760); tone("sawtooth",760,t+0.15,0.14,v,fx,1000); tone("sawtooth",1000,t+0.32,0.12,v,fx,900);
+        tone("sawtooth",900,t+0.47,0.3,v,fx,1200); tone("sawtooth",1200,t+0.77,0.4,v,fx,820); noise(t,1.2,0.025,fx,"bandpass",1400,2200); },   // cock-a-doodle-doo
       boom:  t=>{ tone("sine",170,t,0.5,0.6,fx,40); noise(t,0.45,0.5,fx,"lowpass",2600,180); [523,659,784].forEach((f,i)=>tone("square",f,t+0.05+i*0.05,0.08,0.06,fx)); },
     };
     function sfx(name){ if(!ctx||!on) return; const f=SFX[name]; if(f) f(ctx.currentTime+0.01); }
@@ -1227,10 +1235,23 @@
   }
   $("tStart").onclick=()=>{ Sound.init(); Sound.sfx("select"); showCreator(); };
   $("crName").oninput=e=>{ P.name=cleanName(e.target.value); };
-  const NAMES=["Rikke","Kai","Wayan","Luna","Sven","Ayu","Mika","Nadia","Theo","Kadek","Ines","Rafa","Freya","Jonas","Putu","Maya","Leo","Sasha","Bodhi","Ketut"];
+  // names for 🎲 Randomise: drawn from a shuffled bag, so you see them all before any repeats
+  const NAMES=[
+    "Rikke","Kai","Wayan","Luna","Sven","Ayu","Mika","Nadia","Theo","Kadek","Ines","Rafa","Freya","Jonas","Putu","Maya","Leo","Sasha","Bodhi","Ketut",
+    "Nyoman","Made","Komang","Dewi","Sari","Indah","Bayu","Agus","Wulan","Rizky","Tari","Gede","Astrid","Mette","Lars","Ida","Freja","Emil","Signe","Oskar",
+    "Noor","Yara","Omar","Layla","Zain","Amira","Tariq","Hana","Kenji","Yuki","Aiko","Haruto","Mei","Jin","Soo-ah","Min","Ananya","Arjun","Priya","Rohan",
+    "Zara","Kofi","Ama","Tunde","Nia","Kwame","Imani","Chidi","Lola","Mateo","Sofia","Diego","Camila","Lucía","Pablo","Inés","Joaquín","Valentina","Bruno","Chiara",
+    "Luca","Giulia","Matteo","Elena","Hugo","Chloé","Louis","Inès","Jules","Léa","Ava","Milo","Ivy","Finn","Ruby","Ezra","Hazel","Otis","Willow","Jasper",
+    "Iris","Felix","Nova","Arlo","Skye","Remy","Juno","Sage","Rio","Kit","Wren","Ash","Indigo","Quinn","River","Marlowe","Tallulah","Dex","Pip","Bo",
+  ];
+  let nameBag=[];
+  const randomName=()=>{
+    if(!nameBag.length){ nameBag=NAMES.filter(n=>n!==P.name); for(let i=nameBag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [nameBag[i],nameBag[j]]=[nameBag[j],nameBag[i]]; } }
+    return nameBag.pop();
+  };
   $("crRand").onclick=()=>{
     for(const [k,o] of Object.entries(LOOK)) P[k]=Math.floor(Math.random()*(o.colors||o.opts).length);
-    P.name=NAMES[Math.floor(Math.random()*NAMES.length)];
+    P.name=randomName();
     buildCreator(); Sound.sfx("blip");
   };
   $("crGo").onclick=()=>{
@@ -1750,12 +1771,12 @@
     sizeTown(); buildLabels(); renderHud(); showTalk();
     info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap the map to walk (or arrow keys). Tap someone or something to walk up to it, then tap it again to talk, look or pick it up (or press Space).</div>`;
     if(!TOWN.raf){ TOWN.last=0; TOWN.raf=requestAnimationFrame(townLoop); }
-    Sound.play("cafe");
+    // (music starts in the opening scene)
     openingScene();
   }
 
   // ── CUTSCENES ──
-  const fade=on=>new Promise(r=>{ $("fade").classList.toggle("on",on); setTimeout(r,850); });
+  const fade=(on,ms=850)=>new Promise(r=>{ const f=$("fade"); f.style.transitionDuration=ms+"ms"; f.classList.toggle("on",on); setTimeout(r,ms+30); });
   const talkP=(name,lines)=>new Promise(r=>talk(name,lines,r));
   const hop=from=>new Promise(r=>{ TOWN.hop={from, t0:performance.now(), dur:420, done:r}; });
 
@@ -1764,12 +1785,14 @@
     TOWN.cut=true; TOWN.sleeping=true;
     Object.assign(TOWN,{x:7,y:8,px:7.5,py:7,dir:1,face:[0,1]});
     const f=$("fade"); f.style.transition="none"; f.classList.add("on"); void f.offsetWidth; f.style.transition="";
-    townCam(); TOWN.dirty=true;
-    await sleep(300); await fade(false); await sleep(1200);
+    townCam(); TOWN.dirty=true; Sound.stop();
+    await sleep(300); Sound.sfx("rooster"); await fade(false,1400); Sound.play("morning"); await sleep(900);
     await talkP("", ["☀️ It's a beautiful morning in Canggu, Bali.", "Roosters crowing. Scooters buzzing. Waves rolling in.", "What could possibly go wrong?"]);
-    TOWN.sleeping=false; Sound.sfx("select"); await hop([7.5,7]);
+    // a quick blink, and you're up: standing in front of the hammock
+    await fade(true,350); TOWN.sleeping=false; Object.assign(TOWN,{px:7,py:8,dir:1,face:[0,1]}); townCam(); TOWN.dirty=true;
+    await sleep(200); await fade(false,350);
     await talkP(P.name||"You", ["*Yaaawn*… Right. Let's see what today brings."]);
-    TOWN.cut=false; updateAct();
+    Sound.play("cafe"); TOWN.cut=false; updateAct();
   }
 
   // Walking into The Sloppy Sloth: the suits are inside
