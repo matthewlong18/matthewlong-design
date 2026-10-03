@@ -75,7 +75,6 @@
       <p style="font:400 16px/1.5 'IBM Plex Sans',sans-serif;color:#6b5f4d;margin:16px 0 0;max-width:440px">Toronto → Copenhagen, by way of everywhere. Usually answering from a café you've never heard of.</p>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
         <div onClick="{{ goJourney }}" style="background:#16130d;color:#f3ebdd;font:600 15px 'Space Grotesk',sans-serif;padding:14px 26px;border-radius:5px;cursor:pointer">Start the journey ↓</div>
-        <a href="https://x.com" target="_blank" style="text-decoration:none;display:flex;align-items:center;gap:8px;border:1.5px solid #16130d;color:#16130d;font:600 15px 'Space Grotesk',sans-serif;padding:14px 22px;border-radius:5px">Find me on 𝕏</a>
       </div>
     </div>
 
@@ -179,7 +178,7 @@
     <p style="font:400 17px/1.5 'IBM Plex Sans',sans-serif;color:#5c5344;margin:14px 0 0;max-width:520px">Tap a card to open it up. No case-study novels — just what it is and why it works.</p>
 
     <div style="margin-top:clamp(32px,4vw,52px);display:flex;flex-direction:column;gap:14px">
-      <sc-for list="{{ projects }}" as="p" hint-placeholder-count="4">
+      <sc-for list="{{ projects }}" as="p" hint-placeholder-count="3">
         <div onClick="{{ p.toggle }}" style="background:{{ p.bg }};border:1px solid {{ p.border }};border-radius:12px;padding:clamp(20px,3vw,30px);cursor:pointer;transition:transform .2s ease,border-color .2s ease" style-hover="transform:translateY(-3px);border-color:#a8391a">
           <div style="display:flex;align-items:center;gap:16px">
             <div style="font:500 11px 'IBM Plex Mono',monospace;color:#a8391a;letter-spacing:.1em">{{ p.kind }}</div>
@@ -192,20 +191,12 @@
           </div>
           <div style="max-height:{{ p.maxh }};overflow:hidden;transition:max-height .4s ease,opacity .3s ease;opacity:{{ p.op }}">
             <p style="font:400 16px/1.6 'IBM Plex Sans',sans-serif;color:#3a342a;margin:18px 0 0;max-width:600px">{{ p.body }}</p>
-            <div style="margin-top:18px;border-left:3px solid #ec6a26;padding-left:14px">
-              <div style="font:700 clamp(24px,3.4vw,34px)/1 'Space Grotesk',sans-serif;color:#16130d">{{ p.result }}</div>
-              <div style="font:400 13px 'IBM Plex Mono',monospace;color:#5c5344;margin-top:5px">{{ p.resultNote }}</div>
-            </div>
-            <!-- image placeholder -->
-            <div style="margin-top:18px;height:clamp(140px,22vw,200px);border-radius:8px;background:repeating-linear-gradient(135deg,rgba(22,19,13,.04) 0 12px,rgba(22,19,13,.07) 12px 24px);border:1px dashed rgba(22,19,13,.2);display:grid;place-items:center">
-              <span style="font:400 12px 'IBM Plex Mono',monospace;color:#6b5f4d;letter-spacing:.08em">{{ p.shot }}</span>
-            </div>
             <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px">
               <sc-for list="{{ p.stack }}" as="s" hint-placeholder-count="3">
                 <span style="font:500 12px 'IBM Plex Mono',monospace;color:#2b5fa8;background:rgba(43,95,168,.14);padding:5px 11px;border-radius:5px">{{ s }}</span>
               </sc-for>
               <span style="flex:1"></span>
-              <span style="font:600 14px 'Space Grotesk',sans-serif;color:#a8391a;align-self:center">{{ p.link }} →</span>
+              <a href="{{ p.href }}" target="_blank" rel="noopener" onClick="{{ p.stop }}" style="font:600 14px 'Space Grotesk',sans-serif;color:#a8391a;align-self:center;text-decoration:none;border-bottom:1px solid rgba(168,57,26,.35)">{{ p.link }} →</a>
             </div>
           </div>
         </div>
@@ -313,12 +304,11 @@
     <p style="font:400 clamp(17px,2.2vw,20px)/1.5 'IBM Plex Sans',sans-serif;color:#4a4236;margin:20px auto 0;max-width:480px">No pitch, no pressure. If you're a solo founder drowning in ops — or just want to talk shop — my calendar's open.</p>
     <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:36px">
       <a href="https://calendly.com" target="_blank" style="text-decoration:none;background:#ec6a26;color:#16130d;font:600 16px 'Space Grotesk',sans-serif;padding:16px 32px;border-radius:6px">Book a call →</a>
-      <a href="https://x.com" target="_blank" style="text-decoration:none;border:1.5px solid rgba(22,19,13,.35);color:#16130d;font:600 16px 'Space Grotesk',sans-serif;padding:16px 28px;border-radius:6px">DM me on 𝕏</a>
+      <a href="mailto:hello@matthewlong.design" style="text-decoration:none;border:1.5px solid rgba(22,19,13,.35);color:#16130d;font:600 16px 'Space Grotesk',sans-serif;padding:16px 28px;border-radius:6px">Email me</a>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:clamp(16px,3vw,28px);justify-content:center;margin-top:44px;font:500 14px 'Space Grotesk',sans-serif">
-      <a href="https://x.com" target="_blank" style="color:#16130d;text-decoration:none;border-bottom:1px solid rgba(22,19,13,.28);padding-bottom:2px">𝕏 @matthewlong</a>
       <a href="mailto:hello@matthewlong.design" style="color:#16130d;text-decoration:none;border-bottom:1px solid rgba(22,19,13,.28);padding-bottom:2px">hello@matthewlong.design</a>
-      <a href="https://github.com" target="_blank" style="color:#16130d;text-decoration:none;border-bottom:1px solid rgba(22,19,13,.28);padding-bottom:2px">GitHub</a>
+      <a href="https://github.com/matthewlong18" target="_blank" style="color:#16130d;text-decoration:none;border-bottom:1px solid rgba(22,19,13,.28);padding-bottom:2px">GitHub</a>
     </div>
     <div style="font:400 13px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:26px;position:relative;z-index:1">Toronto-made · Copenhagen-based · café-powered · © 2026</div>
   </div>
@@ -572,22 +562,15 @@ class Component extends DCLogic {
     ];
 
     const projData = [
-      { kind: 'The main thing', name: 'Nomad Café', tagline: 'Done-for-you business infra',
-        body: "Notion + Claude + Framer, assembled into a back-office that runs itself. Solo founders get the systems, automations and site a 5-person team would build — without hiring one. The sloth barista is the mascot; the speed is anything but slow.",
-        stack: ['Notion','Claude','Framer'], shot: 'NOMAD CAFÉ — dashboard shot', link: 'Visit', dark: true,
-        result: '8 hrs → <1', resultNote: 'weekly ops time, per founder · [your real number]' },
-      { kind: 'Built for my brother', name: 'ReHouse', tagline: 'Renovate-to-sell, GTA',
-        body: "A renovate-to-sell service I built for my brother Andrew, aimed at Greater-Toronto homeowners who want max sale price without the headache. I built the brand, the site and the intake flow end-to-end.",
-        stack: ['Framer','Brand','Intake flow'], shot: 'REHOUSE — landing page', link: 'See it',
-        result: '11 days', resultNote: 'on market — sold over asking · [your real number]' },
-      { kind: 'Free tool', name: 'Café Finder', tagline: 'Where to actually work',
-        body: "A little tool I made because I kept asking the same question in every new city: which café will actually let me sit and ship for three hours? Filters for wifi, outlets and espresso quality.",
-        stack: ['Side project','Maps API'], shot: 'CAFÉ FINDER — map view', link: 'Try it',
-        result: '40+ cities', resultNote: '3,000+ cafés mapped · [your real number]' },
-      { kind: 'Experiment', name: 'Shiplog', tagline: 'Building in public, automated',
-        body: "Pulls what I shipped this week and drafts the X post for me. Half tool, half accountability device. Lives on my own timeline.",
-        stack: ['Claude','X API'], shot: 'SHIPLOG — weekly digest', link: 'Read more',
-        result: '52 weeks', resultNote: 'shipped in public, no missed weeks · [your real number]' }
+      { kind: 'The main thing', name: 'Nomad Café', tagline: 'Done-for-you business systems',
+        body: "Done-for-you business systems for independent operators: the back-office, the automations and the website a small team would build, without hiring one. Built, shipped and run by me.",
+        stack: ['Websites','Systems','Automation'], link: 'Visit', href: 'https://www.nomadcafe.co', dark: true },
+      { kind: 'Website', name: 'Re House', tagline: 'Design. Renovate. List.',
+        body: "The marketing site for Re House, a Toronto pre-sale design and renovation studio. One team handles the design, the renovation and the listing, and the site gets homeowners from curious to booking a free walkthrough.",
+        stack: ['Website','Booking flow','Intake form'], link: 'See it', href: 'https://rehouseto.ca' },
+      { kind: 'Website', name: 'McKenzie Studios', tagline: 'AI-focused video production',
+        body: "The home of McKenzie Studios, a multimedia production company making digital content through the lens of AI: weekly shows on the biggest AI trends, and on how AI is changing leadership, business and strategy.",
+        stack: ['Website','Video','AI'], link: 'Visit', href: 'https://mckenziestudios.ai' }
     ];
 
     const projects = projData.map((pr, i) => {
@@ -599,6 +582,7 @@ class Component extends DCLogic {
         rot: openNow ? 'rotate(45deg)' : 'rotate(0deg)',
         maxh: openNow ? '780px' : '0px',
         op: openNow ? 1 : 0,
+        stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },   // clicking the link shouldn't also fold the card
         toggle: () => this.setState(s => ({ open: s.open === i ? -1 : i }))
       };
     });
