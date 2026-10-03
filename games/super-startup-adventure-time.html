@@ -1256,13 +1256,16 @@
     return false;
   }
 
-  const TIPS=[
-    "Matt arrives at the start of turn 2 and heals everyone. Keep your hero alive until then.",
-    "Automate the Admin stuns every suit in its blast, and a stunned suit loses their turn.",
-    "Snacks you find around Canggu help a lot. Explore before you walk into The Sloth.",
-    "Take down the consultants first: they hit hard and fall fast. The Intern is tanky and weak.",
-    "Claude can only be summoned once, so save the summon for when it counts.",
-    "Gord can't be hit and doesn't count toward the win. Ignore him and enjoy the show."
+  // cryptic on purpose: one nudge toward the hidden snacks, one toward summoning Claude early
+  const TREAT_HINTS=[
+    "Canggu rewards a sweet tooth. Not every treat sits in plain sight.",
+    "A hungry hero is a short-lived hero. Look under, behind and inside things.",
+    "The town hides more than it shows. Wander before you fight."
+  ];
+  const CLAUDE_HINTS=[
+    "Help from the north is a short summon away. Don't make them wait.",
+    "Those who save their one call for later often never get to make it.",
+    "Someone friendly is waiting to be invited. Early is polite."
   ];
   // the closing cutscene: everyone says their piece, and Gord raises a beer either way
   async function endingScene(win){
@@ -1300,9 +1303,8 @@
     const cta = `<a href="/#sec-contact" target="_top">Let's talk →</a>`;
     const assist = S.backupIn ? ` Matt dealt ${S.backupDmg} damage${S.claudeIn?`, Claude ${S.claudeDmg}`:""}.` : "";
     const btns = `<div class="row2"><button class="primary" id="again">${win?"Play again":"Try again"}</button><button id="newHero">New hero</button></div>`;
-    const tipList = [...TIPS].sort(()=>Math.random()-.5);
-    if(S.turn<=2 && !win){ tipList.splice(tipList.indexOf(TIPS[0]),1); tipList.unshift(TIPS[0]); }
-    const tips = win ? "" : `<p style="text-align:left"><b>Tips for next time</b><br>${tipList.slice(0,3).map(t=>"• "+t).join("<br>")}</p>`;
+    const hints = [TREAT_HINTS[Math.floor(Math.random()*TREAT_HINTS.length)], CLAUDE_HINTS[Math.floor(Math.random()*CLAUDE_HINTS.length)]];
+    const tips = win ? "" : `<p style="text-align:left"><b>A whisper for next time</b><br>${hints.map(t=>"• "+t).join("<br>")}</p>`;
     overlay.innerHTML = win
       ? `<h2>Sloth saved 🦥</h2><p>Won in ${S.turn} turn${S.turn>1?"s":""}. The Sloppy Sloth stays sloppy.${assist}</p><p>Running your own thing? You don't have to hold the line alone. ${cta}</p>${btns}`
       : `<h2>Acquired.</h2><p>The Sloppy Sloth is now a co-working space with a kombucha tap.</p>${tips}<p>Some fights need a plan, not just backup. ${cta}</p>${btns}`;
