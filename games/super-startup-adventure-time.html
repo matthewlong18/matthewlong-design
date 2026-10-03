@@ -1203,10 +1203,12 @@
     if(r.stunned) lines.push(`${t.name} is stunned! 💤`);
     if(r.resisted) lines.push(`${t.name} shrugged off the stun.`);
     if(r.ko) lines.push(t.team==="foe" ? `${t.name} was defeated!` : `${t.name} is out of the fight!`);
-    for(const l of lines){
+    for(let i=0;i<lines.length;i++){
+      const l=lines[i];
       if(l.includes("defeated")||l.includes("out of the fight")){ tPlat.classList.add("faint"); Sound.sfx("ko"); }
       if(l.includes("stunned!")) Sound.sfx("stun");
-      await typeMsg(l, 450);
+      if(a.team==="foe" && i===lines.length-1) await dialogue(l);   // every enemy attack ends on a tap, so nothing rushes past you
+      else await typeMsg(l, 450);
     }
     bt.classList.add("hidden");
     if(S.phase!=="enemy") S.fast=false;
