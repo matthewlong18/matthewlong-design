@@ -292,16 +292,16 @@
             <div style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#8a7f6c">{{ trackLabel }}</div>
             <div style="font:600 16px 'Space Grotesk',sans-serif;color:#f3ebdd;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ trackName }}</div>
           </div>
-          <div onClick="{{ nextTrack }}" style="flex:none;width:36px;height:36px;display:grid;place-items:center;border:1px solid rgba(243,235,221,.22);border-radius:8px;cursor:pointer;font-size:13px;color:#f3ebdd">⏭</div>
+          <div onClick="{{ deckBtn }}" style="flex:none;width:36px;height:36px;display:grid;place-items:center;border:1px solid rgba(243,235,221,.22);border-radius:8px;cursor:pointer;font-size:13px;color:#f3ebdd">{{ deckBtnGlyph }}</div>
         </div>
-        <div style="font:400 11px 'IBM Plex Mono',monospace;color:#a89b85">The turntable's for show. Real records below ↓</div>
+        <div style="font:400 11px 'IBM Plex Mono',monospace;color:#a89b85">Drop the needle. It spins whatever's playing below ↓</div>
       </div>
     </div>
 
     <!-- café playlist (Spotify) -->
     <div data-reveal class="rv" style="{{ playlistStyle }}">
       <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a;margin-bottom:12px">On the café speakers</div>
-      <iframe src="https://open.spotify.com/embed/playlist/0Lp01oNZKHCSACCQ79IVIO?utm_source=generator" title="Matthew's café playlist on Spotify" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style="display:block;width:100%;height:352px;border:0;border-radius:12px"></iframe>
+      <div id="cafe-sp-host" style="min-height:352px"></div>
     </div>
   </div>
 </section>
@@ -411,7 +411,8 @@ class Component extends DCLogic {
     cafeIdx: 0, boarded: false,
     open: -1,
     toyOpen: false, pulling: false, fortune: '',
-    intro: false, introOp: 1, heroP: 0, dragging: false, armDeg: 10, playing: false, track: 0
+    intro: false, introOp: 1, heroP: 0, dragging: false, armDeg: 10, playing: false, track: 0,
+    spLive: false, spPlaying: false, spTitle: ''
   };
   deck = React.createRef();
   tracks = [
@@ -431,8 +432,12 @@ class Component extends DCLogic {
   };
   armUp = () => {
     if (!this.state.dragging) return;
-    const on = this.state.armDeg > 26;
+    const on = this.state.armDeg > 26, was = this.state.playing;
     this.setState({ dragging: false, armDeg: on ? 38 : 10, playing: on });
+    if (this._sp) {
+      if (on && !was) { if (this._spStarted) this._sp.resume(); else { this._spStarted = true; this._sp.play(); } }
+      else if (!on && was) this._sp.pause();
+    }
   };
   nextTrack = () => this.setState(s => ({ track: (s.track + 1) % this.tracks.length }));
 
@@ -473,6 +478,8 @@ class Component extends DCLogic {
     }, { threshold: 0.18 });
     setTimeout(() => document.querySelectorAll('[data-reveal]').forEach(el => this._io.observe(el)), 60);
 
+    this.watchCafe();
+
     try {
       if (!sessionStorage.getItem('ml_intro')) {
         this.setState({ intro: true, introOp: 1 });
@@ -481,7 +488,49 @@ class Component extends DCLogic {
       }
     } catch (e) {}
   }
+  // Spotify player: built when the café section is near, so the turntable can follow what is really playing
+  watchCafe() {
+    const sec = document.getElementById('sec-cafe'); if (!sec) return;
+    this._spIO = new IntersectionObserver((es) => { if (es.some(e => e.isIntersecting)) { this._spIO.disconnect(); this.initSpotify(); } }, { rootMargin: '600px 0px' });
+    this._spIO.observe(sec);
+  }
+  initSpotify() {
+    const host = document.getElementById('cafe-sp-host'); if (!host) return;
+    const fallback = () => {   // API blocked or slow: show the plain embed (the turntable then just animates on its own)
+      if (this._sp || host.firstChild) return;
+      const f = document.createElement('iframe');
+      f.src = 'https://open.spotify.com/embed/playlist/0Lp01oNZKHCSACCQ79IVIO?utm_source=generator'; f.title = "Matthew's café playlist on Spotify";
+      f.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+      f.style.cssText = 'display:block;width:100%;height:352px;border:0;border-radius:12px'; host.appendChild(f);
+    };
+    this._spFallback = setTimeout(fallback, 8000);
+    window.onSpotifyIframeApiReady = (api) => {
+      const el = document.createElement('div'); host.appendChild(el);
+      api.createController(el, { uri: 'spotify:playlist:0Lp01oNZKHCSACCQ79IVIO', width: '100%', height: 352 }, (c) => {
+        this._sp = c; clearTimeout(this._spFallback);
+        c.addListener('playback_update', (e) => this.onSpotify(e.data));
+        this.setState({ spLive: true });
+      });
+    };
+    const sc = document.createElement('script'); sc.src = 'https://open.spotify.com/embed/iframe-api/v1'; sc.async = true; sc.onerror = fallback; document.head.appendChild(sc);
+  }
+  onSpotify(d) {
+    if (!d) return;
+    const playing = !d.isPaused;
+    if (playing !== this.state.spPlaying) this.setState({ spPlaying: playing });
+    if (d.playingURI && d.playingURI !== this._spUri) {   // a new song: look up its title
+      this._spUri = d.playingURI;
+      if (/:track:/.test(d.playingURI)) fetch('https://open.spotify.com/oembed?url=' + encodeURIComponent(d.playingURI))
+        .then(r => r.json()).then(j => { if (this._spUri === d.playingURI && j.title) this.setState({ spTitle: j.title }); }).catch(() => {});
+    }
+  }
+  deckBtn = () => {
+    if (this.state.spLive && this._sp) this._sp.togglePlay(); else this.nextTrack();
+  };
+
   componentWillUnmount() {
+    if (this._spIO) this._spIO.disconnect();
+    clearTimeout(this._spFallback);
     window.removeEventListener('scroll', this._onScroll);
     if (this._io) this._io.disconnect();
     clearTimeout(this._wake);
@@ -505,6 +554,7 @@ class Component extends DCLogic {
   };
 
   renderVals() {
+    const live = this.state.spLive, spin = live ? this.state.spPlaying : this.state.playing;   // the deck follows the real player once it's connected
     const p = this.state.progress;
     const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
     const rgb = c => 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
@@ -629,15 +679,16 @@ class Component extends DCLogic {
       armDeg: this.state.armDeg.toFixed(1) + 'deg',
       armTrans: this.state.dragging ? 'none' : 'transform .5s cubic-bezier(.4,1.4,.5,1)',
       armDown: this.armDown, armMove: this.armMove, armUp: this.armUp,
-      spinAnim: this.state.playing ? 'spin 2.4s linear infinite' : 'none',
-      lampColor: this.state.playing ? '#ec6a26' : '#4a4438',
-      deckState: this.state.playing ? 'PLAYING' : 'DRAG THE TONEARM →',
-      trackLabel: this.state.playing ? this.tracks[this.state.track].label : 'NOTHING SPINNING',
-      trackName: this.state.playing ? this.tracks[this.state.track].name : 'Drop the needle',
-      barAnim1: this.state.playing ? 'bar .7s ease-in-out infinite' : 'none',
-      barAnim2: this.state.playing ? 'bar .9s ease-in-out .1s infinite' : 'none',
-      barAnim3: this.state.playing ? 'bar .6s ease-in-out .2s infinite' : 'none',
-      barAnim4: this.state.playing ? 'bar 1s ease-in-out .15s infinite' : 'none',
+      spinAnim: spin ? 'spin 2.4s linear infinite' : 'none',
+      lampColor: spin ? '#ec6a26' : '#4a4438',
+      deckState: spin ? 'PLAYING' : (live && this.state.playing) ? 'PAUSED' : 'DRAG THE TONEARM →',
+      trackLabel: live ? (spin ? 'NOW SPINNING' : this.state.playing ? 'PAUSED' : 'NOTHING SPINNING') : this.state.playing ? this.tracks[this.state.track].label : 'NOTHING SPINNING',
+      trackName: live ? (this.state.playing ? (this.state.spTitle || 'Nomad Cafe Vibes') : 'Drop the needle') : this.state.playing ? this.tracks[this.state.track].name : 'Drop the needle',
+      deckBtn: this.deckBtn, deckBtnGlyph: live ? '⏯' : '⏭',
+      barAnim1: spin ? 'bar .7s ease-in-out infinite' : 'none',
+      barAnim2: spin ? 'bar .9s ease-in-out .1s infinite' : 'none',
+      barAnim3: spin ? 'bar .6s ease-in-out .2s infinite' : 'none',
+      barAnim4: spin ? 'bar 1s ease-in-out .15s infinite' : 'none',
       playlistStyle: this.state.playing
         ? 'margin-top:clamp(18px,3vw,28px);max-height:420px;opacity:1;overflow:hidden;transition:max-height .6s ease,opacity .6s ease,margin-top .6s ease'
         : 'margin-top:0;max-height:0;opacity:0;overflow:hidden;pointer-events:none;transition:max-height .6s ease,opacity .6s ease,margin-top .6s ease',
