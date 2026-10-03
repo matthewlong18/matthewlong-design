@@ -289,12 +289,12 @@
   //             area: 1 = also hits the 4 squares around the target square (a "+" shape)
   // Your hero: built from the character creator (name + look), stats below.
   const heroDef = () => ({name:P.name || "You", spr:"player", team:"hero", hp:40, mp:12, def:4, mov:3,
-    blurb:"Regular at The Sloppy Sloth. Not leaving.",
+    blurb:"Solo founder. Doing everything. Sleeping never.",
     moves:[
-      {name:"Haymaker",     kind:"fight", type:"dmg",  pow:12, rng:[1,1]},
-      {name:"Pint Toss",    kind:"fight", type:"dmg",  pow:8,  rng:[2,3]},
-      {name:"Mosh Pit",     kind:"magic", type:"dmg",  pow:10, rng:[1,3], mp:5, color:"#c96f8a", area:1},
-      {name:"Second Wind",  kind:"magic", type:"heal", pow:10, rng:[0,0], mp:4, color:"#74b383"},
+      {name:"Hustle",            kind:"fight", type:"dmg",  pow:14, rng:[1,1], recoil:4},                         // big hit, but it costs you: running on no sleep
+      {name:"Cold DM Blast",     kind:"fight", type:"dmg",  pow:7,  rng:[2,3]},                                    // mass outreach, low reply rate
+      {name:"Do It All Yourself",kind:"magic", type:"dmg",  pow:9,  rng:[1,3], mp:6, color:"#c96f8a", area:1},     // hits everything nearby, but burns through your MP
+      {name:"Doom-Scroll Break", kind:"magic", type:"heal", pow:6,  rng:[0,0], mp:4, color:"#74b383"},              // "rest" that barely helps
     ]});
 
   const FOES = [
@@ -331,13 +331,14 @@
   ];
   const STARTS = [[1,2],[6,1],[6,4],[7,2],[7,3],[7,5]];   // your hero first, then FOES in order
 
-  // ── BACKUP ── Matt joins at the start of turn 2. Move names are placeholders — rename them after real services.
+  // ── BACKUP ── Matt joins at the start of turn 2. Each move is one of the services he delivers, and does what it says for the team.
   const BACKUP = {name:"Matt", spr:"matthew", team:"hero", hp:30, mp:12, def:4, mov:4, backup:true,
-    blurb:"Designer. Builds with AI. Handles the boring stuff.",
+    blurb:"Builds the done-for-you business infrastructure solo founders wish they had a team for.",
     moves:[
-      {name:"Ship It",       kind:"fight", type:"dmg",    pow:13, rng:[1,1]},
-      {name:"Automate It",   kind:"magic", type:"dmg",    pow:12, rng:[2,3], mp:4, color:"#8fd3ff"},
-      {name:"Clear Brief",   kind:"magic", type:"heal",   pow:12, rng:[0,3], mp:3, color:"#74b383"},
+      {name:"Brand + Site Launch",    kind:"fight", type:"dmg",  pow:13, rng:[1,2]},                                // ships the brand and website in one hit
+      {name:"Automate the Admin",     kind:"magic", type:"stun", pow:0,  rng:[1,3], mp:4, color:"#8fd3ff", stun:70, area:1},   // busywork on autopilot: the suits lose their turn
+      {name:"Take It Off Your Plate", kind:"magic", type:"heal", pow:12, rng:[0,3], mp:3, color:"#74b383", cleanse:true},      // heals an ally, clears stun, gives back 3 MP
+      {name:"Systems Setup",          kind:"magic", type:"buff", pow:3,  rng:[0,3], mp:4, color:"#e5b340"},                    // a back-office that runs itself: an ally gets +3 power and +1 move
       {name:"Summon Claude", kind:"magic", type:"summon", pow:0,  rng:[1,1], mp:5, color:"#e0782b"},
     ]};
   const RALLY_HEAL = 8;
@@ -534,7 +535,7 @@
         if(inR(Math.abs(x-pos.x)+Math.abs(y-pos.y),mv.rng) && foes.some(f=>Math.abs(f.x-x)+Math.abs(f.y-y)<=mv.area)) out.push({x,y});
       return out;
     }
-    const pool = mv.type==="heal" ? alive(u.team).filter(a=>a.hp<a.maxHp) : alive(u.team==="hero"?"foe":"hero");
+    const pool = mv.type==="heal" ? alive(u.team).filter(a=>a.hp<a.maxHp || (mv.cleanse && a.stun)) : mv.type==="buff" ? alive(u.team) : alive(u.team==="hero"?"foe":"hero");
     return pool.filter(t => inR(md(pos,t), mv.rng));
   }
   function areaTiles(cx,cy,r){   // the "+" blast: target square plus everything within r steps
@@ -603,7 +604,7 @@
       let any=false;
       for(const m of u.moves){
         const tg=targetsFor(u,m), ok=canUse(u,m)&&tg.length; if(ok) any=true;
-        const eff = (m.type==="heal" ? `HEAL ${m.pow}` : m.type==="stun" ? `STUN ${m.stun}%` : m.type==="summon" ? "ONCE" : `PWR ${m.pow}${m.stun?` · STUN ${m.stun}%`:""}`) + (m.area ? " · AREA" : "");
+        const eff = (m.type==="heal" ? `HEAL ${m.pow}${m.cleanse?" · UN-STUN · +3 MP":""}` : m.type==="buff" ? `+${m.pow} POWER · +1 MOVE` : m.type==="stun" ? `STUN ${m.stun}%` : m.type==="summon" ? "ONCE" : `PWR ${m.pow}${m.stun?` · STUN ${m.stun}%`:""}${m.recoil?` · COSTS ${m.recoil} HP`:""}`) + (m.area ? " · AREA" : "");
         const why = !canUse(u,m) ? " · low MP" : !tg.length ? (m.type==="summon" && S.claudeIn ? " · already here" : " · out of range") : "";
         const b=btn(`<b>${m.type==="summon"?"🍁":m.area?"💥":m.kind==="magic"?"✨":"⚔️"} ${m.name}</b><small>${eff} · RNG ${rngTxt(m.rng)}${m.mp?` · ${m.mp} MP`:""}${why}</small>`,
           "mv "+m.kind, ()=>pickMove(m), !ok);
@@ -635,7 +636,7 @@
 
   function pickMove(m){
     S.move=m; S.mode="target"; S.range=rangeTiles(S.sel,m); S.targets=new Map(); S.blast=new Set(); S.aoeAt=null;
-    for(const t of targetsFor(S.sel,m)) S.targets.set(K(t.x,t.y), m.area?"area" : m.type==="heal"||m.type==="summon"?"heal":"atk");
+    for(const t of targetsFor(S.sel,m)) S.targets.set(K(t.x,t.y), m.area?"area" : m.type==="heal"||m.type==="summon"||m.type==="buff"?"heal":"atk");
     render();
   }
 
@@ -660,7 +661,9 @@
   function resolve(a,t,m){
     const r={};
     a.mp -= (m.mp||0);
-    if(m.type==="heal"){ r.heal=Math.min(m.pow, t.maxHp-t.hp); t.hp+=r.heal; return r; }
+    if(m.type==="heal"){ r.heal=Math.min(m.pow, t.maxHp-t.hp); t.hp+=r.heal; if(m.cleanse){ if(t.stun){ t.stun=false; r.cleansed=true; } t.mp=Math.min(t.maxMp,t.mp+3); } return r; }
+    if(m.type==="buff"){ t.boost=(t.boost||0)+m.pow; t.mov+=1; r.buff=m.pow; return r; }
+    if(m.recoil){ r.recoil=Math.min(m.recoil, a.hp-1); a.hp-=r.recoil; }   // hustle hurts you too (never knocks you out)
     if(m.pow){
       let dmg = m.kind==="magic" ? m.pow + Math.floor(Math.random()*3) - 1 : Math.max(1, m.pow + (a.boost||0) - t.def + Math.floor(Math.random()*3));
       if(m.kind==="fight" && Math.random()<0.1){ r.crit=true; dmg=Math.round(dmg*1.5); }
@@ -797,11 +800,11 @@
 
   // ── ATTACK EFFECTS ── each move name → an effect below. Swap them around freely.
   const MOVE_FX = {
-    "Haymaker":"bash", "Pint Toss":"pint", "Second Wind":"heal",
+    "Hustle":"bash", "Cold DM Blast":"email", "Doom-Scroll Break":"heal",
     "Slapshot":"puck", "Timber!":"slash", "Poutine Break":"heal",
     "Reply-All":"email", "Coffee Run":"whack", "Cc Everyone":"email", "Micromanage":"micro", "Golden Parachute":"coins", "Hostile Takeover":"takeover",
     "Slide Deck Toss":"slides", "Synergy Beam":"beam",
-    "Ship It":"bash", "Automate It":"lightning", "Clear Brief":"heal",
+    "Brand + Site Launch":"bigArrow", "Take It Off Your Plate":"pourover", "Systems Setup":"mead",
   };
   const lerp=(a,b,t)=>a+(b-a)*t, clamp=t=>Math.max(0,Math.min(1,t)), rnd=(a,b)=>a+Math.random()*(b-a);
   const easeOut=t=>{ t=clamp(t); return 1-(1-t)*(1-t); };
@@ -993,6 +996,9 @@
     if(r.crit) lines.push("A critical hit!");
     if(r.dmg!=null) lines.push(`${t.name} took ${r.dmg} damage${m.kind==="magic"?" (magic ignores armour)":""}.`);
     if(r.heal!=null) lines.push(r.heal ? `${t.name} recovered ${r.heal} HP!` : `${t.name} is already at full HP.`);
+    if(r.cleansed) lines.push(`${t.name} is back on their feet!`);
+    if(r.buff) lines.push(`${t.name} gets +${r.buff} power and +1 move for the rest of the fight!`);
+    if(r.recoil) lines.push(`${a.name} took ${r.recoil} damage too. Running on no sleep.`);
     if(r.stunned) lines.push(`${t.name} is stunned! 💤`);
     if(r.resisted) lines.push(`${t.name} shrugged off the stun.`);
     if(r.ko) lines.push(t.team==="foe" ? `${t.name} was defeated!` : `${t.name} is out of the fight!`);
@@ -1015,10 +1021,12 @@
     }
     if(r.dmg!=null) float(t,(r.crit?"CRIT ":"")+"-"+r.dmg,"var(--enemy)");
     if(r.heal) float(t,"+"+r.heal,"var(--heal)");
+    if(r.buff) float(t,"+"+r.buff+" PWR","var(--fight)");
+    if(r.recoil) setTimeout(()=>float(a,"-"+r.recoil,"var(--enemy)"),250);
     if(r.stunned) setTimeout(()=>float(t,"💤","var(--magic)"),200);
     if(a.backup){ S.backupDmg+=r.dmg||0; S.backupHeal+=r.heal||0; }
     if(a.summoned) S.claudeDmg+=r.dmg||0;
-    log(`${a.name} used ${m.name}` + (r.dmg!=null?` → ${t.name} −${r.dmg}${r.crit?" (crit)":""}`:"") + (r.heal!=null?` → ${t.name} +${r.heal}`:"") + (r.stunned?` · ${t.name} stunned`:"") + (r.ko?` · ${t.name} ${t.team==="foe"?"defeated":"down"}!`:""));
+    log(`${a.name} used ${m.name}` + (r.dmg!=null?` → ${t.name} −${r.dmg}${r.crit?" (crit)":""}`:"") + (r.heal!=null?` → ${t.name} +${r.heal}`:"") + (r.stunned?` · ${t.name} stunned`:"") + (r.buff?` → ${t.name} +${r.buff} power`:"") + (r.recoil?` · ${a.name} −${r.recoil} (no sleep)`:"") + (r.ko?` · ${t.name} ${t.team==="foe"?"defeated":"down"}!`:""));
     render();
     return r;
   }
@@ -1667,7 +1675,7 @@
     const f=document.createElement("canvas"); f.width=SW; f.height=SW; const g=f.getContext("2d");
     g.drawImage(cv,0,0);
     const L=g.getImageData(0,18,12,5), R=g.getImageData(12,18,12,5);   // the legs
-    g.clearRect(0,18,SW,5); g.putImageData(L,-1,18); g.putImageData(R,1,18);
+    g.clearRect(0,18,SW,5); g.putImageData(L,-1,18); g.putImageData(R,13,18);   // left leg 1px left, right leg 1px right
     STRIDE.set(cv,f); return f;
   }
   function drawChar(c,key,x,y,dir,walk){
