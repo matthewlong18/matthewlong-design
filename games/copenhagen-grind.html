@@ -30,12 +30,15 @@
   .phase{font-weight:700;padding:3px 10px;border-radius:99px;background:var(--hero);color:#fff}
   .phase.enemy{background:var(--enemy)}
   .wrap{position:relative;width:calc(var(--cell)*8);margin:0 auto;border-radius:10px;overflow:hidden;border:3px solid #3b2417}
-  .board{display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:var(--cell)}
-  .tile{position:relative;background:var(--t1);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-shadow:inset 0 -2px 0 rgba(59,36,23,.18),inset -1px 0 0 rgba(59,36,23,.12),inset 0 2px 0 rgba(255,240,210,.18)}   /* wooden floor planks */
-  .tile.alt{background:var(--t2)}
+  .board{position:relative;z-index:1;display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:var(--cell)}
+  .arena{position:absolute;left:0;top:0;width:100%;height:calc(var(--cell)*6);image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none}   /* the pixel-art bar floor under the board */
+  .tile{position:relative;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;}
+  .tile.alt{background:transparent}
   .tile.water{background:var(--water);cursor:default}
-  .tile.rack{background:var(--rack);cursor:default;font-size:calc(var(--cell)*.4)}
-  .tile.counter{background:var(--counter);cursor:default;box-shadow:inset 0 -6px 0 color-mix(in srgb,#000 22%,transparent)}
+  .tile.rack{background:transparent;cursor:default}
+  .tile.counter{background:transparent;cursor:default}
+  .tile.disco::after{animation:disco .3s steps(1) infinite}
+  @keyframes disco{0%{background:rgba(255,80,160,.35)}33%{background:rgba(80,200,255,.35)}66%{background:rgba(255,220,80,.35)}}
   .tile::after{content:"";position:absolute;inset:0;pointer-events:none}
   .tile.move::after{background:color-mix(in srgb,var(--hero) 30%,transparent);box-shadow:inset 0 0 0 1px var(--hero)}
   .tile.danger::after{background:color-mix(in srgb,var(--enemy) 18%,transparent)}
@@ -49,6 +52,7 @@
   .unit{position:relative;z-index:1;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center}
   .unit::before{content:"";position:absolute;bottom:8%;left:20%;right:20%;height:16%;border-radius:50%;background:color-mix(in srgb,var(--hero) 45%,transparent);border:2px solid var(--hero)}
   .unit.foe::before{background:color-mix(in srgb,var(--enemy) 45%,transparent);border-color:var(--enemy)}
+  .unit.neutral::before{background:color-mix(in srgb,#8a7565 40%,transparent);border-color:#8a7565}
   .spr{position:relative;width:88%;height:88%;margin-bottom:10%;image-rendering:pixelated;image-rendering:crisp-edges;animation:bob 1.2s steps(2) infinite}
   .unit.foe .spr{transform:scaleX(-1)}
   @keyframes bob{50%{translate:0 -2px}}
@@ -67,9 +71,9 @@
   @keyframes up{from{transform:translateY(0);opacity:1}to{transform:translateY(-28px);opacity:0}}
 
   /* ── battle scene ── */
-  .battle{position:absolute;inset:0;z-index:4;background:linear-gradient(var(--sky) 0 52%,var(--ground) 52%);cursor:pointer;overflow:hidden}
+  .battle{position:absolute;inset:0;z-index:4;background:linear-gradient(#e8c27a 0 52%,#c99a62 52%);image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;overflow:hidden}
   .plat{position:absolute;width:32%;aspect-ratio:1;display:flex;align-items:flex-end;justify-content:center}
-  .plat::before{content:"";position:absolute;bottom:2%;left:0;right:0;height:22%;border-radius:50%;background:var(--plat)}
+  .plat::before{content:"";position:absolute;bottom:2%;left:0;right:0;height:22%;border-radius:50%;background:#a8743f;box-shadow:inset 0 3px 0 rgba(255,235,200,.25)}
   .plat.top{right:5%;top:3%}
   .plat.bot{left:5%;bottom:25%}
   .plat img{position:relative;width:78%;margin-bottom:9%;image-rendering:pixelated;image-rendering:crisp-edges;animation:bob 1s steps(2) infinite}
@@ -195,6 +199,22 @@
   .town{position:absolute;inset:0;z-index:3;overflow:hidden;background:#78b350}
   #townCv{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;touch-action:manipulation}
   /* cutscenes */
+  .wrap.shake{animation:quake .4s}
+  .lbox{position:absolute;left:0;right:0;height:0;background:#000;z-index:6;transition:height .45s ease;pointer-events:none}
+  .lbox.top{top:0} .lbox.bot{bottom:0}
+  .wrap.cine .lbox{height:11%}
+  .wrap.cine .cutbox{bottom:calc(11% + 6px)}
+  .flash{position:absolute;inset:0;z-index:8;background:#fff;opacity:0;pointer-events:none}
+  .flash.go{animation:flashA .35s ease-out}
+  @keyframes flashA{0%{opacity:.85}100%{opacity:0}}
+  .vs{position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;gap:4%;background:rgba(20,10,8,.72);pointer-events:none}
+  .vs img{width:30%;image-rendering:pixelated;image-rendering:crisp-edges}
+  .vs img.l{animation:vsL .45s cubic-bezier(.2,1.4,.4,1) both}
+  .vs img.r{transform:scaleX(-1);animation:vsR .45s cubic-bezier(.2,1.4,.4,1) both}
+  .vs span{font:900 clamp(32px,9vw,60px)/1 ui-monospace,Menlo,Consolas,monospace;color:#f2c14e;text-shadow:3px 3px 0 #3b2417,-2px -2px 0 #3b2417,2px -2px 0 #3b2417,-2px 2px 0 #3b2417;animation:vsPop .5s ease-out .35s both}
+  @keyframes vsL{from{translate:-170% 0}to{translate:0 0}}
+  @keyframes vsR{from{translate:170% 0}to{translate:0 0}}
+  @keyframes vsPop{0%{transform:scale(3);opacity:0}60%{transform:scale(.9);opacity:1}100%{transform:scale(1);opacity:1}}
   .fade{position:absolute;inset:0;z-index:9;background:#000;opacity:0;pointer-events:none;transition:opacity .8s}
   .fade.on{opacity:1;pointer-events:auto}
   .cutbox{position:absolute;left:6px;right:6px;bottom:6px;z-index:6;display:flex;gap:10px;align-items:flex-start;padding:8px 26px 8px 8px;border:3px double #3b2a20;border-radius:8px;background:#fffaf3;color:#3b2a20;font-size:13px;line-height:1.4;cursor:pointer;user-select:none}
@@ -244,6 +264,7 @@
     <span class="phase" id="phase">Your turn</span>
   </div>
   <div class="wrap">
+    <canvas class="arena" id="arena" aria-hidden="true"></canvas>
     <div class="board" id="board"></div>
     <div class="town" id="town"><canvas id="townCv" aria-label="Canggu town map"></canvas><div class="tlabels" id="tlabels"></div><div class="hud" id="hud"></div><div class="talk hidden" id="talk" role="status"></div></div>
     <div class="fx" id="fx"></div>
@@ -259,6 +280,9 @@
     <div class="overlay hidden" id="overlay"></div>
     <div class="cutbox hidden" id="cut" role="status"></div>
     <div class="banner hidden" id="banner" aria-hidden="true"></div>
+    <div class="lbox top"></div><div class="lbox bot"></div>
+    <div class="flash" id="flash"></div>
+    <div class="vs hidden" id="vs"><img class="l" id="vsL" alt=""><span>VS</span><img class="r" id="vsR" alt=""></div>
     <div class="fade" id="fade"></div>
   </div>
   <div class="panel">
@@ -293,17 +317,11 @@
     moves:[
       {name:"Hustle",            kind:"fight", type:"dmg",  pow:14, rng:[1,1], recoil:4},                         // big hit, but it costs you: running on no sleep
       {name:"Cold DM Blast",     kind:"fight", type:"dmg",  pow:7,  rng:[2,3]},                                    // mass outreach, low reply rate
-      {name:"Do It All Yourself",kind:"magic", type:"dmg",  pow:9,  rng:[1,3], mp:6, color:"#c96f8a", area:1},     // hits everything nearby, but burns through your MP
+      {name:"Do It All Yourself",kind:"magic", type:"dmg",  pow:9,  rng:[1,3], mp:6, color:"#c96f8a", area:1, icons:["🎩","📊","📧","🧾","💼","📱"], sfx:"hustle"},     // hits everything nearby, but burns through your MP
       {name:"Doom-Scroll Break", kind:"magic", type:"heal", pow:6,  rng:[0,0], mp:4, color:"#74b383"},              // "rest" that barely helps
     ]});
 
   const FOES = [
-    {name:"Middle Manager", spr:"manager", team:"foe", hp:18, mp:6, def:2, mov:3,
-     blurb:"Wants to circle back. Right now.",
-     moves:[
-      {name:"Reply-All",    kind:"fight", type:"dmg", pow:10, rng:[1,1]},
-      {name:"Micromanage",  kind:"magic", type:"dmg", pow:4,  rng:[1,2], mp:3, color:"#34507a", stun:50},
-     ]},
     {name:"Middle Manager", spr:"manager", team:"foe", hp:18, mp:6, def:2, mov:3,
      blurb:"Wants to circle back. Right now.",
      moves:[
@@ -316,27 +334,39 @@
       {name:"Golden Parachute", kind:"fight", type:"dmg", pow:11, rng:[1,1]},
       {name:"Hostile Takeover", kind:"magic", type:"dmg", pow:11, rng:[1,2], mp:5, color:"#e5b340"},
      ]},
-    {name:"Consultant", spr:"consult", team:"foe", hp:15, mp:8, def:1, mov:2,
+    {name:"Brooke, Consultant", spr:"consultW", team:"foe", hp:15, mp:8, def:1, mov:2,
      blurb:"Bills by the hour. Attacks from range.",
      moves:[
       {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
       {name:"Synergy Beam",    kind:"magic", type:"dmg", pow:9, rng:[2,3], mp:4, color:"#6fb6d9"},
      ]},
-    {name:"Intern", spr:"intern", team:"foe", hp:14, mp:4, def:1, mov:3,
-     blurb:"Unpaid, but enthusiastic.",
+    {name:"Grace, Consultant", spr:"consultA", team:"foe", hp:15, mp:8, def:1, mov:2,
+     blurb:"Three frameworks deep before breakfast.",
      moves:[
-      {name:"Coffee Run",   kind:"fight", type:"dmg", pow:8, rng:[1,1]},
-      {name:"Cc Everyone",  kind:"magic", type:"dmg", pow:3, rng:[1,2], mp:3, color:"#34507a"},
+      {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
+      {name:"Synergy Beam",    kind:"magic", type:"dmg", pow:9, rng:[2,3], mp:4, color:"#6fb6d9"},
      ]},
+    // The Intern never attacks you. He talks, or dances, and the dancing hurts his own team.
+    {name:"Intern", spr:"intern", team:"foe", hp:40, mp:0, def:1, mov:2, intern:true,
+     blurb:"Unpaid. Extremely online. More danger to his own team than to you.",
+     moves:[ {name:"TikTok Dance", kind:"magic", type:"dance", pow:4, rng:[0,0]} ]},
   ];
-  const STARTS = [[1,2],[6,1],[6,4],[7,2],[7,3],[7,5]];   // your hero first, then FOES in order
+  // Gaz is just here for a drink. Nobody can target him, and he doesn't count toward winning.
+  const GAZ = {name:"Gord", spr:"gord", team:"neutral", hp:99, mp:0, def:9, mov:0, moves:[],
+    blurb:"On holiday. Beach shirt, cold drink, zero interest in this.",
+    lines:["Bud, I'm just here for a drink. Leave me out of this.", "Can someone grab me another cold one? Cheers.", "Is this a team-building thing? Yeah, no. I'll pass.",
+           "Careful of the nachos, eh.", "Not my circus, not my monkeys.", "This is the most Canggu thing I've ever seen."]};
+  const INTERN_LINES=["It's giving… corporate.", "No cap, this co-working space is so 2019.", "I'm literally so cooked rn.", "This meeting could've been a TikTok.",
+    "Lowkey just want a matcha.", "Bestie, that's not very demure.", "Is 'synergy' a vibe or a red flag?", "Wait, are we getting paid in exposure again?",
+    "Ate and left no crumbs. 💅", "Touch grass? We're literally on a beach."];
+  const STARTS = [[1,2],[6,1],[7,2],[7,3],[6,4],[7,5],[3,0]];   // your hero, then FOES in order, then Gaz
 
   // ── BACKUP ── Matt joins at the start of turn 2. Each move is one of the services he delivers, and does what it says for the team.
   const BACKUP = {name:"Matt", spr:"matthew", team:"hero", hp:30, mp:12, def:4, mov:4, backup:true,
     blurb:"Builds the done-for-you business infrastructure solo founders wish they had a team for.",
     moves:[
       {name:"Brand + Site Launch",    kind:"fight", type:"dmg",  pow:13, rng:[1,2]},                                // ships the brand and website in one hit
-      {name:"Automate the Admin",     kind:"magic", type:"stun", pow:0,  rng:[1,3], mp:4, color:"#8fd3ff", stun:70, area:1},   // busywork on autopilot: the suits lose their turn
+      {name:"Automate the Admin",     kind:"magic", type:"stun", pow:0,  rng:[1,3], mp:4, color:"#8fd3ff", stun:70, area:1, icons:["⚙️","🤖","⚙️","✅"], sfx:"systems"},   // busywork on autopilot: the suits lose their turn
       {name:"Take It Off Your Plate", kind:"magic", type:"heal", pow:12, rng:[0,3], mp:3, color:"#74b383", cleanse:true},      // heals an ally, clears stun, gives back 3 MP
       {name:"Systems Setup",          kind:"magic", type:"buff", pow:3,  rng:[0,3], mp:4, color:"#e5b340"},                    // a back-office that runs itself: an ally gets +3 power and +1 move
       {name:"Summon Claude", kind:"magic", type:"summon", pow:0,  rng:[1,1], mp:5, color:"#e0782b"},
@@ -349,7 +379,7 @@
     moves:[
       {name:"Slapshot",         kind:"fight", type:"dmg",  pow:11, rng:[2,3]},
       {name:"Timber!",          kind:"fight", type:"dmg",  pow:14, rng:[1,1]},
-      {name:"Maple Syrup Flood", kind:"magic", type:"stun", pow:0, rng:[1,3], mp:5, color:"#c26a1b", stun:60, area:1},
+      {name:"Maple Syrup Flood", kind:"magic", type:"stun", pow:0, rng:[1,3], mp:5, color:"#c26a1b", stun:60, area:1, icons:["🍁","🥞","🍁"], sfx:"maple"},
       {name:"Poutine Break",    kind:"magic", type:"heal", pow:12, rng:[0,2], mp:3, color:"#e5b340"},
     ]};
 
@@ -359,7 +389,7 @@
     hair:        {label:"Hair",        opts:["Short","Long","Bun","Curly","Buzz","Bald"]},
     hairColor:   {label:"Hair colour", colors:["#1b1b1f","#4a3222","#8a5a32","#e0b84f","#c2552d","#b7bec6","#d96fa8","#4f7fd1"]},
     facial:      {label:"Face",        opts:["Clean","Stubble","Beard","Moustache"]},
-    outfit:      {label:"Outfit",      opts:["Hoodie","Tee","Tunic","Dress","Suit","Plaid"]},
+    outfit:      {label:"Outfit",      opts:["Hoodie","Tee","Tunic","Dress","Suit","Plaid","Aloha"]},
     outfitColor: {label:"Outfit colour", colors:["#f08a3c","#3d7fd1","#4fb05a","#e04a3c","#9a5ad6","#3a4a60","#f2c14e","#f7efe0"]},
     hat:         {label:"Hat",         opts:["None","Beanie","Cap","Crown","Flower"]},
     eyes:        {label:"Eyewear",     opts:["None","Glasses","Shades"]},
@@ -395,9 +425,10 @@
     [[13,7,16],[14,6,17],[15,6,17],[16,6,17],[17,7,16]].forEach(([y,a,b])=>span(y,a,b,"top"));
     for(let y=13;y<=16;y++){ span(y,4,5,"top"); span(y,18,19,"top"); }
     span(17,4,5,"skin"); span(17,18,19,"skin");
-    if(outfit==="Tee") for(let y=15;y<=16;y++){ span(y,4,5,"skin"); span(y,18,19,"skin"); }
+    if(outfit==="Tee"||outfit==="Aloha") for(let y=15;y<=16;y++){ span(y,4,5,"skin"); span(y,18,19,"skin"); }
     if(outfit==="Dress"){ span(18,6,17,"top"); span(19,5,18,"top"); span(20,5,18,"top"); span(21,8,10,"shoe"); span(21,13,15,"shoe"); }
     else { span(18,8,15,"pants"); for(const y of [19,20]){ span(y,8,10,"pants"); span(y,13,15,"pants"); } span(21,7,10,"shoe"); span(21,13,16,"shoe"); }
+    if(L.shorts) for(const y of [20]){ span(y,8,10,"skin"); span(y,13,15,"skin"); }   // shorts: bare legs below the knee
     // hair
     const crop=()=>{ span(2,8,15,"hair"); span(3,6,17,"hair"); span(4,5,18,"hair"); span(5,5,18,"hair");
       span(6,5,7,"hair"); span(6,16,18,"hair"); span(7,5,6,"hair"); span(7,17,18,"hair"); dot(9,6,"hair"); dot(12,6,"hair"); dot(14,6,"hair"); };
@@ -417,7 +448,7 @@
     // shading: light from the top-left, the right side of the figure in shade
     const topHex=L.topHex||LOOK.outfitColor.colors[L.outfitColor], hatHex=L.hatHex||(hat==="Cap"?"#3a6ea5":"#c23b30");
     const R={ skin:ramp(LOOK.skin.colors[L.skin]), hair:ramp(LOOK.hairColor.colors[L.hairColor]), top:ramp(topHex),
-      pants:ramp(outfit==="Suit"?topHex:"#3b4a63"), shoe:ramp("#5a3a2a"), hat:ramp(hatHex), cuff:ramp(mix(hatHex,.25,"k")),
+      pants:ramp(L.pantsHex||(outfit==="Suit"?topHex:"#3b4a63")), shoe:ramp("#5a3a2a"), hat:ramp(hatHex), cuff:ramp(mix(hatHex,.25,"k")),
       brim:ramp(mix(hatHex,.18,"k")), gold:ramp("#e5b340"), petal:ramp("#f2a6c4") };
     const C=Array.from({length:SW},()=>Array(SW).fill(null));
     const other=(x,y,m)=>x<0||y<0||x>=SW||y>=SW||M[y][x]!==m;
@@ -440,10 +471,11 @@
     // outfit details
     const accent=L.accentHex||"#c23b30";
     if(outfit==="Hoodie"){ for(const [x,y] of [[10,13],[10,14],[13,13],[13,14]]) put(x,y,"#f4ede4"); for(let x=9;x<=14;x++) put(x,16,R.top.sh); }
-    if(outfit==="Tee"||outfit==="Dress"){ put(11,13,R.skin.base); put(12,13,R.skin.sh); }
+    if(outfit==="Tee"||outfit==="Dress"||outfit==="Aloha"){ put(11,13,R.skin.base); put(12,13,R.skin.sh); }
     if(outfit==="Tunic"){ for(let x=7;x<=16;x++) put(x,17,x<15?"#c9962a":"#9c7220"); put(11,17,"#f5d68a"); }
     if(outfit==="Suit"){ for(const [x,y] of [[10,13],[13,13],[10,14],[13,14]]) put(x,y,"#f4f1ea"); for(let y=13;y<=17;y++){ put(11,y,accent); put(12,y,mix(accent,.3,"k")); } put(11,13,mix(accent,.2,"w")); }
     if(outfit==="Plaid") for(let y=13;y<=20;y++) for(let x=4;x<=19;x++) if(M[y][x]==="top" && ((x>>1)+(y>>1))%2===0) put(x,y,mix(C[y][x],.55,"k"));
+    if(outfit==="Aloha") for(let y=13;y<=17;y++) for(let x=4;x<=19;x++) if(M[y][x]==="top" && (x*3+y*5)%7===0) put(x,y,(x+y)%2?"#fff3b0":"#f7b6d2");   // hibiscus print
     // eyewear
     const ec=LOOK.eyeColor.colors[L.eyeColor||0];
     if(eyes==="Glasses"){ const F=ec;   // thin rims around each eye, joined by a bridge
@@ -468,7 +500,10 @@
     manager:{skin:1, hair:0, hairColor:1, facial:0, outfit:4, topHex:"#3d63a8", accentHex:"#c23b30", hat:0, eyes:0},
     ceo:    {skin:2, hair:4, hairColor:5, facial:0, outfit:4, topHex:"#2c2c3a", accentHex:"#e5b340", hat:0, eyes:2, eyeColor:0},
     consult:{skin:0, hair:0, hairColor:3, facial:0, outfit:4, topHex:"#7d8a98", accentHex:"#3a6ea5", hat:0, eyes:1, eyeColor:0},
-    intern: {skin:4, hair:2, hairColor:0, facial:0, outfit:1, outfitColor:7, hat:0, eyes:0},
+    consultW:{skin:0, hair:1, hairColor:4, facial:0, outfit:4, topHex:"#7d8a98", accentHex:"#3a6ea5", hat:0, eyes:1, eyeColor:0},
+    consultA:{skin:1, hair:2, hairColor:0, facial:0, outfit:4, topHex:"#2f4a7a", accentHex:"#d96fa8", hat:0, eyes:0},
+    gord:   {skin:0, hair:5, hairColor:1, facial:2, outfit:6, topHex:"#2fa7a0", hat:0, eyes:1, eyeColor:0, shorts:true, pantsHex:"#c9a36a"},   // bald, beard, glasses, beach shirt + shorts
+    intern: {skin:2, hair:3, hairColor:6, facial:0, outfit:0, outfitColor:6, hat:0, eyes:2, eyeColor:4},
   };
   const SPRITE_URL = {};
   for (const [key, look] of Object.entries(CAST)) SPRITE_URL[key] = makeSprite(look).toDataURL();
@@ -490,13 +525,14 @@
   let S;
   function reset(){
     S = {
-      units: [heroDef(), ...FOES].map((d,i)=>({...d, id:i, maxHp:d.hp, maxMp:d.mp, x:STARTS[i][0], y:STARTS[i][1], alive:true, acted:false, stun:false})),
+      units: [heroDef(), ...FOES, GAZ].map((d,i)=>({...d, id:i, maxHp:d.hp, maxMp:d.mp, x:STARTS[i][0], y:STARTS[i][1], alive:true, acted:false, stun:false})),
       phase:"player", turn:1, sel:null, mode:null, origin:null, move:null, kind:null,
       moveSet:new Map(), targets:new Map(), danger:new Set(), range:new Set(), hit:new Set(), busy:false, fast:false,
       backupIn:false, backupDmg:0, backupHeal:0, claudeIn:false, claudeDmg:0,
       inv:{...INV},   // snacks found in town (a retry gets them all back)
-      blast:new Set(), boom:new Set(), aoeAt:null
+      blast:new Set(), boom:new Set(), aoeAt:null, disco:new Set()
     };
+    drawArena();
     logEl.innerHTML=""; log("The suits have taken over The Sloppy Sloth. You're on your own.");
     info.innerHTML=`Tap <b>${S.units[0].name}</b> to begin.`;
     render();
@@ -564,7 +600,7 @@
     for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
       const c=document.createElement("div"), t=terrain(x,y), k=K(x,y);
       c.className="tile"+((x+y)%2?" alt":"")+(t==="~"?" counter":"")+(t==="#"?" rack":"");
-      if(t==="#") c.textContent="🪴";
+      if(S.disco.has(k)) c.classList.add("disco");
       if(S.mode==="move" && S.moveSet.has(k)) c.classList.add("move");
       if(S.danger.has(k)) c.classList.add("danger");
       if(S.range.has(k)) c.classList.add("range");
@@ -578,7 +614,7 @@
         S.aoeAt=k; S.blast=areaTiles(x,y,S.move.area); renderBoard(); };
       if(u){
         const el=document.createElement("div");
-        el.className="unit"+(u.team==="foe"?" foe":"")+(u===S.sel?" sel":"")+(u.acted?" done":"")+(S.hit.has(u.id)?" hit":"");
+        el.className="unit"+(u.team==="foe"?" foe":u.team==="neutral"?" neutral":"")+(u===S.sel?" sel":"")+(u.acted?" done":"")+(S.hit.has(u.id)?" hit":"");
         el.innerHTML=`<img class="spr" src="${SPRITE_URL[u.spr]}" alt="${u.name}"><span class="hp"><i style="width:${u.hp/u.maxHp*100}%"></i></span>${u.stun?'<span class="zz">z</span>':""}`;
         c.appendChild(el);
       }
@@ -790,6 +826,21 @@
       step:  t=>tone("triangle",180,t,0.04,0.05,fx,140),
       rooster:t=>{ const v=0.075; tone("sawtooth",520,t,0.12,v,fx,760); tone("sawtooth",760,t+0.15,0.14,v,fx,1000); tone("sawtooth",1000,t+0.32,0.12,v,fx,900);
         tone("sawtooth",900,t+0.47,0.3,v,fx,1200); tone("sawtooth",1200,t+0.77,0.4,v,fx,820); noise(t,1.2,0.025,fx,"bandpass",1400,2200); },   // cock-a-doodle-doo
+      hustle:t=>{ for(let i=0;i<4;i++){ noise(t+i*.09,.06,.35,fx,"bandpass",1200,300); tone("square",160-i*10,t+i*.09,.06,.15,fx,80); } },
+      dms:   t=>{ for(let i=0;i<6;i++) tone("sine",1320+(i%2)*220,t+i*.08,.05,.08,fx); tone("triangle",1760,t+.75,.08,.06,fx); tone("triangle",2093,t+.82,.1,.06,fx); },
+      scroll:t=>{ for(let i=0;i<8;i++) noise(t+i*.07,.03,.06,fx,"highpass",4000); tone("triangle",784,t+.75,.15,.06,fx); },
+      launch:t=>{ noise(t,.6,.2,fx,"bandpass",300,1800); tone("sawtooth",120,t,.6,.06,fx,600); noise(t+.62,.4,.5,fx,"lowpass",3000,200); [784,988,1175,1568].forEach((f,i)=>tone("triangle",f,t+.7+i*.06,.12,.08,fx)); },
+      plate: t=>{ tone("triangle",1568,t,.1,.1,fx); tone("triangle",2093,t+.05,.15,.08,fx); [0,.1,.2,.3].forEach(d=>tone("sine",600,t+.3+d,.08,.08,fx,1200)); [784,988,1175,1568].forEach((f,i)=>tone("triangle",f,t+.75+i*.08,.25,.12,fx)); },
+      systems:t=>{ [523,659,784,1047,1319].forEach((f,i)=>tone("square",f,t+i*.1,.08,.07,fx)); tone("triangle",1047,t+.6,.4,.12,fx); },
+      slapshot:t=>{ noise(t+.05,.25,.08,fx,"bandpass",800,2000); noise(t+.42,.05,.6,fx,"highpass",1500); tone("square",220,t+.42,.05,.25,fx,90); noise(t+.44,.25,.12,fx,"highpass",6000,3000); tone("triangle",2637,t+.72,.15,.1,fx); },
+      timber:t=>{ tone("square",520,t,.08,.1,fx,700); tone("square",700,t+.1,.12,.1,fx,520); noise(t+.45,.35,.6,fx,"lowpass",900,90); tone("sine",90,t+.45,.4,.6,fx,40); },
+      poutine:t=>{ noise(t,.5,.05,fx,"lowpass",900,600); [659,784,988,1319].forEach((f,i)=>tone("triangle",f,t+.6+i*.08,.25,.12,fx)); },
+      maple: t=>{ [880,1047,1319,1568,1760].forEach((f,i)=>tone("triangle",f,t+i*.09,.3,.08,fx)); },
+      dance: t=>{ for(let i=0;i<8;i++){ tone("sine",i%2?110:55,t+i*.09,.08,.4,fx,40); if(i%2) noise(t+i*.09,.04,.15,fx,"highpass",6000); tone("square",[523,659,784,659][i%4],t+i*.09,.06,.05,fx); } },
+      quip:  t=>{ [440,550,495].forEach((f,i)=>tone("square",f,t+i*.06,.05,.05,fx)); },
+      scratch:t=>{ tone("sawtooth",900,t,.18,.12,fx,180); tone("sawtooth",300,t+.18,.25,.1,fx,1100); noise(t,.45,.15,fx,"bandpass",1200,400); },   // record scratch
+      sting: t=>{ for(const f of [110,165,220]) tone("sawtooth",f,t,1.1,.09,fx,f*.97); noise(t,.3,.3,fx,"lowpass",600,80); },                       // dramatic chord
+      thud:  t=>{ tone("sine",80,t,.35,.8,fx,35); noise(t,.2,.5,fx,"lowpass",500,80); },
       boom:  t=>{ tone("sine",170,t,0.5,0.6,fx,40); noise(t,0.45,0.5,fx,"lowpass",2600,180); [523,659,784].forEach((f,i)=>tone("square",f,t+0.05+i*0.05,0.08,0.06,fx)); },
     };
     function sfx(name){ if(!ctx||!on) return; const f=SFX[name]; if(f) f(ctx.currentTime+0.01); }
@@ -800,11 +851,11 @@
 
   // ── ATTACK EFFECTS ── each move name → an effect below. Swap them around freely.
   const MOVE_FX = {
-    "Hustle":"bash", "Cold DM Blast":"email", "Doom-Scroll Break":"heal",
-    "Slapshot":"puck", "Timber!":"slash", "Poutine Break":"heal",
+    "Hustle":"hustle", "Cold DM Blast":"dms", "Doom-Scroll Break":"scroll",
+    "Slapshot":"slapshot", "Timber!":"timber", "Poutine Break":"poutine",
     "Reply-All":"email", "Coffee Run":"whack", "Cc Everyone":"email", "Micromanage":"micro", "Golden Parachute":"coins", "Hostile Takeover":"takeover",
     "Slide Deck Toss":"slides", "Synergy Beam":"beam",
-    "Brand + Site Launch":"bigArrow", "Take It Off Your Plate":"pourover", "Systems Setup":"mead",
+    "Brand + Site Launch":"launch", "Take It Off Your Plate":"plate", "Systems Setup":"systems",
   };
   const lerp=(a,b,t)=>a+(b-a)*t, clamp=t=>Math.max(0,Math.min(1,t)), rnd=(a,b)=>a+Math.random()*(b-a);
   const easeOut=t=>{ t=clamp(t); return 1-(1-t)*(1-t); };
@@ -924,7 +975,95 @@
     pint: thrown((c,r)=>{ c.fillStyle="#e5b340"; c.fillRect(-r*.7,-r*.5,r*1.4,r*1.5); c.fillStyle="#fff"; c.fillRect(-r*.8,-r*.95,r*1.6,r*.5);
       c.strokeStyle="#cfd6dc"; c.lineWidth=2; c.strokeRect(-r*.7,-r*.5,r*1.4,r*1.5); c.beginPath(); c.arc(r*.9,r*.2,r*.4,-1.4,1.4); c.stroke(); }, "#e5b340", .2, 12),
     puck: thrown((c,r)=>{ c.fillStyle="#141414"; c.beginPath(); c.ellipse(0,0,r,r*.5,0,0,7); c.fill(); c.fillStyle="#3a3a3a"; c.fillRect(-r,-r*.08,r*2,r*.16); }, "#dff3ff", .02, 0),
+    // ── one animation per hero move, each acting out what the move is ──
+    hustle:(A,T,W,H)=>({dur:800, shake:true, draw(c,t){   // speed lines, a flurry of hits, "GRIND!", and a sweat drop
+      const u=clamp(t/.4); c.strokeStyle="rgba(255,255,255,.85)"; c.lineWidth=2;
+      for(let i=0;i<7;i++){ const y=T.y-W*.08+i*W*.027, x1=lerp(A.x,T.x,u), len=W*.12*(1-u)+W*.03; c.globalAlpha=1-u*.6; c.beginPath(); c.moveTo(x1-len,y); c.lineTo(x1,y); c.stroke(); }
+      c.globalAlpha=1;
+      if(t>.35){ const v=(t-.35)/.65;
+        for(let i=0;i<4;i++){ const d=clamp((v-i*.12)/.3); if(d<=0||d>=1) continue; const ox=T.x+(hsh(i,1,9)-.5)*W*.12, oy=T.y+(hsh(i,2,9)-.5)*W*.1; star(c,ox,oy,W*.05*(1-d)+3,d*4,"#fff3b0"); ring(c,{x:ox,y:oy},W*.06*d,3,"#e0782b",1-d); }
+        if(v<.8) bigText(c,"GRIND!",T.x,T.y-W*.15,W*.06,"#e0782b");
+        c.fillStyle="#7fd3ff"; c.beginPath(); c.ellipse(A.x+W*.06,A.y-W*.1+v*W*.04,W*.012,W*.018,0,0,7); c.fill(); } }}),
+    dms:(A,T,W,H)=>({dur:950, draw(c,t){   // a swarm of chat bubbles, then "Seen ✓✓"
+      for(let i=0;i<6;i++){ const u=clamp((t-i*.08)/.5); if(!u) continue; c.globalAlpha = u>=1 ? Math.max(0,1-(t-i*.08-.5)*5) : 1;
+        const p=arcPos(A,{x:T.x+(i%3-1)*W*.03,y:T.y+(i%2?1:-1)*W*.02},u,H*.08*(i%2?1:-1)), w=W*.075, h=W*.045;
+        c.fillStyle="#ffffff"; c.strokeStyle="#3d7fd1"; c.lineWidth=2; c.beginPath(); c.roundRect(p.x-w/2,p.y-h/2,w,h,4); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(p.x-w*.2,p.y+h/2); c.lineTo(p.x-w*.3,p.y+h*.85); c.lineTo(p.x,p.y+h/2); c.fill();
+        c.fillStyle="#3d7fd1"; for(let k=-1;k<=1;k++){ c.beginPath(); c.arc(p.x+k*w*.22,p.y,W*.006,0,7); c.fill(); } }
+      c.globalAlpha=1;
+      if(t>.75){ c.font=`700 ${W*.032}px system-ui`; c.fillStyle="#6b8aa8"; c.textAlign="center"; c.globalAlpha=Math.min(1,(t-.75)*5); c.fillText("Seen ✓✓",T.x,T.y-W*.12); c.globalAlpha=1; } }}),
+    scroll:(A,T,W,H)=>({dur:1100, draw(c,t){   // a phone, an endless feed, and a couple of sad little hearts
+      const pw=W*.09, ph=W*.16, x=T.x+W*.1-pw/2, y=T.y-ph*.9;
+      c.fillStyle="#1e1e24"; c.beginPath(); c.roundRect(x,y,pw,ph,5); c.fill();
+      c.save(); c.beginPath(); c.rect(x+3,y+5,pw-6,ph-10); c.clip(); c.fillStyle="#f4f1ea"; c.fillRect(x+3,y+5,pw-6,ph-10);
+      for(let i=0;i<8;i++){ const span=ph*1.44, ly=y+5+(((i*ph*.18-t*ph*1.6)%span)+span)%span; c.fillStyle=i%3?"#c9c3b8":"#e0782b"; c.fillRect(x+6,ly,pw-12,3); c.fillStyle="#d9d3c8"; c.fillRect(x+6,ly+5,(pw-12)*.6,2); }
+      c.restore();
+      if(t>.6){ const v=(t-.6)/.4; c.fillStyle="#e04a3c"; for(let i=0;i<3;i++){ c.globalAlpha=1-v; heart(c,T.x-W*.05+i*W*.05,T.y-W*.05-v*W*.1-i*4,W*.012); } c.globalAlpha=1; } }}),
+    launch:(A,T,W,H)=>{ const puffs=[]; return {dur:1100, draw(c,t){   // a rocket with a smoke trail, confetti, and the site goes LIVE
+      const u=clamp(t/.6), p=arcPos(A,T,easeOut(u),H*.22), q=arcPos(A,T,easeOut(Math.max(0,u-.03)),H*.22);
+      for(const s of puffs){ s.life-=.035; if(s.life>0){ c.globalAlpha=s.life*.7; c.fillStyle="#e8e4dc"; c.beginPath(); c.arc(s.x,s.y,W*.02*(1.4-s.life),0,7); c.fill(); } } c.globalAlpha=1;
+      if(u<1){ puffs.push({x:q.x,y:q.y,life:1}); const L=W*.07; c.save(); c.translate(p.x,p.y); c.rotate(Math.atan2(p.y-q.y,p.x-q.x));
+        c.fillStyle="#f4f1ea"; c.beginPath(); c.moveTo(L*.6,0); c.lineTo(-L*.4,-L*.22); c.lineTo(-L*.4,L*.22); c.closePath(); c.fill();
+        c.fillStyle="#e0782b"; c.fillRect(-L*.5,-L*.3,L*.2,L*.6); c.fillStyle="#3d7fd1"; c.beginPath(); c.arc(L*.1,0,L*.09,0,7); c.fill();
+        c.fillStyle=hsh(t*100|0,1,1)<.5?"#ffd65a":"#ff7a59"; c.beginPath(); c.moveTo(-L*.5,-L*.12); c.lineTo(-L*(.8+hsh(t*100|0,2,1)*.3),0); c.lineTo(-L*.5,L*.12); c.fill(); c.restore(); }
+      else { const v=(t-.6)/.4; flash(c,W,H,.3*(1-v),"#fff3d6");
+        for(let i=0;i<16;i++){ const a=i/16*Math.PI*2, d=W*.16*easeOut(v); c.fillStyle=["#e0782b","#3d7fd1","#f2c14e","#4fb05a","#e04a3c"][i%5]; c.save(); c.translate(T.x+Math.cos(a)*d,T.y+Math.sin(a)*d+v*W*.05); c.rotate(a+v*6); c.globalAlpha=1-v; c.fillRect(-3,-2,6,4); c.restore(); }
+        c.globalAlpha=1;
+        if(v<.75){ const bw=W*.15,bh=W*.09,bx=T.x-bw/2,by=T.y-W*.21; c.fillStyle="#ffffff"; c.strokeStyle="#3b2417"; c.lineWidth=2; c.beginPath(); c.roundRect(bx,by,bw,bh,4); c.fill(); c.stroke();
+          c.fillStyle="#e0782b"; c.fillRect(bx+2,by+2,bw-4,bh*.24); c.fillStyle="#3b2417"; c.font=`800 ${W*.026}px system-ui`; c.textAlign="center"; c.fillText("LIVE ✓",T.x,by+bh*.75); } } }}; },
+    plate:(A,T,W,H)=>{ const h=FX.heal(A,T,W,H); return {dur:1200, draw(c,t){   // a plate of tasks; Matt takes them away one by one
+      const px=T.x, py=T.y-W*.13, pr=W*.07;
+      c.globalAlpha=Math.min(1,t*4); c.fillStyle="#ffffff"; c.strokeStyle="#c9c3b8"; c.lineWidth=2; c.beginPath(); c.ellipse(px,py,pr,pr*.35,0,0,7); c.fill(); c.stroke(); c.globalAlpha=1;
+      ["📧","🧾","📅","📊"].forEach((ic,i)=>{ const d=clamp((t-.25-i*.1)/.35); c.globalAlpha=1-d; c.font=`${W*.04}px system-ui`; c.textAlign="center"; c.fillText(ic,px+(i-1.5)*pr*.45+d*W*.25,py-pr*.25-d*W*.25); });
+      c.globalAlpha=1; if(t>.6) h.draw(c,(t-.6)/.4); }}; },
+    systems:(A,T,W,H)=>({dur:1200, draw(c,t){   // a little flowchart builds itself, then gold arrows lift the ally
+      const nodes=[[-1,-1],[1,-1],[-1,1],[1,1],[0,-1.6]].map(([dx,dy])=>({x:T.x+dx*W*.09,y:T.y-W*.05+dy*W*.06})), k=clamp(t/.6)*nodes.length;
+      c.strokeStyle="#3b2417"; c.lineWidth=2;
+      for(let i=1;i<Math.min(nodes.length,Math.ceil(k));i++){ c.beginPath(); c.moveTo(nodes[0].x,nodes[0].y); c.lineTo(nodes[i].x,nodes[i].y); c.stroke(); }
+      nodes.forEach((n,i)=>{ if(i>=k) return; c.fillStyle=["#f2c14e","#3d7fd1","#4fb05a","#e0782b","#9a5ad6"][i]; c.beginPath(); c.roundRect(n.x-W*.025,n.y-W*.017,W*.05,W*.034,3); c.fill(); c.stroke(); });
+      if(t>.55){ const v=(t-.55)/.45; c.fillStyle="#f2c14e";
+        for(let i=0;i<4;i++){ const x=T.x+(i-1.5)*W*.04, y=T.y+W*.08-v*W*.18-i*3; c.globalAlpha=1-v; c.beginPath(); c.moveTo(x,y-W*.025); c.lineTo(x-W*.018,y); c.lineTo(x+W*.018,y); c.fill(); c.fillRect(x-W*.006,y,W*.012,W*.02); }
+        c.globalAlpha=1; ring(c,T,W*.15*v,3,"#f2c14e",1-v); } }}),
+    slapshot:(A,T,W,H)=>({dur:1000, draw(c,t){   // Claude winds up the stick, swings, and the puck flies flat and fast
+      const pivot={x:A.x+W*.02,y:A.y-W*.07}, L=W*.17;
+      const ang = t<.3 ? lerp(-.5,-2.1,easeOut(t/.3)) : t<.42 ? lerp(-2.1,.6,(t-.3)/.12) : .6;
+      if(t<.75){ c.save(); c.translate(pivot.x,pivot.y); c.rotate(ang); c.lineCap="round";
+        c.strokeStyle="#3b2417"; c.lineWidth=W*.022; c.beginPath(); c.moveTo(0,0); c.lineTo(0,L); c.stroke();
+        c.strokeStyle="#c98a4a"; c.lineWidth=W*.013; c.beginPath(); c.moveTo(0,0); c.lineTo(0,L); c.stroke();
+        c.fillStyle="#1e1e24"; c.fillRect(-W*.008,L*.04,W*.016,L*.14);                                          // tape grip
+        c.fillStyle="#3b2417"; c.beginPath(); c.roundRect(-W*.012,L-W*.014,W*.075,W*.028,5); c.fill();          // blade
+        c.fillStyle="#f4f1ea"; c.fillRect(W*.005,L-W*.008,W*.05,W*.006); c.restore();
+        if(t>.3 && t<.45){ c.strokeStyle="rgba(255,255,255,.6)"; c.lineWidth=2; c.beginPath(); c.arc(pivot.x,pivot.y,L*.95,-.5,1.9); c.stroke(); } }   // swing blur
+      const start={x:A.x+W*.08,y:A.y+W*.06}, end={x:T.x,y:T.y+W*.03}, u=clamp((t-.42)/.28), p={x:lerp(start.x,end.x,u), y:lerp(start.y,end.y,u)};
+      if(u<1){
+        if(u>0){ c.strokeStyle="rgba(255,255,255,.65)"; c.lineWidth=3; const b=Math.max(0,u-.25); c.beginPath(); c.moveTo(lerp(start.x,end.x,b),lerp(start.y,end.y,b)); c.lineTo(p.x,p.y); c.stroke();
+          c.fillStyle="#e6f7ff"; c.globalAlpha=Math.max(0,1-u*1.5); for(let i=0;i<6;i++) c.fillRect(start.x+(hsh(i,3,1)-.5)*W*.07, start.y-hsh(i,4,1)*W*.06*Math.min(1,u*4), 3,3); c.globalAlpha=1; }   // ice spray
+        c.fillStyle="#141414"; c.beginPath(); c.ellipse(p.x,p.y,W*.022,W*.011,0,0,7); c.fill(); c.fillStyle="#3a3a3a"; c.fillRect(p.x-W*.022,p.y-1,W*.044,2);
+      } else { const v=(t-.7)/.3; sparks(c,end,v,8,W*.09,"#e6f7ff"); ring(c,end,W*.1*v,3,"#ffffff",1-v); if(v<.8) bigText(c,"PING!",T.x,T.y-W*.13,W*.05,"#ffffff"); } }}),
+    timber:(A,T,W,H)=>({dur:1000, shake:true, draw(c,t){   // a log comes crashing down. TIMBER!
+      const u=clamp(t/.45), y=lerp(-W*.1,T.y-W*.02,u*u), rot=lerp(-1.2,0,u);
+      if(t<.85){ const lw=W*.2, lh=W*.05; c.save(); c.translate(T.x,y); c.rotate(rot);
+        c.fillStyle="#8a5a32"; c.strokeStyle="#3b2417"; c.lineWidth=2; c.beginPath(); c.roundRect(-lw/2,-lh/2,lw,lh,lh/2); c.fill(); c.stroke();
+        c.fillStyle="#d9b07a"; c.beginPath(); c.ellipse(lw/2-2,0,lh*.3,lh*.48,0,0,7); c.fill(); c.stroke(); c.strokeStyle="#a8803f"; c.beginPath(); c.ellipse(lw/2-2,0,lh*.15,lh*.24,0,0,7); c.stroke();
+        c.strokeStyle="#6b4a2e"; for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*lw*.15,-lh*.25); c.lineTo(i*lw*.15+6,-lh*.25); c.stroke(); } c.restore(); }
+      if(t>.45){ const v=(t-.45)/.55;
+        for(let i=0;i<8;i++){ const a=-Math.PI*hsh(i,7,2), d=W*.12*v; c.globalAlpha=1-v; c.fillStyle=i%2?"#c9962a":"#8a5a32"; c.fillRect(T.x+Math.cos(a)*d,T.y+Math.sin(a)*d+v*v*W*.08,4,3); }
+        c.globalAlpha=1; if(v<.75) bigText(c,"TIMBER!",T.x,T.y-W*.16,W*.055,"#e0782b"); } }}),
+    poutine:(A,T,W,H)=>{ const h=FX.heal(A,T,W,H); return {dur:1300, draw(c,t){   // a steaming bowl of poutine
+      const bx=T.x, by=T.y-W*.12, br=W*.065; c.globalAlpha=Math.min(1,t*4);
+      for(let i=0;i<9;i++){ c.fillStyle=i%2?"#f2c14e":"#e8b84a"; c.save(); c.translate(bx+(i-4)*br*.2,by-br*.15); c.rotate((i-4)*.15); c.fillRect(-2,-br*.6,4,br*.6); c.restore(); }   // fries
+      c.fillStyle="#7a4a26"; c.beginPath(); c.ellipse(bx,by-br*.1,br*.8,br*.25,0,0,7); c.fill();                                                     // gravy
+      c.fillStyle="#fff8e8"; for(const [dx,dy] of [[-.4,-.15],[.2,-.2],[.45,-.05],[-.1,-.05]]){ c.beginPath(); c.arc(bx+dx*br,by+dy*br,br*.1,0,7); c.fill(); }   // cheese curds
+      c.fillStyle="#ffffff"; c.strokeStyle="#c9c3b8"; c.lineWidth=2; c.beginPath(); c.moveTo(bx-br,by); c.lineTo(bx+br,by); c.lineTo(bx+br*.7,by+br*.6); c.lineTo(bx-br*.7,by+br*.6); c.closePath(); c.fill(); c.stroke();   // bowl
+      c.strokeStyle="rgba(255,255,255,.75)"; for(let i=-1;i<=1;i++){ c.beginPath(); for(let s=0;s<10;s++) c.lineTo(bx+i*br*.4+Math.sin(s*.8+t*10)*3, by-br*.5-s*3); c.stroke(); }   // steam
+      c.globalAlpha=1; if(t>.55) h.draw(c,(t-.55)/.45); }}; },
+    maple:(A,T,W,H)=>{ const ls=Array.from({length:14},()=>({x:rnd(-1,1),d:rnd(0,.4),s:rnd(.7,1.2),r:rnd(0,6)})); return {dur:1200, draw(c,t){   // maple leaves swirl down
+      for(const l of ls){ const u=clamp((t-l.d)/.6); if(!u||u>=1) continue; c.globalAlpha=1-Math.max(0,u-.7)/.3;
+        star(c,T.x+l.x*W*.18+Math.sin(u*6+l.r)*W*.03, lerp(-W*.05,T.y+W*.04,u), W*.024*l.s, u*5+l.r, l.r>3?"#e04a3c":"#e0782b"); }
+      c.globalAlpha=1; if(t>.5) ring(c,{x:T.x,y:T.y+W*.06},W*.18*(t-.5)*2,4,"#e0782b",1-(t-.5)*2); }}; },
   };
+  function heart(c,x,y,s){ c.beginPath(); c.moveTo(x,y+s); c.bezierCurveTo(x-s*2,y-s,x-s,y-s*2.2,x,y-s*.8); c.bezierCurveTo(x+s,y-s*2.2,x+s*2,y-s,x,y+s); c.fill(); }
+  function bigText(c,txt,x,y,size,fill){ c.font=`900 ${size}px system-ui`; c.textAlign="center"; c.lineWidth=Math.max(3,size*.12); c.strokeStyle="#3b2417"; c.strokeText(txt,x,y); c.fillStyle=fill; c.fillText(txt,x,y); }
   function thrown(drawObj, burst, arc, spin){
     return (A,T,W,H)=>({dur:700, draw(c,t){
       const u=clamp(t/.65);
@@ -1082,7 +1221,8 @@
     a.mp-=m.mp||0; S.speed=1;
     const area=areaTiles(cx,cy,m.area), hit=alive(a.team==="hero"?"foe":"hero").filter(f=>area.has(K(f.x,f.y)));
     S.blast=new Set(); S.aoeAt=null; S.boom=area; render();
-    Sound.sfx(m.type==="stun" ? "fog" : "boom");
+    Sound.sfx(m.sfx || (m.type==="stun" ? "fog" : "boom"));
+    if(m.icons) for(const k of area){ const [x,y]=k.split(",").map(Number); float({x,y}, m.icons[Math.floor(Math.random()*m.icons.length)], "var(--ink)"); }   // what this move throws around
     await wait(450);
     const parts=[];
     for(const t of hit){
@@ -1102,6 +1242,82 @@
     render();
   }
 
+  // ── someone says something mid-battle (the Intern's quips, Gord at the bar) ──
+  async function sayScene(u, text){
+    log(`${u.name}: “${text}”`);
+    if(!$("scenes").checked){ float(u,"💬","var(--muted)"); await sleep(700); return; }
+    const bt=$("battle"), pTop=$("pTop"), pBot=$("pBot");
+    pBot.className="plat bot hidden"; $("bBot").classList.add("hidden"); $("bTop").classList.add("hidden");
+    pTop.className="plat top"; const im=pTop.querySelector("img"); im.src=SPRITE_URL[u.spr]; im.className=u.team==="foe"?"flip":"";
+    S.speed=1; bt.classList.remove("quake"); bt.classList.remove("hidden");
+    Sound.sfx("quip");
+    await typeMsg(`${u.name}: “${text}”`, 1500);
+    bt.classList.add("hidden"); pBot.classList.remove("hidden"); $("bBot").classList.remove("hidden");
+    if(S.phase!=="enemy") S.fast=false;
+  }
+
+  // ── the Intern: never attacks you. Wanders over to his own team, then either posts or dances ──
+  async function internTurn(e){
+    const suits=alive("foe").filter(f=>f!==e);
+    let best=null;
+    for(const [k] of reachable(e)){
+      const [x,y]=k.split(",").map(Number);
+      const next=suits.filter(s=>Math.abs(s.x-x)+Math.abs(s.y-y)===1).length, d=Math.min(99,...suits.map(s=>Math.abs(s.x-x)+Math.abs(s.y-y)));
+      const score=next*10-d; if(!best||score>best.score) best={x,y,score};
+    }
+    if(best && (best.x!==e.x||best.y!==e.y)){ e.x=best.x; e.y=best.y; render(); await wait(250); }
+    const near=suits.filter(s=>Math.abs(s.x-e.x)+Math.abs(s.y-e.y)<=1);
+    if(near.length && Math.random()<.6) await tiktokDance(e,near);
+    else await sayScene(e, INTERN_LINES[Math.floor(Math.random()*INTERN_LINES.length)]);
+  }
+  async function tiktokDance(e,near){
+    S.disco=areaTiles(e.x,e.y,1); render(); Sound.sfx("dance");
+    for(const k of S.disco){ const [x,y]=k.split(",").map(Number); if(Math.random()<.7) float({x,y},["♪","♫","💃","✨"][Math.floor(Math.random()*4)],"var(--magic)"); }
+    await wait(800);
+    const parts=[];
+    for(const s of near){ const dmg=Math.min(s.hp-1, 3+Math.floor(Math.random()*3)); if(dmg>0){ s.hp-=dmg; S.hit.add(s.id); float(s,"-"+dmg,"var(--enemy)"); parts.push(`${s.name} −${dmg}`); } }
+    S.disco=new Set(); render(); await wait(350); S.hit.clear();
+    log(`Intern did a TikTok Dance 💃 → ${parts.length ? parts.join(", ")+" (his own team!)" : "nobody, luckily"}`);
+    render();
+  }
+
+  // ── the bar, drawn in the same pixel-art style as the town (sits under the board) ──
+  function drawArena(){
+    const cv=$("arena"); cv.width=COLS*16; cv.height=ROWS*16; const g=cv.getContext("2d");
+    const R=(col,x,y,w=1,h=1)=>{ g.fillStyle=col; g.fillRect(x,y,w,h); };
+    for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){   // wooden floor planks
+      const px=x*16, py=y*16;
+      for(let r=0;r<4;r++){ const yy=py+r*4, off=((y*4+r)%2)*8; R(r%2?"#c99a62":"#d1a46c",px,yy,16,4); R("#a87a48",px,yy+3,16,1); R("#a87a48",px+(off+5)%16,yy,1,3); if(hsh(x,y*4+r,3)>.7) R("#b8875a",px+Math.floor(hsh(x,r,4)*12),yy+1,3,1); }
+    }
+    // a woven rug in the middle
+    R(OUTLINE,47,31,34,34); R("#e0782b",48,32,32,32); for(let i=0;i<32;i+=4){ R("#f7efe0",48+i,32,2,32); } R("#c25e22",52,36,24,24); R("#f2c14e",58,42,12,12);
+    for(let i=0;i<34;i+=2){ R("#f7efe0",47+i,29,1,2); R("#f7efe0",47+i,65,1,2); }
+    for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+      const t=MAP[y][x], px=x*16, py=y*16;
+      if(t==="~"){   // bamboo bar counter: dark wooden top, bamboo front, glasses on top
+        R(OUTLINE,px,py+1,16,15); R("#7a4a26",px,py+2,16,5); R("#9a6440",px,py+2,16,1); R("#e8c27a",px,py+7,16,8);
+        for(let i=1;i<16;i+=4){ R("#c99a52",px+i,py+7,1,8); R("#f0d494",px+i+1,py+7,1,8); }
+        if(x%2===0){ R("#d9eef6",px+5,py-1,3,3); R("#e5b340",px+5,py+1,3,1); } else { R("#4fb05a",px+9,py-2,2,4); R("#3b2417",px+9,py-3,2,1); }
+      }
+      if(t==="#"){   // potted monstera
+        R("rgba(59,36,23,.25)",px+3,py+13,10,2); R(OUTLINE,px+4,py+9,8,6); R("#c96a3a",px+5,py+10,6,4); R("#e08a55",px+5,py+10,6,1);
+        for(const [lx,ly,lw,lh] of [[2,3,5,5],[8,1,6,6],[5,0,5,4],[1,7,5,3],[10,6,5,4]]){ R(OUTLINE,px+lx-1,py+ly-1,lw+2,lh+2); }
+        for(const [lx,ly,lw,lh] of [[2,3,5,5],[8,1,6,6],[5,0,5,4],[1,7,5,3],[10,6,5,4]]){ R("#4fa346",px+lx,py+ly,lw,lh); R("#6cc25a",px+lx,py+ly,lw,1); R("#3a7f34",px+lx+Math.floor(lw/2),py+ly,1,lh); }
+      }
+    }
+  }
+  // the attack-cutscene backdrop: the inside of the Sloth, with a window onto the beach
+  const BACKDROP=(()=>{
+    const cv=document.createElement("canvas"); cv.width=160; cv.height=100; const g=cv.getContext("2d"), R=(col,x,y,w=1,h=1)=>{ g.fillStyle=col; g.fillRect(x,y,w,h); };
+    R("#e8c27a",0,0,160,52); for(let x=2;x<160;x+=5){ R("#c99a52",x,0,1,52); R("#f0d494",x+1,0,1,52); }          // bamboo wall
+    R(OUTLINE,92,8,52,30); R("#bfe6f5",94,10,48,14); R("#47b4e0",94,24,48,6); R("#f6dfa4",94,30,48,6); R("#ffffff",100,24,20,1); R("#7cc45a",94,10,4,10);   // window: sky, sea, sand
+    R(OUTLINE,117,10,2,26); R(OUTLINE,94,22,48,1);
+    for(let x=6;x<156;x+=6){ R(OUTLINE,x,4+((x/6)%2),1,1); R(["#ffd65a","#ff7a59","#7fd3ff","#a3e36a"][(x/6|0)%4],x,5+((x/6)%2),2,2); }   // fairy lights
+    R(OUTLINE,10,20,40,3); R("#7a4a26",10,21,40,1); for(const [bx,c2] of [[13,"#4fb05a"],[20,"#e0782b"],[27,"#d9eef6"],[34,"#9a5ad6"],[41,"#e5b340"]]){ R(OUTLINE,bx-1,9,5,11); R(c2,bx,10,3,10); R(OUTLINE,bx,7,3,2); }   // a shelf of bottles
+    R("#7a4a26",0,50,160,3); for(let y=53;y<100;y+=5){ R(y%10?"#c99a62":"#d1a46c",0,y,160,5); R("#a87a48",0,y+4,160,1); for(let x=(y%10?0:20);x<160;x+=40) R("#a87a48",x,y,1,4); }   // floor
+    return cv.toDataURL();
+  })();
+  $("battle").style.background=`url(${BACKDROP}) center / 100% 100% no-repeat`;
   // ── Claude arrives (Matt's one-time summon) ──
   async function summonClaude(a,x,y,m){
     S.claudeIn=true; a.mp-=m.mp||0;
@@ -1114,7 +1330,7 @@
       pBot.querySelector("img").src=SPRITE_URL[u.spr]; $("bBot").innerHTML=boxHTML(u,u.hp);
       S.fast=false; S.speed=1; bt.classList.remove("hidden");
       await typeMsg(`${a.name} used Summon Claude!`, 500);
-      await playFx("mead", pBot, pBot);
+      await playFx("maple", pBot, pBot);
       await typeMsg("Claude: « Allô! Sorry I'm late, eh. On y va! »", 1200);
       bt.classList.add("hidden"); S.fast=false;
     } else await sleep(400);
@@ -1186,11 +1402,14 @@
     for(const e of alive("foe")){
       if(!alive("hero").length) break;
       if(e.stun){ e.stun=false; log(`${e.name} is stunned and loses a turn.`); float(e,"💤","var(--magic)"); render(); await wait(500); continue; }
+      if(e.intern){ await internTurn(e); await wait(120); continue; }
       const p=planEnemy(e);
       if(p && (p.x!==e.x||p.y!==e.y)){ e.x=p.x; e.y=p.y; render(); await wait(250); }
       if(p && p.t){ await perform(e,p.t,p.m); await wait(120); }
       if(checkEnd()){ S.busy=false; return; }
     }
+    const gord=S.units.find(u=>u.team==="neutral" && u.alive);   // Gord pipes up every other round
+    if(gord && S.turn%2===1) await sayScene(gord, gord.lines[((S.turn-1)/2)%gord.lines.length]);
     S.turn++; S.phase="player"; S.fast=false;
     const stunned=[];
     for(const h of alive("hero")){
@@ -1241,7 +1460,7 @@
     const add=(key,flip)=>{ const i=document.createElement("img"); i.src=SPRITE_URL[key]; i.alt=""; if(flip) i.className="flip"; l.appendChild(i); };
     add("claude"); add("matthew"); add("player");
     const vs=document.createElement("span"); vs.className="vs"; vs.textContent="VS"; l.appendChild(vs);
-    add("manager",1); add("ceo",1); add("consult",1);
+    add("manager",1); add("ceo",1); add("consultA",1);
   }
   $("tStart").onclick=()=>{ Sound.init(); Sound.sfx("select"); showCreator(); };
   $("crName").oninput=e=>{ P.name=cleanName(e.target.value); };
@@ -1309,11 +1528,11 @@
   const PEOPLE=[
     {name:"Ibu Ketut", x:4, y:9, look:{skin:3,hair:2,hairColor:0,facial:0,outfit:2,outfitColor:2,hat:0,eyes:0},
       lines:["Selamat pagi! Beautiful day, ya?","Nasi goreng is ready at noon. Don't be late this time."]},
-    {name:"Nick the Nomad", x:13, y:9, look:{skin:0,hair:0,hairColor:3,facial:1,outfit:1,outfitColor:7,hat:2,eyes:2},
-      lines:["I'm building an AI for dog yoga. Pre-revenue. Very pre.","Do dogs need a subscription tier? Asking for a friend. The friend is me."]},
-    {name:"Made", x:12, y:17, look:{skin:4,hair:1,hairColor:0,facial:0,outfit:1,outfitColor:1,hat:0,eyes:0},
+    {name:"Chad, Crypto Founder", x:13, y:9, look:{skin:0,hair:0,hairColor:3,facial:1,outfit:1,outfitColor:7,hat:2,eyes:2},
+      lines:["Bro. I'm building a DAO for dog yoga.","We're pre-revenue, pre-product, pre-idea. Super early. Wanna get in?"]},
+    {name:"Wayan, Surf Instructor", x:12, y:17, look:{skin:4,hair:1,hairColor:0,facial:0,outfit:1,outfitColor:1,hat:0,eyes:0},
       lines:["Waves are pumping today! 🏄","Want a lesson sometime? First one's free. Second one's also free. I'm bad at business."]},
-    {name:"Saffron", x:4, y:15, look:{skin:1,hair:2,hairColor:6,facial:0,outfit:3,outfitColor:4,hat:4,eyes:0},
+    {name:"Saffron, Breathwork Coach", x:4, y:15, look:{skin:1,hair:2,hairColor:6,facial:0,outfit:3,outfitColor:4,hat:4,eyes:0},
       lines:["Breathe in… breathe out…","Your aura is very… morning. Namaste. 🙏"]},
     {name:"Matt", x:23, y:17, spr:"matthew",
       lines:["Morning! I'm Matt. I design things and handle the boring stuff for people.","The Sloth does a great breakfast. Shout if you ever need a hand. 🍁"]},
@@ -1807,7 +2026,7 @@
 
   // Walking into The Sloppy Sloth: the suits are inside
   const CUT={next:null};
-  function cutTalk(lines){   // lines: [spriteKey, name, text]
+  function cutTalk(lines,onShow){   // lines: [spriteKey, name, text]; onShow(i) runs as each line appears
     return new Promise(res=>{
       let i=0; const box=$("cut");
       const show=()=>{
@@ -1815,7 +2034,7 @@
         const im=new Image(); im.src=SPRITE_URL[spr]; im.alt="";
         const body=document.createElement("div"), nm=document.createElement("b"), tx=document.createElement("div"), more=document.createElement("span");
         nm.textContent=name; tx.textContent=text; more.className="more"; more.textContent=i<lines.length-1?"▼":"✕";
-        body.append(nm,tx); box.append(im,body,more); box.classList.remove("hidden");
+        body.append(nm,tx); box.append(im,body,more); box.classList.remove("hidden"); if(onShow) onShow(i);
       };
       CUT.next=()=>{ Sound.sfx("blip"); if(++i>=lines.length){ box.classList.add("hidden"); CUT.next=null; res(); } else show(); };
       show();
@@ -1827,22 +2046,41 @@
     return new Promise(r=>{ const b=$("banner"); b.textContent=text; b.classList.remove("hidden"); b.style.animation="none"; void b.offsetWidth; b.style.animation="";
       Sound.sfx("arrive"); setTimeout(()=>{ b.classList.add("hidden"); r(); }, 1000); });
   }
+  // cinematic bits for the fight cutscene
+  const wrapEl=document.querySelector(".wrap");
+  const shakeWrap=()=>{ wrapEl.classList.remove("shake"); void wrapEl.offsetWidth; wrapEl.classList.add("shake"); };
+  const flashFx=()=>{ const f=$("flash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go"); };
+  function vsSplash(left,right){
+    return new Promise(r=>{ const v=$("vs"); $("vsL").src=SPRITE_URL[left]; $("vsR").src=SPRITE_URL[right];
+      v.querySelectorAll("img,span").forEach(el=>{ el.style.animation="none"; void el.offsetWidth; el.style.animation=""; });
+      v.classList.remove("hidden"); setTimeout(()=>{ Sound.sfx("thud"); shakeWrap(); },380);
+      setTimeout(()=>{ v.classList.add("hidden"); r(); },1500); });
+  }
   async function fightScene(){
     if(TOWN.cut) return;
     TOWN.cut=true; TOWN.path=[]; Sound.stop();
-    await fade(true);
-    setScreen("battle"); reset(); S.busy=true; render();
+    Sound.sfx("scratch"); shakeWrap();                       // record scratch: the music stops dead
+    await sleep(450); await fade(true,600);
+    setScreen("battle"); reset(); S.busy=true; render(); wrapEl.classList.add("cine");
     info.innerHTML="<b>The Sloppy Sloth 🦥</b>";
-    await sleep(250); await fade(false);
+    await sleep(300); await fade(false,900);
+    Sound.sfx("sting"); for(const u of alive("foe")) float(u,"❗","var(--enemy)");   // every suit turns to look at you
+    await sleep(800);
+    const me=S.units[0].name;
     await cutTalk([
-      ["manager", "Middle Manager", "Oh! Hi. We just bought this place. Surprise!"],
-      ["ceo", "The CEO", "By Monday it's “Sloth Space”. Hot desks, cold brew, kombucha on tap."],
-      ["consult", "Consultant", "Your vibe is… not on-brand. We'll need you to leave."],
-      ["player", S.units[0].name, "Not my Sloppy Sloth. Not today."],
-    ]);
-    await banner("FIGHT!");
+      ["manager",  "Middle Manager",     "Oh! Hi. We just bought this place. Surprise!"],
+      ["ceo",      "The CEO",            "By Monday it's “Sloth Space”. Hot desks, cold brew, kombucha on tap."],
+      ["consultW", "Brooke, Consultant", "Your vibe is… not on-brand. We'll need you to leave."],
+      ["consultA", "Grace, Consultant",  "I've made a deck about it. Forty slides. Please hold your questions."],
+      ["intern",   "Intern",             "Wait, is this a fight? This is so going on my story."],
+      ["gord",     "Gord",               "…Bud, I'm just here for a drink. Leave me out of this."],
+      ["player",   me,                   "Not my Sloppy Sloth. Not today."],
+    ], i=>{ if(i===1){ Sound.sfx("thud"); flashFx(); shakeWrap(); } if(i===6){ Sound.sfx("sting"); shakeWrap(); } });
+    wrapEl.classList.remove("cine");
+    await vsSplash("player","ceo");
+    flashFx(); await banner("FIGHT!");
     Sound.play("battle"); S.busy=false; TOWN.cut=false;
-    info.innerHTML=`Tap <b>${S.units[0].name}</b> → tap a <b style="color:var(--hero)">blue</b> tile to move → pick a move → tap a target. Snacks you found are in the move list.`;
+    info.innerHTML=`Tap <b>${me}</b> → tap a <b style="color:var(--hero)">blue</b> tile to move → pick a move → tap a target. Snacks you found are in the move list.`;
     render();
   }
 
