@@ -7,7 +7,7 @@
 <style>
   :root{
     --bg:#f4ede4; --panel:#fffaf3; --ink:#3b2a20; --muted:#8a7565;
-    --t1:#eadcc8; --t2:#e2d2ba; --water:#9cc3cf; --rack:#cdbba3;
+    --t1:#e9c890; --t2:#e2be84; --water:#9cc3cf; --rack:#cdbba3;
     --hero:#3a6ea5; --enemy:#b5483b; --heal:#4f8a5b; --line:#d9c9b3;
     --fight:#d9822b; --magic:#8a5cc7; --sky:#d6e8ee; --ground:#dccaa8; --plat:#c4ae88;
     --grass:#c5d6a4; --grass2:#bccf99; --cobble:#e2d6c4; --counter:#9a6a44;
@@ -15,7 +15,7 @@
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#1c1511; --panel:#261d17; --ink:#f1e6d8; --muted:#a8937f;
-      --t1:#3a2d24; --t2:#33271f; --water:#2f5561; --rack:#4a3a2e;
+      --t1:#7a5534; --t2:#6f4c2e; --water:#2f5561; --rack:#4a3a2e;
       --hero:#6a9bd1; --enemy:#d86b5c; --heal:#74b383; --line:#45362a;
       --fight:#e89a4a; --magic:#a883e0; --sky:#24333a; --ground:#3a2e22; --plat:#4d3e2e;
       --grass:#34402a; --grass2:#303b27; --cobble:#3a3029; --counter:#5a3b26;
@@ -29,9 +29,9 @@
   .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;gap:8px}
   .phase{font-weight:700;padding:3px 10px;border-radius:99px;background:var(--hero);color:#fff}
   .phase.enemy{background:var(--enemy)}
-  .wrap{position:relative;width:calc(var(--cell)*8);margin:0 auto;border-radius:10px;overflow:hidden;border:2px solid var(--line)}
+  .wrap{position:relative;width:calc(var(--cell)*8);margin:0 auto;border-radius:10px;overflow:hidden;border:3px solid #3b2417}
   .board{display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:var(--cell)}
-  .tile{position:relative;background:var(--t1);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+  .tile{position:relative;background:var(--t1);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-shadow:inset 0 -2px 0 rgba(59,36,23,.18),inset -1px 0 0 rgba(59,36,23,.12),inset 0 2px 0 rgba(255,240,210,.18)}   /* wooden floor planks */
   .tile.alt{background:var(--t2)}
   .tile.water{background:var(--water);cursor:default}
   .tile.rack{background:var(--rack);cursor:default;font-size:calc(var(--cell)*.4)}
@@ -359,7 +359,7 @@
     hairColor:   {label:"Hair colour", colors:["#1b1b1f","#4a3222","#8a5a32","#e0b84f","#c2552d","#b7bec6","#d96fa8","#4f7fd1"]},
     facial:      {label:"Face",        opts:["Clean","Stubble","Beard","Moustache"]},
     outfit:      {label:"Outfit",      opts:["Hoodie","Tee","Tunic","Dress","Suit","Plaid"]},
-    outfitColor: {label:"Outfit colour", colors:["#e0782b","#3a6ea5","#4f8a5b","#b5483b","#8a5cc7","#2f3a45","#e5b340","#f4ede4"]},
+    outfitColor: {label:"Outfit colour", colors:["#f08a3c","#3d7fd1","#4fb05a","#e04a3c","#9a5ad6","#3a4a60","#f2c14e","#f7efe0"]},
     hat:         {label:"Hat",         opts:["None","Beanie","Cap","Crown","Flower"]},
     eyes:        {label:"Eyewear",     opts:["None","Glasses","Shades"]},
     eyeColor:    {label:"Eyewear colour", colors:["#141414","#d1352b","#e0782b","#3a6ea5","#d96fa8","#e5b340","#4f8a5b","#f4ede4"]},
@@ -379,7 +379,9 @@
   const SW=24;
   const mix=(hex,t,to)=>{ const a=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)), b=to==="w"?[255,248,232]:[22,12,26];
     return "#"+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,"0")).join(""); };
-  const ramp=hex=>({hi:mix(hex,.24,"w"), base:hex, sh:mix(hex,.3,"k"), ol:mix(hex,.62,"k")});
+  // COZY FARM-SIM STYLE: warm juicy colours, one dark-brown outline round everything, soft shadows on the bottom-right only
+  const OUTLINE="#3b2417";
+  const ramp=hex=>({hi:mix(hex,.2,"w"), base:hex, sh:mix(hex,.22,"k"), ol:OUTLINE});
 
   function makeSprite(L){
     const M=Array.from({length:SW},()=>Array(SW).fill(null));   // which material each pixel is
@@ -420,8 +422,8 @@
     const other=(x,y,m)=>x<0||y<0||x>=SW||y>=SW||M[y][x]!==m;
     for(let y=0;y<SW;y++) for(let x=0;x<SW;x++){
       const m=M[y][x]; if(!m) continue; const r=R[m]; let t=r.base;
-      if(x>=15) t=r.sh;
-      if(other(x,y-1,m)||other(x-1,y,m)) t=r.hi;
+      if(x>=16) t=r.sh;   // a soft shade down the right-hand side
+      if(m==="hair" && (other(x,y-1,m)||other(x-1,y,m))) t=r.hi;   // only hair catches the light
       if(other(x+1,y,m)||other(x,y+1,m)) t=r.sh;
       if(m==="skin" && y>0 && ["hair","hat","cuff","brim"].includes(M[y-1][x])) t=r.sh;   // hair and hats cast a shadow
       if(m==="hair" && t===r.base && (x*3+y)%7===0) t=r.sh;                                 // strands
@@ -452,7 +454,7 @@
     const out=document.createElement("canvas"); out.width=SW; out.height=SW; const g=out.getContext("2d");
     for(let y=0;y<SW;y++) for(let x=0;x<SW;x++){
       let col=C[y][x];
-      if(!col){ for(const [dx,dy] of [[0,1],[-1,0],[1,0],[0,-1]]){ const nx=x+dx, ny=y+dy; if(nx>=0&&ny>=0&&nx<SW&&ny<SW&&M[ny][nx]){ col=R[M[ny][nx]].ol; break; } } }
+      if(!col){ for(const [dx,dy] of [[0,1],[-1,0],[1,0],[0,-1]]){ const nx=x+dx, ny=y+dy; if(nx>=0&&ny>=0&&nx<SW&&ny<SW&&M[ny][nx]){ col=OUTLINE; break; } } }
       if(col){ g.fillStyle=col; g.fillRect(x,y,1,1); }
     }
     return out;
@@ -462,9 +464,9 @@
   const CAST={
     matthew:{skin:3, hair:0, hairColor:0, facial:1, outfit:0, outfitColor:0, hat:0, eyes:0},
     claude: {skin:1, hair:0, hairColor:1, facial:2, outfit:5, outfitColor:0, hat:1, hatHex:"#e0782b", eyes:0},
-    manager:{skin:1, hair:0, hairColor:1, facial:0, outfit:4, topHex:"#34507a", accentHex:"#c23b30", hat:0, eyes:0},
-    ceo:    {skin:2, hair:4, hairColor:5, facial:0, outfit:4, topHex:"#26262e", accentHex:"#e5b340", hat:0, eyes:2, eyeColor:0},
-    consult:{skin:0, hair:0, hairColor:3, facial:0, outfit:4, topHex:"#6d7782", accentHex:"#3a6ea5", hat:0, eyes:1, eyeColor:0},
+    manager:{skin:1, hair:0, hairColor:1, facial:0, outfit:4, topHex:"#3d63a8", accentHex:"#c23b30", hat:0, eyes:0},
+    ceo:    {skin:2, hair:4, hairColor:5, facial:0, outfit:4, topHex:"#2c2c3a", accentHex:"#e5b340", hat:0, eyes:2, eyeColor:0},
+    consult:{skin:0, hair:0, hairColor:3, facial:0, outfit:4, topHex:"#7d8a98", accentHex:"#3a6ea5", hat:0, eyes:1, eyeColor:0},
     intern: {skin:4, hair:2, hairColor:0, facial:0, outfit:1, outfitColor:7, hat:0, eyes:0},
   };
   const SPRITE_URL = {};
@@ -1358,7 +1360,7 @@
     // already standing next to it? then act on it straight away
     const near=objAt(tx,ty), touching=d=>{ const [dx,dy]=d; return (TOWN.x+dx===tx && TOWN.y+dy===ty) || (near && near.k==="bld" && objAt(TOWN.x+dx,TOWN.y+dy)===near); };
     const dirNow=[[0,-1],[1,0],[-1,0],[0,1]].find(touching);
-    if(!TOWN.path.length && dirNow && (personAt(tx,ty) || pickupAt(tx,ty) || isDoor(tx,ty) || (near && (near.say || near.enter)))){
+    if(!TOWN.path.length && dirNow && (personAt(tx,ty) || pickupAt(tx,ty) || isDoor(tx,ty) || (near && near.say && !near.enter))){   // (tapping the Sloth itself always walks to its door)
       TOWN.face=dirNow; if(dirNow[0]) TOWN.dir=dirNow[0]; TOWN.dirty=true; doAction(); return;
     }
     const faceIt=()=>faceTo(tx,ty);
@@ -1479,7 +1481,7 @@
       if(m){ const r=ramps[m]; col=r.base;
         if(r.tex && hsh(x,y,r.tex)>.78) col = hsh(x,y,r.tex+1)>.45 ? r.sh : r.hi;
         if(r.streak && hsh(x,Math.floor(y/4),r.streak)>.72) col = hsh(x,1,r.streak)>.5 ? r.sh : r.hi;   // thatch: vertical streaks
-        if(!r.flat){ if(other(x,y-1,m)||other(x-1,y,m)) col=r.hi; if(other(x+1,y,m)||other(x,y+1,m)) col=r.sh; } }
+        if(!r.flat){ if(r.lit && (other(x,y-1,m)||other(x-1,y,m))) col=r.hi; if(other(x+1,y,m)||other(x,y+1,m)) col=r.sh; } }
       else for(const [dx,dy] of [[0,1],[-1,0],[1,0],[0,-1]]){ const nx=x+dx, ny=y+dy;
         if(nx>=0&&ny>=0&&nx<w&&ny<h&&M[ny][nx]&&!ramps[M[ny][nx]].noOl){ col=ramps[M[ny][nx]].ol; break; } }
       if(col){ g.fillStyle=col; g.fillRect(x,y,1,1); }
@@ -1490,7 +1492,7 @@
   const RP=(hex,o={})=>({...ramp(hex),...o});
 
   // ground tiles: a few cached variants of each, plus edges drawn against neighbours
-  const GR={g:ramp("#6fae4c"), p:ramp("#d6b98a"), s:ramp("#f0d9a2"), w:ramp("#3196cb"), r:ramp("#84c24e"), f:ramp("#cbc1b0")};
+  const GR={g:ramp("#7cc45a"), p:ramp("#e3c491"), s:ramp("#f6dfa4"), w:ramp("#47b4e0"), r:ramp("#8fd05a"), f:ramp("#d6ccba")};
   const TILE={};
   function tileArt(t,v,f){
     const key=t+v+"."+f; if(TILE[key]) return TILE[key];
@@ -1500,7 +1502,7 @@
     if(t==="g"){
       for(let i=0;i<4;i++) R(r.sh,Math.floor(h(i)*14),Math.floor(h(i+20)*14),2,1);
       for(let i=0;i<3;i++){ const x=1+Math.floor(h(i+5)*12), y=2+Math.floor(h(i+9)*11); R(r.sh,x,y+1); R(r.hi,x+1,y); R(r.sh,x+2,y+1); R(mix(r.sh,.3,"k"),x+1,y+2); }   // tufts
-      if(h(40)>.72){ const x=2+Math.floor(h(41)*11), y=2+Math.floor(h(42)*11), pet=["#fff3b0","#f7b6d2","#ffffff","#f2c14e"][Math.floor(h(43)*4)];
+      if(h(40)>.6){ const x=2+Math.floor(h(41)*11), y=2+Math.floor(h(42)*11), pet=["#fff3b0","#f7b6d2","#ffffff","#f2c14e"][Math.floor(h(43)*4)];
         R(pet,x,y); R(pet,x+2,y); R(pet,x+1,y-1); R(pet,x+1,y+1); R("#e08a2a",x+1,y); }   // wildflower
     }
     if(t==="p"){ for(let i=0;i<3;i++){ const x=1+Math.floor(h(i)*12), y=1+Math.floor(h(i+4)*12); R(r.hi,x,y,2,1); R(r.base,x,y+1); R(r.sh,x+1,y+1); R(r.sh,x+2,y); R(mix(r.sh,.3,"k"),x+2,y+1); }
@@ -1522,10 +1524,10 @@
     const nb=(dx,dy)=>{ const xx=x+dx, yy=y+dy; return yy<0||yy>=TH||xx<0||xx>=TW ? g : GROUND[yy][xx]; };
     const G=GR.g;
     if(g==="p"||g==="s"){   // grass grows over the edge of paths and sand, with a little shadow under it
-      if(nb(0,-1)==="g") for(let i=0;i<16;i++){ const d=hsh(x+i,y,3)>.55?2:1; R(G.base,i,0,1,d); R(G.sh,i,d,1,1); }
-      if(nb(0,1)==="g") for(let i=0;i<16;i++) if(hsh(x+i,y,4)>.5) R(G.hi,i,15);
-      if(nb(-1,0)==="g") for(let j=0;j<16;j++){ const d=hsh(x,y+j,5)>.55?2:1; R(G.base,0,j,d,1); R(G.sh,d,j,1,1); }
-      if(nb(1,0)==="g") for(let j=0;j<16;j++) if(hsh(x,y+j,6)>.5) R(G.base,15,j);
+      if(nb(0,-1)==="g") for(let i=0;i<16;i++){ const d=(x*16+i)%6===2?2:1; R(G.base,i,0,1,d); R(mix(GR.p.base,.18,"k"),i,d,1,1); }   // tidy grass lip, a tuft now and then
+      if(nb(0,1)==="g") R(mix(GR.p.base,.12,"w"),0,15,16,1);
+      if(nb(-1,0)==="g") for(let j=0;j<16;j++){ const d=(y*16+j)%6===2?2:1; R(G.base,0,j,d,1); R(mix(GR.p.base,.18,"k"),d,j,1,1); }
+      if(nb(1,0)==="g") R(G.base,15,0,1,16);
     }
     if(g==="s" && nb(0,-1)==="p") R(GR.s.sh,0,0,16,1);
     if(g==="w"){
@@ -1546,12 +1548,12 @@
   }
 
   const BLD={
-    warung:{roof:"#c0563a", wall:"#f1e3c8", trim:"#8a5a32", glass:"#8ed0e6", tile:true},
-    cafe:  {roof:"#c9a25b", wall:"#8a5a3c", trim:"#5a3a22", glass:"#f5d68a", planks:true},
-    villa: {roof:"#3d4f5c", wall:"#f7f3ea", trim:"#b9a98f", glass:"#8ed0e6", tile:true},
-    surf:  {roof:"#e2d3ab", wall:"#4aa3c4", trim:"#2f7fa0", glass:"#f4ede4", wave:true},
-    shala: {roof:"#c9a25b", wall:null,      trim:"#8a5a32"},
-    sloth: {roof:"#c9a25b", wall:"#d8b56a", trim:"#8a5a32", glass:"#f5d68a", bamboo:true},
+    warung:{roof:"#d9643e", wall:"#fbeed4", trim:"#8a5a32", glass:"#8ed0e6", tile:true},
+    cafe:  {roof:"#e0a84e", wall:"#9a6440", trim:"#5a3a22", glass:"#f5d68a", planks:true},
+    villa: {roof:"#46607a", wall:"#fdf9f0", trim:"#b9a98f", glass:"#8ed0e6", tile:true},
+    surf:  {roof:"#f2e2b4", wall:"#4fb6dc", trim:"#2f7fa0", glass:"#f4ede4", wave:true},
+    shala: {roof:"#e0a84e", wall:null,      trim:"#8a5a32"},
+    sloth: {roof:"#e0a84e", wall:"#f0c879", trim:"#8a5a32", glass:"#f5d68a", bamboo:true},
   };
   const BLD_ART=new Map();
   function bldArt(o){
