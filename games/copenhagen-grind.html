@@ -346,16 +346,21 @@
       {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
       {name:"Synergy Beam",    kind:"magic", type:"dmg", pow:9, rng:[2,3], mp:4, color:"#6fb6d9"},
      ]},
-    // The Intern never attacks you. He talks, or dances, and the dancing hurts his own team.
+    // The Intern attacks by taking a selfie with you in the background (with a comment). Sometimes he dances instead, which hurts his own team.
     {name:"Intern", spr:"intern", team:"foe", hp:40, mp:0, def:1, mov:2, intern:true,
-     blurb:"Unpaid. Extremely online. More danger to his own team than to you.",
-     moves:[ {name:"TikTok Dance", kind:"magic", type:"dance", pow:4, rng:[0,0]} ]},
+     blurb:"Unpaid. Extremely online. Attacks by taking selfies at you. Sometimes dances and hurts his own team.",
+     moves:[ {name:"Selfie Flash", kind:"magic", type:"dmg", pow:5, rng:[1,3], color:"#ff6fae", get quips(){ return SELFIE_LINES; }} ]},
   ];
   // Gaz is just here for a drink. Nobody can target him, and he doesn't count toward winning.
   const GAZ = {name:"Gord", spr:"gord", team:"neutral", hp:99, mp:0, def:9, mov:0, moves:[],
     blurb:"On holiday. Beach shirt, cold drink, zero interest in this.",
-    lines:["Bud, I'm just here for a drink. Leave me out of this.", "Can someone grab me another cold one? Cheers.", "Is this a team-building thing? Yeah, no. I'll pass.",
-           "Careful of the nachos, eh.", "Not my circus, not my monkeys.", "This is the most Canggu thing I've ever seen."]};
+    // Gord takes a turn every round: he drinks a beer and says something. Each line is a bit more unhinged than the last.
+    lines:["Ahh. Cheers, mate. Just a quiet beer, nobody mind me.", "Is it just me, or is that CEO bloke's tie looking at me?", "I used to be a lifeguard in Perth. I saw things, mate. THINGS.",
+           "This beer has a face now. His name's Kevin. Kevin says hi.", "I've been to the other side of the bar. It's just more bar.", "Not to brag, but I think I invented the beer. Nobody's proved otherwise.",
+           "THE INTERN KNOWS WHAT I DID IN BALI. HE HAS A PHONE.", "I AM THE BAR. THE BAR IS ME. WHO'S HOLDING MY BEER?!", "I just ate a coaster and I feel FANTASTIC. Ask me about the moon.",
+           "SHEEP. EVERYTHING IS SHEEP. I LOVE YOU ALL. NOBODY LEAVE.", "THE MOON OWES ME MONEY AND IT KNOWS IT. KEVIN, BRING THE BOAT!", "I AM ONE WITH THE FOAM. THE FOAM IS ETERNAL. BEHOLD, MY BEER-SOUL!"]};
+  const SELFIE_LINES=["Hold still, you're ruining my lighting!", "Say 'synergy'!", "This is so going on my story.", "Wait, my good side is the other good side.",
+    "Bestie, you're giving 'background character'.", "Okay but make it a candid.", "Smile! It's for the 'gram. Please don't sue.", "Caption: 'Day 4 of being unpaid 🥲'.", "Photo dump incoming 📸"];
   const INTERN_LINES=["It's giving… corporate.", "No cap, this co-working space is so 2019.", "I'm literally so cooked rn.", "This meeting could've been a TikTok.",
     "Lowkey just want a matcha.", "Bestie, that's not very demure.", "Is 'synergy' a vibe or a red flag?", "Wait, are we getting paid in exposure again?",
     "Ate and left no crumbs. 💅", "Touch grass? We're literally on a beach."];
@@ -503,7 +508,7 @@
     consultW:{skin:0, hair:1, hairColor:4, facial:0, outfit:4, topHex:"#7d8a98", accentHex:"#3a6ea5", hat:0, eyes:1, eyeColor:0},
     consultA:{skin:1, hair:2, hairColor:0, facial:0, outfit:4, topHex:"#2f4a7a", accentHex:"#d96fa8", hat:0, eyes:0},
     gord:   {skin:0, hair:5, hairColor:1, facial:2, outfit:6, topHex:"#2fa7a0", hat:0, eyes:1, eyeColor:0, shorts:true, pantsHex:"#c9a36a"},   // bald, beard, glasses, beach shirt + shorts
-    intern: {skin:2, hair:3, hairColor:6, facial:0, outfit:0, outfitColor:6, hat:0, eyes:2, eyeColor:4},
+    intern: {skin:0, hair:3, hairColor:3, facial:0, outfit:0, outfitColor:6, hat:0, eyes:2, eyeColor:4},
   };
   const SPRITE_URL = {};
   for (const [key, look] of Object.entries(CAST)) SPRITE_URL[key] = makeSprite(look).toDataURL();
@@ -837,6 +842,8 @@
       poutine:t=>{ noise(t,.5,.05,fx,"lowpass",900,600); [659,784,988,1319].forEach((f,i)=>tone("triangle",f,t+.6+i*.08,.25,.12,fx)); },
       maple: t=>{ [880,1047,1319,1568,1760].forEach((f,i)=>tone("triangle",f,t+i*.09,.3,.08,fx)); },
       dance: t=>{ for(let i=0;i<8;i++){ tone("sine",i%2?110:55,t+i*.09,.08,.4,fx,40); if(i%2) noise(t+i*.09,.04,.15,fx,"highpass",6000); tone("square",[523,659,784,659][i%4],t+i*.09,.06,.05,fx); } },
+      selfie:t=>{ [660,880,1100].forEach((f,i)=>tone("square",f,t+i*.14,.06,.07,fx)); noise(t+.65,.05,.5,fx,"highpass",3000); noise(t+.7,.07,.4,fx,"highpass",1500); tone("triangle",1568,t+.78,.2,.1,fx); },
+      beer:  t=>{ noise(t,.25,.12,fx,"bandpass",900,500); for(let i=0;i<4;i++) tone("sine",160-i*15,t+.3+i*.12,.1,.5,fx,70); tone("sawtooth",110,t+1.1,.25,.1,fx,70); noise(t+1.1,.25,.18,fx,"lowpass",600,200); },
       quip:  t=>{ [440,550,495].forEach((f,i)=>tone("square",f,t+i*.06,.05,.05,fx)); },
       scratch:t=>{ tone("sawtooth",900,t,.18,.12,fx,180); tone("sawtooth",300,t+.18,.25,.1,fx,1100); noise(t,.45,.15,fx,"bandpass",1200,400); },   // record scratch
       sting: t=>{ for(const f of [110,165,220]) tone("sawtooth",f,t,1.1,.09,fx,f*.97); noise(t,.3,.3,fx,"lowpass",600,80); },                       // dramatic chord
@@ -854,7 +861,7 @@
     "Hustle":"hustle", "Cold DM Blast":"dms", "Doom-Scroll Break":"scroll",
     "Slapshot":"slapshot", "Timber!":"timber", "Poutine Break":"poutine",
     "Reply-All":"email", "Coffee Run":"whack", "Cc Everyone":"email", "Micromanage":"micro", "Golden Parachute":"coins", "Hostile Takeover":"takeover",
-    "Slide Deck Toss":"slides", "Synergy Beam":"beam",
+    "Slide Deck Toss":"slides", "Synergy Beam":"beam", "Selfie Flash":"selfie",
     "Brand + Site Launch":"launch", "Take It Off Your Plate":"plate", "Systems Setup":"systems",
   };
   const lerp=(a,b,t)=>a+(b-a)*t, clamp=t=>Math.max(0,Math.min(1,t)), rnd=(a,b)=>a+Math.random()*(b-a);
@@ -976,6 +983,30 @@
       c.strokeStyle="#cfd6dc"; c.lineWidth=2; c.strokeRect(-r*.7,-r*.5,r*1.4,r*1.5); c.beginPath(); c.arc(r*.9,r*.2,r*.4,-1.4,1.4); c.stroke(); }, "#e5b340", .2, 12),
     puck: thrown((c,r)=>{ c.fillStyle="#141414"; c.beginPath(); c.ellipse(0,0,r,r*.5,0,0,7); c.fill(); c.fillStyle="#3a3a3a"; c.fillRect(-r,-r*.08,r*2,r*.16); }, "#dff3ff", .02, 0),
     // ── one animation per hero move, each acting out what the move is ──
+    selfie:(A,T,W,H)=>({dur:1300, draw(c,t){   // the Intern holds up his phone, poses (peace sign), and the flash goes off with you in the background
+      const px=lerp(A.x,T.x,.42), py=lerp(A.y,T.y,.42)-H*.04, s=W*.1*(.4+.6*easeOut(t/.25));
+      c.save(); c.translate(px,py); c.rotate(-.12);
+      c.fillStyle="#1d1d22"; c.beginPath(); c.roundRect(-s*.55,-s*.95,s*1.1,s*1.9,s*.14); c.fill();
+      c.fillStyle="#bfe9ff"; c.beginPath(); c.roundRect(-s*.47,-s*.82,s*.94,s*1.64,s*.08); c.fill();
+      c.fillStyle="#b5483b"; c.beginPath(); c.arc(s*.24,-s*.42,s*.17,0,7); c.fill();                     // you, photobombing in the back
+      c.fillStyle="#3b2417"; c.fillRect(s*.17,-s*.46,s*.05,s*.04); c.fillRect(s*.28,-s*.46,s*.05,s*.04); c.fillRect(s*.18,-s*.34,s*.12,s*.03);
+      c.fillStyle="#f6d3b3"; c.beginPath(); c.arc(-s*.1,s*.1,s*.3,0,7); c.fill();                        // his face
+      c.fillStyle="#3b2417"; c.fillRect(-s*.2,s*.02,s*.06,s*.08); c.fillRect(-s*.02,s*.02,s*.06,s*.08);
+      c.strokeStyle="#3b2417"; c.lineWidth=Math.max(2,s*.04); c.beginPath(); c.arc(-s*.1,s*.12,s*.14,.15,Math.PI-.15); c.stroke();
+      c.fillStyle="#f6d3b3"; c.fillRect(s*.12,s*.02,s*.05,s*.26); c.fillRect(s*.2,s*.0,s*.05,s*.28);    // peace sign
+      c.restore();
+      if(t>.5 && t<.72){ const v=(t-.5)/.22; c.globalAlpha=Math.sin(v*Math.PI)*.85; c.fillStyle="#fff"; c.fillRect(0,0,W,H); c.globalAlpha=1; }   // flash
+      if(t>.55){ const v=(t-.55)/.45; sparks(c,T,v,10,W*.09,"#fff6b0"); if(v<.8) bigText(c,"SNAP!",T.x,T.y-W*.14,W*.05,"#ff6fae"); } }}),
+    beer:(A,T,W,H)=>({dur:1500, draw(c,t){   // Gord tips back a pint: it tilts, drains, and he slams it down
+      const x=A.x+W*.1, y=A.y+H*.03, gw=W*.07, gh=W*.1, tilt=t<.2?lerp(0,-.9,easeOut(t/.2)):t<.7?-.9:lerp(-.9,0,(t-.7)/.15), level=t<.2?1:t<.7?lerp(1,0,(t-.2)/.5):0;
+      c.save(); c.translate(x,y-(t<.7?W*.03:0)); c.rotate(Math.max(-.9,Math.min(0,tilt)));
+      c.fillStyle="#f6c443"; if(level>0.02) c.fillRect(-gw/2+2,gh/2-gh*level+2,gw-4,gh*level-4);                                    // beer
+      if(level>.1){ c.fillStyle="#fffbe8"; c.fillRect(-gw/2+2,gh/2-gh*level+2,gw-4,Math.min(6,gh*level*.2)); }                         // foam
+      c.strokeStyle="rgba(255,255,255,.9)"; c.lineWidth=3; c.strokeRect(-gw/2,-gh/2,gw,gh);                                          // glass
+      c.beginPath(); c.arc(gw/2+3,-gh*.05,gh*.22,-1.2,1.2); c.stroke(); c.restore();                                                  // handle
+      if(t>.2 && t<.7) for(let i=0;i<3;i++){ const v=((t*3+i*.33)%1); c.globalAlpha=1-v; c.fillStyle="#fffbe8"; c.beginPath(); c.arc(x-W*.03+i*W*.02, y-gh*.7-v*W*.07, 3, 0, 7); c.fill(); }   // bubbles
+      c.globalAlpha=1; if(t>.3 && t<.7) bigText(c,"GLUG",x,y-gh-W*.04-Math.sin(t*30)*2,W*.04,"#f6c443");
+      if(t>.82){ const v=(t-.82)/.18; bigText(c,"*BURP*",x,y-gh-W*.06-v*W*.03,W*.045,"#ffffff"); } }}),
     hustle:(A,T,W,H)=>({dur:800, shake:true, draw(c,t){   // speed lines, a flurry of hits, "GRIND!", and a sweat drop
       const u=clamp(t/.4); c.strokeStyle="rgba(255,255,255,.85)"; c.lineWidth=2;
       for(let i=0;i<7;i++){ const y=T.y-W*.08+i*W*.027, x1=lerp(A.x,T.x,u), len=W*.12*(1-u)+W*.03; c.globalAlpha=1-u*.6; c.beginPath(); c.moveTo(x1-len,y); c.lineTo(x1,y); c.stroke(); }
@@ -1119,8 +1150,9 @@
     const aPlat = a===heroBottom ? pBot : pTop, tPlat = t===heroBottom ? pBot : pTop;
     const aBox = a===heroBottom ? bBot : bTop, tBox = t===heroBottom ? bBot : bTop;
 
-    S.speed = a.team==="foe" ? 1.6 : 1;
+    S.speed = a.team==="foe" ? 2 : 1;
     await typeMsg(`${a.name} used ${m.name}!`, 120);
+    if(m.quip) await typeMsg(`${a.name}: “${m.quip}”`, 1100);
     const r = resolve(a,t,m);
     aBox.querySelector(".mpb i").style.width=(a.mp/a.maxMp*100)+"%";
     if(!self && m.kind==="fight"){ aPlat.classList.add(a===heroBottom?"lunge-up":"lunge-down"); await wait(100); }
@@ -1144,7 +1176,7 @@
     for(const l of lines){
       if(l.includes("defeated")||l.includes("out of the fight")){ tPlat.classList.add("faint"); Sound.sfx("ko"); }
       if(l.includes("stunned!")) Sound.sfx("stun");
-      await typeMsg(l, 500);
+      await typeMsg(l, 380);
     }
     bt.classList.add("hidden");
     if(S.phase!=="enemy") S.fast=false;
@@ -1153,6 +1185,7 @@
 
   async function perform(a,t,m){
     let r;
+    if(m.quips){ m={...m, quip:m.quips[Math.floor(Math.random()*m.quips.length)]}; log(`${a.name}: “${m.quip}”`); }   // a comment with the attack (the Intern's selfie captions)
     if($("scenes").checked){ r = await battleScene(a,t,m); }
     else {
       r = resolve(a,t,m);
@@ -1243,31 +1276,34 @@
   }
 
   // ── someone says something mid-battle (the Intern's quips, Gord at the bar) ──
-  async function sayScene(u, text){
+  async function sayScene(u, text, fxName, intro){   // fxName: an optional animation first (Gord's beer); intro: a line shown before it
     log(`${u.name}: “${text}”`);
-    if(!$("scenes").checked){ float(u,"💬","var(--muted)"); await sleep(700); return; }
+    if(!$("scenes").checked){ float(u,fxName==="beer"?"🍺":"💬","var(--muted)"); await sleep(700); return; }
     const bt=$("battle"), pTop=$("pTop"), pBot=$("pBot");
     pBot.className="plat bot hidden"; $("bBot").classList.add("hidden"); $("bTop").classList.add("hidden");
     pTop.className="plat top"; const im=pTop.querySelector("img"); im.src=SPRITE_URL[u.spr]; im.className=u.team==="foe"?"flip":"";
-    S.speed=1; bt.classList.remove("quake"); bt.classList.remove("hidden");
+    S.speed=1.5; bt.classList.remove("quake"); bt.classList.remove("hidden");
+    if(fxName){ if(intro) await typeMsg(intro, 200); await playFx(fxName, pTop, pTop); }
     Sound.sfx("quip");
-    await typeMsg(`${u.name}: “${text}”`, 1500);
+    await typeMsg(`${u.name}: “${text}”`, 1100);
     bt.classList.add("hidden"); pBot.classList.remove("hidden"); $("bBot").classList.remove("hidden");
     if(S.phase!=="enemy") S.fast=false;
+  }
+  // Gord's turn: he "attacks" by drinking a beer and saying something, and each comment is more unhinged than the last
+  async function gordTurn(g){
+    g.beers=(g.beers||0)+1;
+    const L=g.lines, i=g.beers-1, line = i<L.length ? L[i] : L[L.length-3+((i-L.length)%3)];   // after the last line, cycle the final three
+    await sayScene(g, line, "beer", `${g.name} drinks a beer! 🍺`);
   }
 
   // ── the Intern: never attacks you. Wanders over to his own team, then either posts or dances ──
   async function internTurn(e){
     const suits=alive("foe").filter(f=>f!==e);
-    let best=null;
-    for(const [k] of reachable(e)){
-      const [x,y]=k.split(",").map(Number);
-      const next=suits.filter(s=>Math.abs(s.x-x)+Math.abs(s.y-y)===1).length, d=Math.min(99,...suits.map(s=>Math.abs(s.x-x)+Math.abs(s.y-y)));
-      const score=next*10-d; if(!best||score>best.score) best={x,y,score};
-    }
-    if(best && (best.x!==e.x||best.y!==e.y)){ e.x=best.x; e.y=best.y; render(); await wait(250); }
-    const near=suits.filter(s=>Math.abs(s.x-e.x)+Math.abs(s.y-e.y)<=1);
-    if(near.length && Math.random()<.6) await tiktokDance(e,near);
+    const near=()=>suits.filter(s=>Math.abs(s.x-e.x)+Math.abs(s.y-e.y)<=1);
+    if(near().length && Math.random()<.2){ await tiktokDance(e,near()); return; }   // now and then he just dances (and hurts his own team)
+    const p=planEnemy(e);   // otherwise: walk up and take a selfie with a hero in the background
+    if(p && (p.x!==e.x||p.y!==e.y)){ e.x=p.x; e.y=p.y; render(); await wait(250); }
+    if(p && p.t) await perform(e,p.t,p.m);
     else await sayScene(e, INTERN_LINES[Math.floor(Math.random()*INTERN_LINES.length)]);
   }
   async function tiktokDance(e,near){
@@ -1360,9 +1396,9 @@
       $("pTop").className="plat top hidden"; $("bTop").classList.add("hidden"); pBot.className="plat bot"; bt.classList.remove("quake");
       pBot.querySelector("img").src=SPRITE_URL[u.spr]; $("bBot").innerHTML=boxHTML(u,u.hp);
       S.fast=false; S.speed=1; bt.classList.remove("hidden");
-      await typeMsg("Reinforcements have arrived!");
+      await typeMsg("Reinforcements have arrived!", 500);
       await playFx("heal", pBot, pBot);
-      await typeMsg(`${u.name} joins the party. Everyone recovers ${RALLY_HEAL} HP.`);
+      await typeMsg(`${u.name} joins the party. Everyone recovers ${RALLY_HEAL} HP.`, 700);
       bt.classList.add("hidden"); S.fast=false;
     } else await sleep(400);
     for(const [h,amt] of healed) float(h,"+"+amt,"var(--heal)");
@@ -1408,8 +1444,8 @@
       if(p && p.t){ await perform(e,p.t,p.m); await wait(120); }
       if(checkEnd()){ S.busy=false; return; }
     }
-    const gord=S.units.find(u=>u.team==="neutral" && u.alive);   // Gord pipes up every other round
-    if(gord && S.turn%2===1) await sayScene(gord, gord.lines[((S.turn-1)/2)%gord.lines.length]);
+    const gord=S.units.find(u=>u.team==="neutral" && u.alive);   // Gord gets a turn every round: a beer and a comment
+    if(gord && alive("hero").length) await gordTurn(gord);
     S.turn++; S.phase="player"; S.fast=false;
     const stunned=[];
     for(const h of alive("hero")){
