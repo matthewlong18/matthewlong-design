@@ -91,7 +91,7 @@
           <div style="text-align:right"><div style="font:700 32px 'Space Grotesk',sans-serif;line-height:1">CPH</div><div style="font:400 10px 'IBM Plex Mono',monospace;color:#a89b85;letter-spacing:.1em">COPENHAGEN</div></div>
         </div>
         <div style="display:flex;gap:14px;margin-top:16px;align-items:center;font-family:'IBM Plex Mono',monospace">
-          <img src="assets/matthew.jpg" alt="Matthew Long" style="width:58px;height:72px;object-fit:cover;object-position:center top;border-radius:5px;border:1px solid rgba(243,235,221,.25);filter:grayscale(.15) contrast(1.02);flex:none">
+          <img src="assets/passport.jpg" alt="Matthew Long" style="width:66px;height:82px;object-fit:cover;object-position:center;border-radius:5px;border:1px solid rgba(243,235,221,.3);flex:none">
           <div style="flex:1;display:flex;justify-content:space-between">
             <div><div style="font-size:9px;color:#8a7f6c;letter-spacing:.1em">PASSENGER</div><div style="font-size:13px;color:#f3ebdd;margin-top:3px">M. LONG</div></div>
             <div><div style="font-size:9px;color:#8a7f6c;letter-spacing:.1em">CABIN</div><div style="font-size:13px;color:#f3ebdd;margin-top:3px">BUILDER</div></div>
@@ -244,19 +244,10 @@
 <section id="sec-cafe" style="background:#f4efe6;color:#16130d;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
   <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
     <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">The virtual café</div>
-    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;color:#16130d;max-width:640px">Pull up a chair. Drop the needle.</h2>
-    <p style="font:400 17px/1.5 'IBM Plex Sans',sans-serif;color:#5c5344;margin:14px 0 0;max-width:480px">This is roughly where you'd find me most days. Drag the tonearm onto the record and put something on.</p>
+    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;color:#16130d;max-width:640px">What I'm listening to.</h2>
+    <p style="font:400 17px/1.5 'IBM Plex Sans',sans-serif;color:#5c5344;margin:14px 0 0;max-width:480px">Pull up a chair. Drag the tonearm onto the record and the real playlist starts spinning.</p>
 
-    <div style="margin-top:clamp(30px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(18px,3vw,28px);align-items:stretch">
-
-      <!-- photo -->
-      <div data-reveal class="rv" style="position:relative;border-radius:14px;overflow:hidden;min-height:300px;background:#221d15">
-        <img src="assets/matthew.jpg" alt="Matthew Long working from a café" style="width:100%;height:100%;min-height:300px;object-fit:cover;object-position:center 28%;display:block;filter:saturate(.92) contrast(1.03)">
-        <div style="position:absolute;left:0;right:0;bottom:0;padding:20px;background:linear-gradient(transparent,rgba(22,19,13,.85))">
-          <div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#ec6a26">TABLE FOR ONE · 55°N</div>
-          <div style="font:600 19px 'Space Grotesk',sans-serif;margin-top:4px;color:#f3ebdd">Copenhagen, most mornings</div>
-        </div>
-      </div>
+    <div style="margin-top:clamp(30px,4vw,48px);max-width:560px">
 
       <!-- turntable -->
       <div data-reveal class="rv" style="background:#241f17;border:1px solid rgba(243,235,221,.12);border-radius:14px;padding:clamp(18px,3vw,26px);display:flex;flex-direction:column">
@@ -434,7 +425,28 @@ class Component extends DCLogic {
   };
   nextTrack = () => this.setState(s => ({ track: (s.track + 1) % this.tracks.length }));
 
-  cafes = ['Prolog Coffee, CPH','La Cabra, Aarhus','a sloth-slow brew in Bali','Coffee Collective, Jægersborggade','some place in Lisbon w/ bad wifi','Andersen & Maillard, CPH'];
+  cafes = [
+    // home turf
+    'Prolog Coffee, CPH', 'Coffee Collective, Jægersborggade', 'Andersen & Maillard, CPH', 'La Cabra, Aarhus', 'Democratic Coffee, Copenhagen',
+    // Nordics
+    'Tim Wendelboe, Oslo', 'Fuglen, Oslo', 'Drop Coffee, Stockholm', 'Johan & Nyström, Stockholm', 'Kaffa Roastery, Helsinki', 'Reykjavík Roasters, Iceland',
+    // Europe
+    'Monmouth Coffee, London', 'Workshop Coffee, London', 'The Barn, Berlin', 'Father Carpenter, Berlin', 'Café Kitsuné, Paris', 'Coutume, Paris', 'Ten Belles, Paris',
+    'Screaming Beans, Amsterdam', 'Lot Sixty One, Amsterdam', 'Nomad Coffee Lab, Barcelona', "Satan's Coffee Corner, Barcelona", 'Syra Coffee, Barcelona',
+    'Copenhagen Coffee Lab, Lisbon', 'Fábrica Coffee Roasters, Lisbon', 'The Mill, Lisbon', 'Kronotrop, Istanbul',
+    // Japan, Korea, Taiwan
+    'Fuglen, Tokyo', 'Glitch Coffee, Tokyo', 'Onibus Coffee, Tokyo', '% Arabica, Kyoto', 'Weekenders Coffee, Kyoto', 'Anthracite, Seoul', 'Fritz Coffee Company, Seoul', 'Simple Kaffa, Taipei',
+    // Southeast Asia
+    'Seniman Coffee Studio, Ubud', 'Revolver Espresso, Seminyak', 'Crate Café, Canggu', 'a sloth-slow brew in Bali', 'Rocket Coffeebar, Bangkok', 'Ristr8to, Chiang Mai',
+    'Common Man Coffee Roasters, Singapore', 'Café Giảng, Hanoi',
+    // Oceania
+    'Patricia Coffee Brewers, Melbourne', 'Market Lane Coffee, Melbourne', 'Single O, Sydney',
+    // North America
+    'Pilot Coffee Roasters, Toronto', 'Sam James Coffee Bar, Toronto', 'Café Olimpico, Montréal', 'Café Myriade, Montréal', '49th Parallel, Vancouver',
+    'Devoción, Brooklyn', 'Sey Coffee, Brooklyn', 'Sightglass, San Francisco', 'Stumptown, Portland', 'Heart Coffee Roasters, Portland', 'Intelligentsia, Silver Lake',
+    // Latin America and beyond
+    'Café Avellaneda, Mexico City', 'Quentin Café, Mexico City', 'Pergamino, Medellín', 'LATTANTE, Buenos Aires', 'Truth Coffee Roasting, Cape Town', 'some place in Lisbon w/ bad wifi'
+  ];
 
   fortunes = [
     'You will refactor on a Friday. Bold.',
@@ -687,7 +699,7 @@ class Component extends DCLogic {
       boarded: this.state.boarded,
       boardLabel: this.state.boarded ? '✓ Welcome aboard — scroll down' : 'Board now ✦',
       cafe: this.cafes[this.state.cafeIdx],
-      shuffleCafe: () => this.setState(s => ({ cafeIdx: (s.cafeIdx + 1) % this.cafes.length })),
+      shuffleCafe: () => this.setState(s => { let n = s.cafeIdx; while (n === s.cafeIdx) n = Math.floor(Math.random() * this.cafes.length); return { cafeIdx: n }; }),
       board: this.board,
 
       chapters: chapterData.map((c, i) => ({ ...c, chNum: i + 1 })),
@@ -726,8 +738,8 @@ class Component extends DCLogic {
       barAnim3: spin ? 'bar .6s ease-in-out .2s infinite' : 'none',
       barAnim4: spin ? 'bar 1s ease-in-out .15s infinite' : 'none',
       playlistStyle: this.state.playing
-        ? 'margin-top:clamp(18px,3vw,28px);max-height:420px;opacity:1;overflow:hidden;transition:max-height .6s ease,opacity .6s ease,margin-top .6s ease'
-        : 'margin-top:0;max-height:0;opacity:0;overflow:hidden;pointer-events:none;transition:max-height .6s ease,opacity .6s ease,margin-top .6s ease',
+        ? 'max-width:560px;margin-top:clamp(18px,3vw,28px);max-height:420px;opacity:1;overflow:hidden;transition:max-height .6s ease,opacity .6s ease,margin-top .6s ease'
+        : 'max-width:560px;margin-top:0;max-height:0;opacity:0;overflow:hidden;pointer-events:none;transition:max-height .6s ease,opacity .6s ease,margin-top .6s ease',
       ideaCards, ideaChips,
       ideaCount: IDEAS.length + ' ideas so far, and counting.',
       ideaMore: () => this.setState(st => ({ ideaMore: !st.ideaMore })),
