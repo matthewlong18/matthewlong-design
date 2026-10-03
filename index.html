@@ -506,8 +506,10 @@ class Component extends DCLogic {
     this._spFallback = setTimeout(fallback, 8000);
     window.onSpotifyIframeApiReady = (api) => {
       const el = document.createElement('div'); host.appendChild(el);
-      api.createController(el, { uri: 'spotify:playlist:0Lp01oNZKHCSACCQ79IVIO', width: '100%', height: 352 }, (c) => {
+      api.createController(el, { uri: 'spotify:playlist:0Lp01oNZKHCSACCQ79IVIO', width: '100%', height: 352}, (c) => {
         this._sp = c; clearTimeout(this._spFallback);
+        const fr = host.querySelector('iframe');   // Spotify's dark theme, to sit with the turntable card (the API has no theme option, so set it on the URL)
+        if (fr && !/theme=/.test(fr.src)) fr.src += (fr.src.includes('?') ? '&' : '?') + 'theme=0';
         c.addListener('playback_update', (e) => this.onSpotify(e.data));
         this.setState({ spLive: true });
       });
