@@ -8,7 +8,7 @@ Matthew's personal portfolio. Matthew is a beginner: explain changes simply, kee
   - `support.js` is the runtime. It loads React + Babel from unpkg and renders the `<x-dc>` template. Never delete or edit `support.js`.
   - `{{ something }}` values, `<sc-for>` loops, `data-reveal` and the `<script type="text/x-dc">` block at the bottom are template logic. Text and styles inside sections are safe to edit; leave the template syntax intact.
   - Styles are inline. Fonts: Space Grotesk (headings), IBM Plex Sans (body), IBM Plex Mono (labels). Colours: ink #16130d, cream #fbf8f3 / #f4efe6, orange #ec6a26, rust label #a8391a, muted #5c5344.
-- Sections, in order: sec-hero, sec-journey, sec-work, sec-now, sec-cafe, sec-play (game), sec-contact.
+- Sections, in order: sec-hero, sec-journey, sec-work, sec-cafe, sec-play (game), sec-contact.
 
 ## The game
 - `games/copenhagen-grind.html` is "Super Start-up Adventure Time", a self-contained tactics RPG set in Canggu, Bali (pixel art, battle scenes, synth audio). Embedded in `#sec-play` via an iframe. (The file name is left over from the old title.)

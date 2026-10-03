@@ -212,35 +212,8 @@
   </div>
 </section>
 
-<!-- ===================== NOW ===================== -->
-<section id="sec-now" style="background:#fbf8f3;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
-  <div class="grain"></div>
-  <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">/now</div>
-      <div style="position:relative;width:8px;height:8px"><div style="position:absolute;inset:0;background:#2b5fa8;border-radius:50%"></div><div style="position:absolute;left:-6px;top:-13px;width:6px;height:14px;border-radius:50%;background:rgba(122,138,111,.5);animation:steamRise 2.6s ease-out infinite"></div></div>
-    </div>
-    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0">What I'm up to right now.</h2>
-    <p style="font:400 15px 'IBM Plex Mono',monospace;color:#6b5f4d;margin:10px 0 0">Last updated when I remembered to · {{ updated }}</p>
-
-
-    <div style="margin-top:clamp(32px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
-      <sc-for list="{{ nowItems }}" as="n" hint-placeholder-count="4">
-        <div data-reveal class="rv" style="background:#fff;border:1px solid rgba(22,19,13,.1);border-radius:12px;padding:22px">
-          <div style="font-size:26px">{{ n.icon }}</div>
-          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#a8391a;margin-top:14px">{{ n.label }}</div>
-          <div style="font:600 19px/1.2 'Space Grotesk',sans-serif;margin-top:6px">{{ n.value }}</div>
-          <div style="font:400 14px/1.45 'IBM Plex Sans',sans-serif;color:#6b5f4d;margin-top:7px">{{ n.note }}</div>
-        </div>
-      </sc-for>
-    </div>
-
-
-  </div>
-</section>
-
 <!-- ===================== THE VIRTUAL CAFÉ ===================== -->
-<section id="sec-cafe" style="background:#f4efe6;color:#16130d;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
+<section id="sec-cafe" style="background:#fbf8f3;color:#16130d;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
   <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
     <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">The virtual café</div>
     <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;color:#16130d;max-width:640px">Pull up a chair. Drop the needle.</h2>
@@ -307,7 +280,7 @@
 </section>
 
 <!-- ===================== SIDE QUEST (game) ===================== -->
-<section id="sec-play" style="background:#fbf8f3;color:#16130d;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
+<section id="sec-play" style="background:#f4efe6;color:#16130d;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
   <div class="grain"></div>
   <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
     <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">Side quest</div>
