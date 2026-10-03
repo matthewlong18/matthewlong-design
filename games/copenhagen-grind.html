@@ -193,7 +193,13 @@
   /* ── town (Canggu): a pixel-art canvas with a scrolling camera ── */
   #cg[data-screen="town"] .wrap{height:calc(var(--cell)*8)}   /* square view while exploring */
   .town{position:absolute;inset:0;z-index:3;overflow:hidden;background:#78b350}
-  #townCv{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;touch-action:manipulation}
+  #townCv{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;touch-action:manipulation}
+  .act{position:absolute;right:10px;bottom:10px;z-index:5;width:60px;height:60px;padding:0;border-radius:50%;border:3px solid #3b2a20;background:#e0782b;color:#fff;text-align:center;line-height:1;box-shadow:0 3px 0 #3b2a20;opacity:.6;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:manipulation}
+  .act b{font-size:22px}
+  .act small{font-size:9px;font-weight:800;min-height:10px}
+  .act.ready{opacity:1;animation:pulse 1.2s infinite}
+  .act:active{translate:0 2px;box-shadow:0 1px 0 #3b2a20}
+  .talk{right:80px!important}
   .tlabels{position:absolute;inset:0;pointer-events:none}
   .tlbl{position:absolute;translate:-50% -100%;font-size:10px;font-weight:800;line-height:1.4;padding:0 6px;border-radius:5px;white-space:nowrap;background:rgba(255,250,243,.92);color:#3b2a20;box-shadow:0 1px 0 rgba(0,0,0,.25)}
   .tlbl.main{background:#e0782b;color:#fff}
@@ -236,7 +242,7 @@
   </div>
   <div class="wrap">
     <div class="board" id="board"></div>
-    <div class="town" id="town"><canvas id="townCv" aria-label="Canggu town map"></canvas><div class="tlabels" id="tlabels"></div><div class="hud" id="hud"></div><div class="talk hidden" id="talk" role="status"></div></div>
+    <div class="town" id="town"><canvas id="townCv" aria-label="Canggu town map"></canvas><div class="tlabels" id="tlabels"></div><div class="hud" id="hud"></div><div class="talk hidden" id="talk" role="status"></div><button class="act" id="act" aria-label="Action: talk, look or pick up"><b>A</b><small></small></button></div>
     <div class="fx" id="fx"></div>
     <div class="battle hidden" id="battle">
       <div class="plat top" id="pTop"><img alt=""></div>
@@ -448,10 +454,11 @@
     outfit:      {label:"Outfit",      opts:["Hoodie","Tee","Tunic","Dress"]},
     outfitColor: {label:"Outfit colour", colors:["#e0782b","#3a6ea5","#4f8a5b","#b5483b","#8a5cc7","#2f3a45","#e5b340","#f4ede4"]},
     hat:         {label:"Hat",         opts:["None","Beanie","Cap","Crown","Flower"]},
-    eyes:        {label:"Eyewear",     opts:["None","Glasses","Shades","Red shades"]},
+    eyes:        {label:"Eyewear",     opts:["None","Glasses","Shades"]},
+    eyeColor:    {label:"Eyewear colour", colors:["#141414","#d1352b","#e0782b","#3a6ea5","#d96fa8","#e5b340","#4f8a5b","#f4ede4"]},
   };
   // Default hero: Rikke — long brown hair, red dress, red sunglasses.
-  const P = {name:"Rikke", skin:1, hair:1, hairColor:2, facial:0, outfit:3, outfitColor:3, hat:0, eyes:3};
+  const P = {name:"Rikke", skin:1, hair:1, hairColor:2, facial:0, outfit:3, outfitColor:3, hat:0, eyes:2, eyeColor:1};
   try { const saved = JSON.parse(localStorage.getItem("cg-hero") || "{}");
     for (const k in P) if (k in saved) {
       if (k === "name") P.name = String(saved.name).slice(0,14);
@@ -473,7 +480,10 @@
     if (hair === "Short" || hair === "Long" || hair === "Bun") {
       put(1,"     kkkkkk     "); put(2,"    khhhhhhk    "); put(3,"   khhhhhhhhk   "); put(4,"   kh      hk   ");
       if (hair === "Bun") put(0,"      khhk      ");
-      if (hair === "Long") for (let y = 4; y <= 8; y++) { rows[y][1] = "k"; rows[y][2] = "h"; rows[y][13] = "h"; rows[y][14] = "k"; }
+      if (hair === "Long") {   // a curtain of hair framing the face, down to the shoulders
+        put(1,"    kkkkkkkk    "); put(2,"   khhhhhhhhk   "); put(3,"  khhhhhhhhhhk  "); put(4,"  khh      hhk  ");
+        put(5,"  kh        hk  "); put(6,"  kh        hk  "); put(7,"  khh      hhk  "); put(8,"  khhh    hhhk  ");
+      }   // (rows 9–10 of long hair are added after the outfit so the hair falls over it)
     } else if (hair === "Curly") {
       put(0,"    kkkkkkkk    "); put(1,"   khhhhhhhhk   "); put(2,"  khhhhhhhhhhk  "); put(3,"  khhhhhhhhhhk  "); put(4,"  khh      hhk  "); put(5,"  kh        hk  ");
     } else if (hair === "Buzz") { put(2,"    kkkkkkkk    "); put(3,"   khhhhhhhhk   "); }
@@ -487,20 +497,20 @@
     if (outfit === "Tee")    put(9,"   kkuussuukk   ");
     if (outfit === "Tunic")  put(13,"   kggggggggk   ");
     if (outfit === "Dress")  { put(9,"   kkussssukk   "); put(13,"  kuuuuuuuuuuk  "); put(14," kUuuuuuuuuuuUk "); put(15,"...kkk....kkk..."); }
+    if (hair === "Long") { put(9,"  khh      hhk  "); put(10,"  kh        hk  "); }
     const hat = LOOK.hat.opts[L.hat];
     if (hat === "Beanie") { put(0,"       bb       "); put(1,"     kbbbbk     "); put(2,"    kbbbbbbk    "); put(3,"   kBBBBBBBBk   "); }
     if (hat === "Cap")    { put(1,"     kkkkkk     "); put(2,"    kbbbbbbk    "); put(3,"   kbbbbbbbbbbk "); }
     if (hat === "Crown")  { put(0,"    g  gg  g    "); put(1,"    gggggggg    "); }
     if (hat === "Flower") { rows[1][11] = "p"; rows[2][10] = "p"; rows[2][11] = "g"; rows[2][12] = "p"; rows[3][11] = "p"; }
     const eyes = LOOK.eyes.opts[L.eyes];
-    if (eyes === "Glasses") put(5,"   kkwkkkkwkk   ");
-    if (eyes === "Shades")  put(5,"   kkKKkkKKkk   ");
-    if (eyes === "Red shades") put(5,"   kkRRkkRRkk   ");
+    if (eyes === "Glasses") put(5,"   kKweKKweKk   ");   // K = frame colour, two lenses with the eyes showing
+    if (eyes === "Shades")  put(5,"   kkKKkkKKkk   ");   // K = lens colour
     const skin = LOOK.skin.colors[L.skin], oc = LOOK.outfitColor.colors[L.outfitColor];
     return { rows: rows.map(r => r.join("")), pal: {
       k:"#1e1612", e:"#1e1612", s:skin, d:shade(skin,.72), m:shade(skin,.45), h:LOOK.hairColor.colors[L.hairColor],
       u:oc, U:shade(oc,.75), y: oc === "#f4ede4" ? "#3b2a20" : "#f4ede4", g:"#e5b340", c:"#2a2a30",
-      b: hat === "Cap" ? "#3a6ea5" : "#c23b30", B:"#7c2320", p:"#e58fb1", w:"#dff3ff", K:"#141414", R:"#d1352b" } };
+      b: hat === "Cap" ? "#3a6ea5" : "#c23b30", B:"#7c2320", p:"#e58fb1", w:"#dff3ff", K:LOOK.eyeColor.colors[L.eyeColor||0] } };
   }
 
   function drawSprite(sp, canvas){
@@ -1271,7 +1281,12 @@
   }
   $("tStart").onclick=()=>{ Sound.init(); Sound.sfx("select"); showCreator(); };
   $("crName").oninput=e=>{ P.name=cleanName(e.target.value); };
-  $("crRand").onclick=()=>{ for(const [k,o] of Object.entries(LOOK)) P[k]=Math.floor(Math.random()*(o.colors||o.opts).length); buildCreator(); Sound.sfx("blip"); };
+  const NAMES=["Rikke","Kai","Wayan","Luna","Sven","Ayu","Mika","Nadia","Theo","Kadek","Ines","Rafa","Freya","Jonas","Putu","Maya","Leo","Sasha","Bodhi","Ketut"];
+  $("crRand").onclick=()=>{
+    for(const [k,o] of Object.entries(LOOK)) P[k]=Math.floor(Math.random()*(o.colors||o.opts).length);
+    P.name=NAMES[Math.floor(Math.random()*NAMES.length)];
+    buildCreator(); Sound.sfx("blip");
+  };
   $("crGo").onclick=()=>{
     P.name=cleanName($("crName").value);
     try{ localStorage.setItem("cg-hero", JSON.stringify(P)); }catch(e){}
@@ -1334,8 +1349,8 @@
   const PICKUPS=[{item:"coffee",x:12,y:5},{item:"beer",x:28,y:3},{item:"tacos",x:1,y:17}];
   const INV={coffee:0, beer:0, tacos:0};
 
-  const TOWN={x:1,y:9,px:1,py:9,dir:1,path:[],onArrive:null,taken:new Set(),talk:null,raf:0,last:0,now:0,frame:0,dirty:true,
-    cam:{x:0,y:0}, vw:176, vh:132, cv:$("townCv"), ctx:null, labels:[]};
+  const TOWN={x:1,y:9,px:1,py:9,dir:1,face:[0,1],walk:0,path:[],onArrive:null,taken:new Set(),talk:null,raf:0,last:0,now:0,frame:0,dirty:true,
+    cam:{x:0,y:0}, vw:176, vh:132, scale:2, cv:$("townCv"), ctx:null, labels:[]};
   TOWN.ctx=TOWN.cv.getContext("2d");
   const SPR_CV={};   // sprite canvases for drawing in town
   const hsh=(x,y,n=0)=>{ const s=Math.sin(x*127.1+y*311.7+n*74.7)*43758.5453; return s-Math.floor(s); };
@@ -1350,7 +1365,7 @@
   const personAt=(x,y)=>PEOPLE.find(p=>p.x===x && p.y===y);
   const objAt=(x,y)=>TOWN_OBJS.find(o=> o.k==="bld" ? x>=o.x&&x<o.x+o.w&&y>=o.y&&y<o.y+o.h : o.k==="gate" ? x===o.x&&y>=o.y&&y<o.y+3 : o.k!=="offering"&&o.x===x&&o.y===y);
   const pickupAt=(x,y)=>PICKUPS.find(p=>p.x===x && p.y===y && !TOWN.taken.has(p.item));
-  const canWalk=(x,y)=>x>=0&&y>=0&&x<TW&&y<TH&&!SOLID[y][x]&&!personAt(x,y);
+  const canWalk=(x,y)=>x>=0&&y>=0&&x<TW&&y<TH&&!SOLID[y][x]&&!personAt(x,y)&&!pickupAt(x,y);
 
   function findPath(goal){   // shortest walk from the player to the first tile where goal(x,y) is true
     const sx=TOWN.x, sy=TOWN.y, prev=new Map([[K(sx,sy),null]]), q=[[sx,sy]];
@@ -1366,49 +1381,93 @@
     return null;
   }
 
+  // Tapping the map walks there. Tapping a person, snack, sign or building walks next to it and faces it;
+  // then the A button (or Space / Enter / E / Z) talks, picks up or reads. Walking into the Sloth's door goes inside.
   function townTap(tx,ty){
     if(TOWN.talk || !overlay.classList.contains("hidden")) return;
     const adj=(x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1;
-    const person=personAt(tx,ty), obj=objAt(tx,ty);
+    const faceIt=()=>faceTo(tx,ty);
+    const person=personAt(tx,ty), item=pickupAt(tx,ty), obj=objAt(tx,ty);
     let path=null, then=null;
-    if(person){ path=findPath(adj); then=()=>{ person.dir = TOWN.x<person.x?-1:1; talk(person.name, person.lines); }; }
+    if(person || item){ path=findPath(adj); then=faceIt; }
     else if(obj && obj.enter) path=findPath(isDoor);
     else if(obj && obj.say){
-      const near = obj.k==="bld" ? (x,y)=>x>=obj.x-1&&x<=obj.x+obj.w&&y>=obj.y-1&&y<=obj.y+obj.h
-                 : obj.k==="gate" ? (x,y)=>(Math.abs(x-obj.x)===1&&y>=obj.y&&y<=obj.y+3) || (x===obj.x&&y===obj.y+3) : adj;
-      path=findPath(near); then=()=>talk(obj.label||"", [obj.say]);
+      if(obj.k==="bld"){   // walk to the nearest tile touching the building, then face it
+        path=findPath((x,y)=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>objAt(x+dx,y+dy)===obj));
+        then=()=>{ const d=[[0,-1],[1,0],[-1,0],[0,1]].find(([dx,dy])=>objAt(TOWN.x+dx,TOWN.y+dy)===obj); if(d){ TOWN.face=d; if(d[0]) TOWN.dir=d[0]; } updateAct(); };
+      } else { path=findPath(adj); then=faceIt; }
     }
     else if(canWalk(tx,ty)) path=findPath((x,y)=>x===tx&&y===ty);
     if(!path) return;
     TOWN.path=path; TOWN.onArrive=then; TOWN.dirty=true;
     if(!path.length && then){ TOWN.onArrive=null; then(); }
   }
+  function faceTo(tx,ty){
+    const dx=Math.sign(tx-TOWN.x), dy=Math.sign(ty-TOWN.y);
+    TOWN.face = Math.abs(tx-TOWN.x)>=Math.abs(ty-TOWN.y) ? [dx,0] : [0,dy];
+    if(TOWN.face[0]) TOWN.dir=TOWN.face[0];
+    TOWN.dirty=true; updateAct();
+  }
+
+  // ── action button ── what's in front of you?
+  function actionTarget(){
+    const fx=TOWN.x+TOWN.face[0], fy=TOWN.y+TOWN.face[1];
+    const person=personAt(fx,fy); if(person) return {label:"Talk", run:()=>{ person.dir = TOWN.x<person.x?-1:1; talk(person.name, person.lines); }};
+    const p=pickupAt(fx,fy); if(p) return {label:"Pick up", run:()=>{
+      TOWN.taken.add(p.item); INV[p.item]++; Sound.sfx("heal"); renderHud(); TOWN.dirty=true;
+      const it=ITEMS[p.item]; talk(`You found ${it.name}! ${it.icon}`, [it.found]); }};
+    if(isDoor(fx,fy)) return {label:"Enter", run:slothPrompt};
+    const o=objAt(fx,fy); if(o && o.say) return {label:o.k==="sign"?"Read":"Look", run:()=>talk(o.label||"", [o.say])};
+    return null;
+  }
+  function updateAct(){
+    const a=$("act"), t=!TOWN.talk && !TOWN.path.length ? actionTarget() : null;
+    a.querySelector("small").textContent = TOWN.talk ? "Next" : t ? t.label : "";
+    a.classList.toggle("ready", !!(t || TOWN.talk));
+  }
+  function doAction(){
+    if(TOWN.talk){ advanceTalk(); return; }
+    if(TOWN.path.length || !overlay.classList.contains("hidden")) return;
+    const t=actionTarget(); if(t){ Sound.sfx("select"); t.run(); } else Sound.sfx("back");
+    updateAct();
+  }
+  $("act").onclick=doAction;
 
   function arriveTile(){
-    const p=pickupAt(TOWN.x,TOWN.y);
-    if(p){ TOWN.taken.add(p.item); INV[p.item]++; Sound.sfx("heal"); renderHud(); TOWN.path=[]; TOWN.onArrive=null;
-      const it=ITEMS[p.item]; talk(`You found ${it.name}! ${it.icon}`, [it.found]); return; }
     if(isDoor(TOWN.x,TOWN.y)){ TOWN.path=[]; TOWN.onArrive=null; slothPrompt(); }
   }
 
   function townUpdate(dt){
     if(!TOWN.path.length) return false;
     const [nx,ny]=TOWN.path[0];
-    if(!canWalk(nx,ny)){ TOWN.path=[]; return true; }
-    if(nx!==Math.round(TOWN.px)) TOWN.dir = nx<TOWN.px?-1:1;
-    const step=6*dt/1000, dx=nx-TOWN.px, dy=ny-TOWN.py, d=Math.hypot(dx,dy);
+    if(!canWalk(nx,ny)){ TOWN.path=[]; updateAct(); return true; }
+    TOWN.face=[Math.sign(nx-TOWN.x), Math.sign(ny-TOWN.y)];
+    if(TOWN.face[0]) TOWN.dir=TOWN.face[0];
+    const step=5*dt/1000, dx=nx-TOWN.px, dy=ny-TOWN.py, d=Math.hypot(dx,dy);
+    TOWN.walk+=Math.min(step,d);
     if(d<=step){
       TOWN.px=TOWN.x=nx; TOWN.py=TOWN.y=ny; TOWN.path.shift(); Sound.sfx("step"); arriveTile();
-      if(!TOWN.path.length && TOWN.onArrive){ const f=TOWN.onArrive; TOWN.onArrive=null; f(); }
+      if(!TOWN.path.length){ if(TOWN.onArrive){ const f=TOWN.onArrive; TOWN.onArrive=null; f(); } updateAct(); }
     } else { TOWN.px+=dx/d*step; TOWN.py+=dy/d*step; }
     return true;
   }
 
+  // the camera follows the player's *pixel* position, so the player never wobbles against the map
   function townCam(){
-    const c=TOWN.cam;
-    c.x=Math.round(Math.max(0,Math.min(TW*TS-TOWN.vw, TOWN.px*TS+8-TOWN.vw/2)));
-    c.y=Math.round(Math.max(0,Math.min(TH*TS-TOWN.vh, TOWN.py*TS+8-TOWN.vh/2)));
+    const c=TOWN.cam, ppx=Math.round(TOWN.px*TS), ppy=Math.round(TOWN.py*TS);
+    c.x=Math.max(0,Math.min(TW*TS-TOWN.vw, ppx+8-TOWN.vw/2));
+    c.y=Math.max(0,Math.min(TH*TS-TOWN.vh, ppy+8-TOWN.vh/2));
   }
+  // pick a whole-number zoom (2×, 3×…) so every art pixel is the same size on screen — no shimmer
+  function sizeTown(){
+    const box=$("town").getBoundingClientRect(); if(!box.width) return;
+    const s=Math.max(2, Math.round(box.width/176)), even=n=>Math.ceil(n/2)*2;
+    TOWN.scale=s; TOWN.vw=even(box.width/s); TOWN.vh=even(box.height/s);
+    TOWN.cv.width=TOWN.vw; TOWN.cv.height=TOWN.vh;
+    TOWN.cv.style.width=TOWN.vw*s+"px"; TOWN.cv.style.height=TOWN.vh*s+"px";
+    townCam(); TOWN.dirty=true;
+  }
+  addEventListener("resize", ()=>{ if($("cg").dataset.screen==="town") sizeTown(); });
 
   // ground tiles, drawn as little pixel-art squares
   function drawGround(c,x,y){
@@ -1493,12 +1552,25 @@
     if(Math.floor(TOWN.now/250)%3===0){ R("#fff6c2",13,1,1,3); R("#fff6c2",12,2,3,1); }   // sparkle
   }
 
-  function drawChar(c,key,x,y,dir,walking){
-    const cv=SPR_CV[key]; if(!cv) return;
-    const px=Math.round(x*TS), py=Math.round(y*TS), bob=walking ? Math.floor(TOWN.now/110)%2 : Math.floor(TOWN.now/700)%2;
+  // walking: alternate a "legs apart" stride frame with the normal stance (which dips 1px as the foot lands)
+  const STRIDE=new Map();
+  function strideFrame(cv){
+    if(STRIDE.has(cv)) return STRIDE.get(cv);
+    const f=document.createElement("canvas"); f.width=16; f.height=16; const g=f.getContext("2d");
+    g.drawImage(cv,0,0);
+    const L=g.getImageData(0,13,8,3), R=g.getImageData(8,13,8,3);
+    g.clearRect(0,13,16,3); g.putImageData(L,-1,13); g.putImageData(R,1,13);
+    STRIDE.set(cv,f); return f;
+  }
+  function drawChar(c,key,x,y,dir,walk){
+    const base=SPR_CV[key]; if(!base) return;
+    const px=Math.round(x*TS), py=Math.round(y*TS);
+    let img=base, lift=0;
+    if(walk!=null){ const stride=Math.floor(walk*4)%2===1; img = stride ? strideFrame(base) : base; lift = stride ? 0 : 1; }   // 2 steps per tile; idle = stand still
     c.fillStyle="rgba(0,0,0,.2)"; c.fillRect(px+4,py+13,8,2);
-    if(dir<0){ c.save(); c.translate(px+16,0); c.scale(-1,1); c.drawImage(cv,0,py-4-bob); c.restore(); }
-    else c.drawImage(cv,px,py-4-bob);
+    const top=py-4-lift;
+    if(dir<0){ c.save(); c.translate(px+16,0); c.scale(-1,1); c.drawImage(img,0,top); c.restore(); }
+    else c.drawImage(img,px,top);
   }
 
   function townDraw(){
@@ -1509,8 +1581,8 @@
     const things=[];   // y-sorted so things lower on the map draw in front
     for(const o of TOWN_OBJS) things.push({by:o.k==="bld"?o.y+o.h-1 : o.k==="gate"?o.y+2 : o.y, z:o.k==="offering"?-1:0, draw:()=>drawObj(c,o)});
     for(const p of PICKUPS) if(!TOWN.taken.has(p.item)) things.push({by:p.y, z:0, draw:()=>drawPickup(c,p)});
-    for(const p of PEOPLE) things.push({by:p.y, z:1, draw:()=>drawChar(c, p.spr||"npc:"+p.name, p.x, p.y, p.dir||1, false)});
-    things.push({by:TOWN.py, z:2, draw:()=>drawChar(c,"player",TOWN.px,TOWN.py,TOWN.dir,TOWN.path.length>0)});
+    for(const p of PEOPLE) things.push({by:p.y, z:1, draw:()=>drawChar(c, p.spr||"npc:"+p.name, p.x, p.y, p.dir||1, null)});
+    things.push({by:TOWN.py, z:2, draw:()=>drawChar(c,"player",TOWN.px,TOWN.py,TOWN.dir, TOWN.path.length ? TOWN.walk : null)});
     things.sort((a,b)=>a.by-b.by || a.z-b.z).forEach(t=>t.draw());
     c.setTransform(1,0,0,1,0,0);
     placeLabels();
@@ -1522,8 +1594,8 @@
   }
   function placeLabels(){
     for(const [l,o] of TOWN.labels){
-      const x=(o.x*TS+o.w*TS/2-TOWN.cam.x)/TOWN.vw*100, y=(o.y*TS-3-TOWN.cam.y)/TOWN.vh*100;
-      l.style.left=x+"%"; l.style.top=y+"%"; l.hidden = x<-20||x>120||y<-10||y>100;
+      const x=(o.x*TS+o.w*TS/2-TOWN.cam.x)*TOWN.scale, y=(o.y*TS-3-TOWN.cam.y)*TOWN.scale;
+      l.style.left=x+"px"; l.style.top=y+"px"; l.hidden = x<-80 || x>TOWN.vw*TOWN.scale+80 || y<10 || y>TOWN.vh*TOWN.scale;
     }
   }
   function renderHud(){
@@ -1534,10 +1606,10 @@
   function talk(name, lines, done){ TOWN.talk={name, lines:[...lines], i:0, done}; showTalk(); }
   function showTalk(){
     const t=TOWN.talk, el=$("talk");
-    if(!t){ el.classList.add("hidden"); return; }
+    if(!t){ el.classList.add("hidden"); updateAct(); return; }
     el.innerHTML=""; const b=document.createElement("b"); b.textContent=t.name; const p=document.createElement("div"); p.textContent=t.lines[t.i];
     const m=document.createElement("span"); m.className="more"; m.textContent=t.i<t.lines.length-1?"▼":"✕";
-    if(t.name) el.append(b); el.append(p,m); el.classList.remove("hidden");
+    if(t.name) el.append(b); el.append(p,m); el.classList.remove("hidden"); updateAct();
   }
   function advanceTalk(){
     const t=TOWN.talk; if(!t) return; Sound.sfx("blip");
@@ -1551,12 +1623,13 @@
   };
   document.addEventListener("keydown", e=>{
     if($("cg").dataset.screen!=="town" || !overlay.classList.contains("hidden")) return;
-    if(TOWN.talk){ if(["Enter"," ","Escape","e","E"].includes(e.key)){ e.preventDefault(); advanceTalk(); } return; }
+    if([" ","Enter","e","E","z","Z"].includes(e.key)){ e.preventDefault(); doAction(); return; }   // the A button
+    if(TOWN.talk) return;
     const d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]}[e.key];
     if(!d || TOWN.path.length) return;
     e.preventDefault();
-    const nx=TOWN.x+d[0], ny=TOWN.y+d[1]; if(d[0]) TOWN.dir=d[0];
-    if(personAt(nx,ny) || objAt(nx,ny)) townTap(nx,ny); else if(canWalk(nx,ny)) TOWN.path=[[nx,ny]];
+    const nx=TOWN.x+d[0], ny=TOWN.y+d[1];
+    if(canWalk(nx,ny)){ TOWN.path=[[nx,ny]]; updateAct(); } else faceTo(nx,ny);   // blocked: just turn to face it
     TOWN.dirty=true;
   });
 
@@ -1572,12 +1645,10 @@
   function enterTown(){
     setScreen("town");
     for(const k in INV) INV[k]=0; TOWN.taken.clear();
-    Object.assign(TOWN,{x:1,y:9,px:1,py:9,dir:1,path:[],onArrive:null,talk:null}); showTalk();
-    SPR_CV.player=drawSprite(playerSprite());
-    const box=$("town").getBoundingClientRect();
-    TOWN.vh=Math.max(96, Math.round(TOWN.vw*box.height/Math.max(1,box.width))); TOWN.cv.width=TOWN.vw; TOWN.cv.height=TOWN.vh;
-    buildLabels(); renderHud(); townCam(); TOWN.dirty=true;
-    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap to walk (arrow keys work too). Talk to people, find hidden snacks, then head to The Sloppy Sloth on the beach.</div>`;
+    Object.assign(TOWN,{x:1,y:9,px:1,py:9,dir:1,face:[0,1],walk:0,path:[],onArrive:null,talk:null});
+    SPR_CV.player=drawSprite(playerSprite()); STRIDE.clear();
+    sizeTown(); buildLabels(); renderHud(); showTalk();
+    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap the map to walk (or arrow keys). Face someone or something and press <b>A</b> (or Space) to talk, look or pick it up. Find the hidden snacks, then head to The Sloppy Sloth on the beach.</div>`;
     if(!TOWN.raf){ TOWN.last=0; TOWN.raf=requestAnimationFrame(townLoop); }
     Sound.play("cafe");
     talk("Canggu, Bali 🌴", [`Welcome, ${P.name||"friend"}! The suits have taken over The Sloppy Sloth, the beach bar.`, "Explore, talk to people and find snacks for the fight. Then head to the Sloth, down on the beach."]);
