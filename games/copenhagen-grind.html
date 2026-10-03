@@ -194,12 +194,6 @@
   #cg[data-screen="town"] .wrap{height:calc(var(--cell)*8)}   /* square view while exploring */
   .town{position:absolute;inset:0;z-index:3;overflow:hidden;background:#78b350}
   #townCv{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;touch-action:manipulation}
-  .act{position:absolute;right:10px;bottom:10px;z-index:5;width:60px;height:60px;padding:0;border-radius:50%;border:3px solid #3b2a20;background:#e0782b;color:#fff;text-align:center;line-height:1;box-shadow:0 3px 0 #3b2a20;opacity:.6;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:manipulation}
-  .act b{font-size:22px}
-  .act small{font-size:9px;font-weight:800;min-height:10px}
-  .act.ready{opacity:1;animation:pulse 1.2s infinite}
-  .act:active{translate:0 2px;box-shadow:0 1px 0 #3b2a20}
-  .talk{right:80px!important}
   /* cutscenes */
   .fade{position:absolute;inset:0;z-index:9;background:#000;opacity:0;pointer-events:none;transition:opacity .8s}
   .fade.on{opacity:1;pointer-events:auto}
@@ -234,7 +228,7 @@
   <p class="sub">A beautiful morning in Canggu, Bali.</p>
   <section class="creator" id="creator" aria-label="Make your hero">
     <div class="cr-top">
-      <canvas id="crPrev" width="16" height="16" role="img" aria-label="Your hero"></canvas>
+      <canvas id="crPrev" width="24" height="24" role="img" aria-label="Your hero"></canvas>
       <div class="cr-name">
         <label for="crName">Your name</label>
         <input id="crName" maxlength="14" placeholder="Your name" autocomplete="off" spellcheck="false">
@@ -251,7 +245,7 @@
   </div>
   <div class="wrap">
     <div class="board" id="board"></div>
-    <div class="town" id="town"><canvas id="townCv" aria-label="Canggu town map"></canvas><div class="tlabels" id="tlabels"></div><div class="hud" id="hud"></div><div class="talk hidden" id="talk" role="status"></div><button class="act" id="act" aria-label="Action: talk, look or pick up"><b>A</b><small></small></button></div>
+    <div class="town" id="town"><canvas id="townCv" aria-label="Canggu town map"></canvas><div class="tlabels" id="tlabels"></div><div class="hud" id="hud"></div><div class="talk hidden" id="talk" role="status"></div></div>
     <div class="fx" id="fx"></div>
     <div class="battle hidden" id="battle">
       <div class="plat top" id="pTop"><img alt=""></div>
@@ -328,7 +322,7 @@
       {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
       {name:"Synergy Beam",    kind:"magic", type:"dmg", pow:9, rng:[2,3], mp:4, color:"#6fb6d9"},
      ]},
-    {name:"Intern", spr:"manager", team:"foe", hp:14, mp:4, def:1, mov:3,
+    {name:"Intern", spr:"intern", team:"foe", hp:14, mp:4, def:1, mov:3,
      blurb:"Unpaid, but enthusiastic.",
      moves:[
       {name:"Coffee Run",   kind:"fight", type:"dmg", pow:8, rng:[1,1]},
@@ -358,112 +352,13 @@
       {name:"Poutine Break",    kind:"magic", type:"heal", pow:12, rng:[0,2], mp:3, color:"#e5b340"},
     ]};
 
-  // ── SPRITES: 16×16 pixel art. Each letter = a colour in 'pal', '.' = transparent. Edit freely.
-  const SPRITES = {
-    manager: {pal:{"k": "#1e1612", "h": "#6b4a2e", "s": "#f1c79b", "e": "#1e1612", "m": "#6b2f2a", "u": "#34507a", "w": "#ffffff", "r": "#c23b30"},
-      rows:[
-        "................",
-        ".....kkkkkk.....",
-        "....khhhhhhk....",
-        "...khhhhhhhhk...",
-        "...khssssssk....",
-        "...kkwkkwkkk....",
-        "...kssssssssk...",
-        "....kssmmssk....",
-        ".....kssssk.....",
-        "...kkuwrrwukk...",
-        "..kuuuwrrwuuuk..",
-        ".kuukuwrrwukuuk.",
-        ".kskuuurruuuksk.",
-        "...kuuuuuuuuk...",
-        "....kuuk.kuuk...",
-        "...kkkk...kkkk..",
-      ]},
-    consult: {pal:{"k": "#1e1612", "h": "#d8b25a", "s": "#f1c79b", "e": "#1e1612", "m": "#6b2f2a", "u": "#6d7782", "w": "#ffffff", "r": "#3a6ea5", "c": "#5a3a22", "y": "#e5b340"},
-      rows:[
-        "................",
-        ".....kkkkkk.....",
-        "....khhhhhhhk...",
-        "...khhhhhhhhhk..",
-        "...khssssssk....",
-        "...kseesseesk...",
-        "...kssssssssk...",
-        "....kssmmssk....",
-        ".....kssssk.....",
-        "...kkuwrrwukk...",
-        "..kuuuwrrwuuuk..",
-        ".kuukuwrrwukuuk.",
-        ".kskuuurruuukcck",
-        "...kuuuuuuuukcyk",
-        "....kuuk.kuukkk.",
-        "...kkkk...kkkk..",
-      ]},
-    ceo: {pal:{"k": "#1e1612", "h": "#1e1612", "s": "#e8b88a", "e": "#1e1612", "m": "#6b2f2a", "u": "#23232b", "w": "#ffffff", "r": "#e5b340", "g": "#9aa4ad"},
-      rows:[
-        "....kkkkkkkk....",
-        "....khhhhhhk....",
-        "...kkkkkkkkkk...",
-        "....khsssshk....",
-        "...kssssssssk...",
-        "...kkkkkkkkkk...",
-        "...ksskssksk....",
-        "....kssmmssk....",
-        ".....kssssk.....",
-        "...kkuwrrwukk...",
-        "..kuuuwrrwuuuk..",
-        ".kuukuwrrwukuuk.",
-        ".kskuuurruuuksk.",
-        "...kuuuuuuuuk...",
-        "....kuuk.kuuk...",
-        "...kkkk...kkkk..",
-      ]},
-    matthew: {pal:{"k": "#1e1612", "h": "#1b1b1f", "H": "#3a3a42", "s": "#a0694a", "d": "#6e4430", "m": "#4a2419", "e": "#1e1612", "u": "#e0782b", "U": "#b35a1c", "y": "#f4ede4", "c": "#2a2a30", "l": "#b7c0c9", "L": "#8fd3ff"},
-      rows:[
-        "................",
-        ".....kkkkkk.....",
-        "....khHhhhhk....",
-        "...khhhhhhhhk...",
-        "...kssssssssk...",
-        "...ksessssesk...",
-        "...kssssssssk...",
-        "...kddmssmddk...",
-        "....kddmmddk....",
-        "...kkuyuuyukk...",
-        "..kuuuyuuyuuuk..",
-        ".kuuUkuuuukLLLk.",
-        ".kskUuuuuukllllk",
-        "...kuuuuuuuuk...",
-        "....kcck.kcck...",
-        "...kkkk...kkkk..",
-      ]},
-    claude: {pal:{"k": "#1e1612", "o": "#e0782b", "x": "#2a1c14", "s": "#f1c79b", "e": "#1e1612", "h": "#7a4a26", "m": "#4a2419", "j": "#3a6ea5", "b": "#5a3a22"},
-      rows:[
-        "......kook......",
-        ".....kooook.....",
-        "....kooooook....",
-        "...kxxxxxxxxk...",
-        "...kssssssssk...",
-        "...ksessssesk...",
-        "...khsssssshk...",
-        "...khhmssmhhk...",
-        "....khhmmhhk....",
-        "...kkoxoxoxkk...",
-        "..koxoxoxoxoxk..",
-        ".kxoxkoxoxkxoxk.",
-        ".kskxoxoxoxoksk.",
-        "...kjjjjjjjjk...",
-        "....kjjk.kjjk...",
-        "...kbbbk..kbbbk.",
-      ]},
-  };
-
   // ── CHARACTER CREATOR ── options shown on the first screen. Add colours or styles freely.
   const LOOK = {
     skin:        {label:"Skin",        colors:["#f6d3b3","#f1c79b","#d9a274","#a0694a","#7a4a2e","#4f2f1d"]},
     hair:        {label:"Hair",        opts:["Short","Long","Bun","Curly","Buzz","Bald"]},
     hairColor:   {label:"Hair colour", colors:["#1b1b1f","#4a3222","#8a5a32","#e0b84f","#c2552d","#b7bec6","#d96fa8","#4f7fd1"]},
     facial:      {label:"Face",        opts:["Clean","Stubble","Beard","Moustache"]},
-    outfit:      {label:"Outfit",      opts:["Hoodie","Tee","Tunic","Dress"]},
+    outfit:      {label:"Outfit",      opts:["Hoodie","Tee","Tunic","Dress","Suit","Plaid"]},
     outfitColor: {label:"Outfit colour", colors:["#e0782b","#3a6ea5","#4f8a5b","#b5483b","#8a5cc7","#2f3a45","#e5b340","#f4ede4"]},
     hat:         {label:"Hat",         opts:["None","Beanie","Cap","Crown","Flower"]},
     eyes:        {label:"Eyewear",     opts:["None","Glasses","Shades"]},
@@ -477,66 +372,104 @@
       else { const n = LOOK[k].colors ? LOOK[k].colors.length : LOOK[k].opts.length; if (Number.isInteger(saved[k]) && saved[k] >= 0 && saved[k] < n) P[k] = saved[k]; }
     } } catch(e) {}
 
-  const lum = hex => (parseInt(hex.slice(1,3),16)*.299 + parseInt(hex.slice(3,5),16)*.587 + parseInt(hex.slice(5,7),16)*.114)/255;   // 0 dark … 1 light
-  const shade = (hex, f) => "#" + [1,3,5].map(i => Math.round(parseInt(hex.slice(i,i+2),16)*f).toString(16).padStart(2,"0")).join("");
+  // ── CHARACTER ART ── 24×24 sprites in a 16-bit tactics-RPG style: chibi proportions, light from the
+  // top-left, three-tone shading and coloured ("sel-out") outlines. Everyone — you, the townspeople,
+  // Matt, Claude and the suits — is built from a "look" by makeSprite(look). Shapes are listed as
+  // horizontal spans: [row, firstColumn, lastColumn].
+  const SW=24;
+  const mix=(hex,t,to)=>{ const a=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)), b=to==="w"?[255,248,232]:[22,12,26];
+    return "#"+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,"0")).join(""); };
+  const ramp=hex=>({hi:mix(hex,.24,"w"), base:hex, sh:mix(hex,.3,"k"), ol:mix(hex,.62,"k")});
 
-  // Builds the 16×16 sprite for your hero from the creator choices (" " in an overlay = keep the pixel underneath).
-  function playerSprite(L = P){   // L = a look (your hero by default; townspeople pass their own)
-    const rows = [
-      "................", "................", "................", "................",
-      "...kssssssssk...", "...kswesswesk...", "...kssssssssk...", "....ksmssmsk....",
-      ".....ksmmsk.....", "...kkuuuuuukk...", "..kuuuuuuuuuuk..", ".kuuUkuuuukUuuk.",
-      ".kskUuuuuuuUksk.", "...kuuuuuuuuk...", "....kcck.kcck...", "...kkkk...kkkk..",
-    ].map(r => r.split(""));
-    const put = (y, str) => [...str].forEach((ch, x) => { if (ch !== " ") rows[y][x] = ch; });
-    const hair = LOOK.hair.opts[L.hair];
-    if (hair === "Short" || hair === "Long" || hair === "Bun") {
-      put(1,"     kkkkkk     "); put(2,"    khhhhhhk    "); put(3,"   khhhhhhhhk   "); put(4,"   kh      hk   ");
-      if (hair === "Bun") put(0,"      khhk      ");
-      if (hair === "Long") {   // a curtain of hair framing the face, down to the shoulders
-        put(1,"    kkkkkkkk    "); put(2,"   khhhhhhhhk   "); put(3,"  khhhhhhhhhhk  "); put(4,"  khh      hhk  ");
-        put(5,"  kh        hk  "); put(6,"  kh        hk  "); put(7,"  khh      hhk  "); put(8,"  khhh    hhhk  ");
-      }   // (rows 9–10 of long hair are added after the outfit so the hair falls over it)
-    } else if (hair === "Curly") {
-      put(0,"    kkkkkkkk    "); put(1,"   khhhhhhhhk   "); put(2,"  khhhhhhhhhhk  "); put(3,"  khhhhhhhhhhk  "); put(4,"  khh      hhk  "); put(5,"  kh        hk  ");
-    } else if (hair === "Buzz") { put(2,"    kkkkkkkk    "); put(3,"   khhhhhhhhk   "); }
-    else { put(2,"    kkkkkkkk    "); put(3,"   kssssssssk   "); }   // Bald
-    const face = LOOK.facial.opts[L.facial];
-    if (face === "Stubble") { put(7,"    kdmssmdk    "); put(8,"     kdmmdk     "); }
-    if (face === "Beard")   { put(6,"   kh      hk   "); put(7,"    khmssmhk    "); put(8,"     khmmhk     "); }
-    if (face === "Moustache") { put(7,"    kshhhhsk    "); put(8,"     ksmmsk     "); }
-    const outfit = LOOK.outfit.opts[L.outfit];
-    if (outfit === "Hoodie") { put(9,"   kkuyuuyukk   "); put(10,"  kuuuyuuyuuuk  "); }
-    if (outfit === "Tee")    put(9,"   kkuussuukk   ");
-    if (outfit === "Tunic")  put(13,"   kggggggggk   ");
-    if (outfit === "Dress")  { put(9,"   kkussssukk   "); put(13,"  kuuuuuuuuuuk  "); put(14," kUuuuuuuuuuuUk "); put(15,"...kkk....kkk..."); }
-    if (hair === "Long") { put(9,"  khh      hhk  "); put(10,"  kh        hk  "); }
-    const hat = LOOK.hat.opts[L.hat];
-    if (hat === "Beanie") { put(0,"       bb       "); put(1,"     kbbbbk     "); put(2,"    kbbbbbbk    "); put(3,"   kBBBBBBBBk   "); }
-    if (hat === "Cap")    { put(1,"     kkkkkk     "); put(2,"    kbbbbbbk    "); put(3,"   kbbbbbbbbbbk "); }
-    if (hat === "Crown")  { put(0,"    g  gg  g    "); put(1,"    gggggggg    "); }
-    if (hat === "Flower") { rows[1][11] = "p"; rows[2][10] = "p"; rows[2][11] = "g"; rows[2][12] = "p"; rows[3][11] = "p"; }
-    const eyes = LOOK.eyes.opts[L.eyes];
-    if (eyes === "Glasses") put(5,"   kKweKKweKk   ");   // K = frame colour, two lenses with the eyes showing
-    if (eyes === "Shades")  put(5,"   kkKKkkKKkk   ");   // K = lens colour
-    const skin = LOOK.skin.colors[L.skin], oc = LOOK.outfitColor.colors[L.outfitColor];
-    return { rows: rows.map(r => r.join("")), pal: {
-      k:"#1e1612", e:"#1e1612", s:skin, d:shade(skin,.72), m:lum(skin)>.45 ? "#7a3b2e" : "#e2a08e", h:LOOK.hairColor.colors[L.hairColor],
-      u:oc, U:shade(oc,.75), y: oc === "#f4ede4" ? "#3b2a20" : "#f4ede4", g:"#e5b340", c:"#2a2a30",
-      b: hat === "Cap" ? "#3a6ea5" : "#c23b30", B:"#7c2320", p:"#e58fb1", w:"#dff3ff", K:LOOK.eyeColor.colors[L.eyeColor||0] } };
+  function makeSprite(L){
+    const M=Array.from({length:SW},()=>Array(SW).fill(null));   // which material each pixel is
+    const span=(y,a,b,m)=>{ if(y<0||y>=SW) return; for(let x=Math.max(0,a);x<=Math.min(SW-1,b);x++) M[y][x]=m; };
+    const dot=(x,y,m)=>{ if(x>=0&&y>=0&&x<SW&&y<SW) M[y][x]=m; };
+    const outfit=LOOK.outfit.opts[L.outfit], hair=LOOK.hair.opts[L.hair], hat=LOOK.hat.opts[L.hat],
+          face=LOOK.facial.opts[L.facial], eyes=LOOK.eyes.opts[L.eyes];
+    // head, neck, body, sleeves, hands
+    [[3,9,14],[4,7,16],[5,6,17],[6,6,17],[7,6,17],[8,6,17],[9,6,17],[10,7,16],[11,8,15],[12,10,13]].forEach(([y,a,b])=>span(y,a,b,"skin"));
+    [[13,7,16],[14,6,17],[15,6,17],[16,6,17],[17,7,16]].forEach(([y,a,b])=>span(y,a,b,"top"));
+    for(let y=13;y<=16;y++){ span(y,4,5,"top"); span(y,18,19,"top"); }
+    span(17,4,5,"skin"); span(17,18,19,"skin");
+    if(outfit==="Tee") for(let y=15;y<=16;y++){ span(y,4,5,"skin"); span(y,18,19,"skin"); }
+    if(outfit==="Dress"){ span(18,6,17,"top"); span(19,5,18,"top"); span(20,5,18,"top"); span(21,8,10,"shoe"); span(21,13,15,"shoe"); }
+    else { span(18,8,15,"pants"); for(const y of [19,20]){ span(y,8,10,"pants"); span(y,13,15,"pants"); } span(21,7,10,"shoe"); span(21,13,16,"shoe"); }
+    // hair
+    const crop=()=>{ span(2,8,15,"hair"); span(3,6,17,"hair"); span(4,5,18,"hair"); span(5,5,18,"hair");
+      span(6,5,7,"hair"); span(6,16,18,"hair"); span(7,5,6,"hair"); span(7,17,18,"hair"); dot(9,6,"hair"); dot(12,6,"hair"); dot(14,6,"hair"); };
+    if(hair==="Short"||hair==="Long"||hair==="Bun") crop();
+    if(hair==="Long") for(let y=6;y<=15;y++){ span(y,4,6,"hair"); span(y,17,19,"hair"); }
+    if(hair==="Bun"){ span(0,10,13,"hair"); span(1,9,14,"hair"); }
+    if(hair==="Curly"){ span(1,7,16,"hair"); span(2,5,18,"hair"); for(let y=3;y<=6;y++) span(y,4,19,"hair"); for(let y=7;y<=9;y++){ span(y,4,6,"hair"); span(y,17,19,"hair"); } }
+    if(hair==="Buzz"){ span(3,8,15,"hair"); span(4,6,17,"hair"); dot(6,5,"hair"); dot(17,5,"hair"); }
+    if(face==="Beard"){ span(9,6,7,"hair"); span(9,16,17,"hair"); span(10,6,17,"hair"); span(11,7,16,"hair"); span(12,9,14,"hair"); }
+    if(face==="Moustache") span(10,9,14,"hair");
+    // hats
+    if(hat==="Beanie"){ span(0,11,12,"hat"); span(1,8,15,"hat"); span(2,6,17,"hat"); span(3,5,18,"hat"); span(4,5,18,"cuff"); span(5,5,18,"cuff"); }
+    if(hat==="Cap"){ span(1,8,15,"hat"); span(2,6,17,"hat"); span(3,5,18,"hat"); span(4,5,18,"hat"); span(5,2,9,"brim"); }
+    if(hat==="Crown"){ dot(8,0,"gold"); dot(12,0,"gold"); dot(16,0,"gold"); span(1,8,16,"gold"); span(2,8,16,"gold"); }
+    if(hat==="Flower"){ dot(16,2,"petal"); dot(15,3,"petal"); dot(17,3,"petal"); dot(16,4,"petal"); dot(16,3,"gold"); }
+
+    // shading: light from the top-left, the right side of the figure in shade
+    const topHex=L.topHex||LOOK.outfitColor.colors[L.outfitColor], hatHex=L.hatHex||(hat==="Cap"?"#3a6ea5":"#c23b30");
+    const R={ skin:ramp(LOOK.skin.colors[L.skin]), hair:ramp(LOOK.hairColor.colors[L.hairColor]), top:ramp(topHex),
+      pants:ramp(outfit==="Suit"?topHex:"#3b4a63"), shoe:ramp("#5a3a2a"), hat:ramp(hatHex), cuff:ramp(mix(hatHex,.25,"k")),
+      brim:ramp(mix(hatHex,.18,"k")), gold:ramp("#e5b340"), petal:ramp("#f2a6c4") };
+    const C=Array.from({length:SW},()=>Array(SW).fill(null));
+    const other=(x,y,m)=>x<0||y<0||x>=SW||y>=SW||M[y][x]!==m;
+    for(let y=0;y<SW;y++) for(let x=0;x<SW;x++){
+      const m=M[y][x]; if(!m) continue; const r=R[m]; let t=r.base;
+      if(x>=15) t=r.sh;
+      if(other(x,y-1,m)||other(x-1,y,m)) t=r.hi;
+      if(other(x+1,y,m)||other(x,y+1,m)) t=r.sh;
+      if(m==="skin" && y>0 && ["hair","hat","cuff","brim"].includes(M[y-1][x])) t=r.sh;   // hair and hats cast a shadow
+      if(m==="hair" && t===r.base && (x*3+y)%7===0) t=r.sh;                                 // strands
+      if(m==="hair" && hair==="Curly" && (x+y)%3===0 && t!==r.sh) t=r.hi;                    // curls
+      C[y][x]=t;
+    }
+    const put=(x,y,col)=>{ if(x>=0&&y>=0&&x<SW&&y<SW) C[y][x]=col; };
+    // eyes: small and dark (no mouth, in the classic style)
+    const EYE="#2a1a1a";
+    if(M[8][9]==="skin"){ put(9,8,EYE); put(9,9,EYE); }
+    if(M[8][14]==="skin"){ put(14,8,EYE); put(14,9,EYE); }
+    if(face==="Stubble") for(let y=10;y<=11;y++) for(let x=8;x<=15;x++) if(M[y][x]==="skin" && (x+y)%2===0) put(x,y,mix(R.skin.base,.32,"k"));
+    // outfit details
+    const accent=L.accentHex||"#c23b30";
+    if(outfit==="Hoodie"){ for(const [x,y] of [[10,13],[10,14],[13,13],[13,14]]) put(x,y,"#f4ede4"); for(let x=9;x<=14;x++) put(x,16,R.top.sh); }
+    if(outfit==="Tee"||outfit==="Dress"){ put(11,13,R.skin.base); put(12,13,R.skin.sh); }
+    if(outfit==="Tunic"){ for(let x=7;x<=16;x++) put(x,17,x<15?"#c9962a":"#9c7220"); put(11,17,"#f5d68a"); }
+    if(outfit==="Suit"){ for(const [x,y] of [[10,13],[13,13],[10,14],[13,14]]) put(x,y,"#f4f1ea"); for(let y=13;y<=17;y++){ put(11,y,accent); put(12,y,mix(accent,.3,"k")); } put(11,13,mix(accent,.2,"w")); }
+    if(outfit==="Plaid") for(let y=13;y<=20;y++) for(let x=4;x<=19;x++) if(M[y][x]==="top" && ((x>>1)+(y>>1))%2===0) put(x,y,mix(C[y][x],.55,"k"));
+    // eyewear
+    const ec=LOOK.eyeColor.colors[L.eyeColor||0];
+    if(eyes==="Glasses"){ const F=ec;   // thin rims around each eye, joined by a bridge
+      for(const x of [8,9,10,13,14,15]){ put(x,7,F); put(x,10,F); } for(const x of [8,10,13,15]){ put(x,8,F); put(x,9,F); }
+      put(11,8,F); put(12,8,F); }
+    if(eyes==="Shades"){ for(const y of [8,9]) for(const x of [8,9,10,13,14,15]) put(x,y,ec); put(8,8,mix(ec,.45,"w")); put(13,8,mix(ec,.45,"w")); put(11,8,"#2a1a1a"); put(12,8,"#2a1a1a"); }
+
+    // coloured outline: each empty pixel touching the figure takes the darkest tone of what it touches
+    const out=document.createElement("canvas"); out.width=SW; out.height=SW; const g=out.getContext("2d");
+    for(let y=0;y<SW;y++) for(let x=0;x<SW;x++){
+      let col=C[y][x];
+      if(!col){ for(const [dx,dy] of [[0,1],[-1,0],[1,0],[0,-1]]){ const nx=x+dx, ny=y+dy; if(nx>=0&&ny>=0&&nx<SW&&ny<SW&&M[ny][nx]){ col=R[M[ny][nx]].ol; break; } } }
+      if(col){ g.fillStyle=col; g.fillRect(x,y,1,1); }
+    }
+    return out;
   }
 
-  function drawSprite(sp, canvas){
-    const c = canvas || document.createElement("canvas"); c.width = 16; c.height = 16;
-    const g = c.getContext("2d"); g.clearRect(0, 0, 16, 16);
-    sp.rows.forEach((row, y) => [...row].forEach((ch, x) => {
-      if (ch !== "." && sp.pal[ch]) { g.fillStyle = sp.pal[ch]; g.fillRect(x, y, 1, 1); }
-    }));
-    return c;
-  }
+  // the cast (built with the same generator as your hero)
+  const CAST={
+    matthew:{skin:3, hair:0, hairColor:0, facial:1, outfit:0, outfitColor:0, hat:0, eyes:0},
+    claude: {skin:1, hair:0, hairColor:1, facial:2, outfit:5, outfitColor:0, hat:1, hatHex:"#e0782b", eyes:0},
+    manager:{skin:1, hair:0, hairColor:1, facial:0, outfit:4, topHex:"#34507a", accentHex:"#c23b30", hat:0, eyes:0},
+    ceo:    {skin:2, hair:4, hairColor:5, facial:0, outfit:4, topHex:"#26262e", accentHex:"#e5b340", hat:0, eyes:2, eyeColor:0},
+    consult:{skin:0, hair:0, hairColor:3, facial:0, outfit:4, topHex:"#6d7782", accentHex:"#3a6ea5", hat:0, eyes:1, eyeColor:0},
+    intern: {skin:4, hair:2, hairColor:0, facial:0, outfit:1, outfitColor:7, hat:0, eyes:0},
+  };
   const SPRITE_URL = {};
-  for (const [key, sp] of Object.entries(SPRITES)) SPRITE_URL[key] = drawSprite(sp).toDataURL();
-  const refreshPlayer = () => { SPRITE_URL.player = drawSprite(playerSprite()).toDataURL(); };
+  for (const [key, look] of Object.entries(CAST)) SPRITE_URL[key] = makeSprite(look).toDataURL();
+  const refreshPlayer = () => { SPRITE_URL.player = makeSprite(P).toDataURL(); };
   refreshPlayer();
 
   const $ = id => document.getElementById(id);
@@ -1261,7 +1194,7 @@
 
   // character creator
   const cleanName = s => s.replace(/[<>&"'`]/g,"").trim().slice(0,14);
-  const paintPreview = () => drawSprite(playerSprite(), $("crPrev"));
+  const paintPreview = () => { const g=$("crPrev").getContext("2d"); g.clearRect(0,0,SW,SW); g.drawImage(makeSprite(P),0,0); };
   function buildCreator(){
     $("crName").value=P.name;
     const rows=$("crRows"); rows.innerHTML="";
@@ -1395,10 +1328,16 @@
   }
 
   // Tapping the map walks there. Tapping a person, snack, sign or building walks next to it and faces it;
-  // then the A button (or Space / Enter / E / Z) talks, picks up or reads. Walking into the Sloth's door goes inside.
+  // tapping it again (or Space / Enter / E / Z) talks, picks up or reads. Walking into the Sloth's door goes inside.
   function townTap(tx,ty){
     if(TOWN.cut || TOWN.talk || !overlay.classList.contains("hidden")) return;
     const adj=(x,y)=>Math.abs(x-tx)+Math.abs(y-ty)===1;
+    // already standing next to it? then act on it straight away
+    const near=objAt(tx,ty), touching=d=>{ const [dx,dy]=d; return (TOWN.x+dx===tx && TOWN.y+dy===ty) || (near && near.k==="bld" && objAt(TOWN.x+dx,TOWN.y+dy)===near); };
+    const dirNow=[[0,-1],[1,0],[-1,0],[0,1]].find(touching);
+    if(!TOWN.path.length && dirNow && (personAt(tx,ty) || pickupAt(tx,ty) || isDoor(tx,ty) || (near && (near.say || near.enter)))){
+      TOWN.face=dirNow; if(dirNow[0]) TOWN.dir=dirNow[0]; TOWN.dirty=true; doAction(); return;
+    }
     const faceIt=()=>faceTo(tx,ty);
     const person=personAt(tx,ty), item=pickupAt(tx,ty), obj=objAt(tx,ty);
     let path=null, then=null;
@@ -1433,10 +1372,8 @@
     const o=objAt(fx,fy); if(o && o.say) return {label:o.k==="sign"?"Read":"Look", run:()=>talk(o.label||"", [o.say])};
     return null;
   }
-  function updateAct(){
-    const a=$("act"), t=!TOWN.talk && !TOWN.path.length ? actionTarget() : null;
-    a.querySelector("small").textContent = TOWN.talk ? "Next" : t ? t.label : "";
-    a.classList.toggle("ready", !!(t || TOWN.talk));
+  function updateAct(){   // the canvas cursor hints when there's something in front of you
+    TOWN.cv.style.cursor = !TOWN.talk && !TOWN.path.length && actionTarget() ? "help" : "pointer";
   }
   function doAction(){
     if(TOWN.talk){ advanceTalk(); return; }
@@ -1445,7 +1382,7 @@
     const t=actionTarget(); if(t){ Sound.sfx("select"); t.run(); } else Sound.sfx("back");
     updateAct();
   }
-  $("act").onclick=doAction;
+  // (no on-screen button: Space / Enter / E / Z on a keyboard, or tap the thing again on a phone)
 
   function arriveTile(){
     if(isDoor(TOWN.x,TOWN.y)){ TOWN.path=[]; TOWN.onArrive=null; fightScene(); }
@@ -1556,7 +1493,7 @@
         R("rgba(0,0,0,.12)",4,13,24,2);
         for(let i=0;i<6;i++){ C("#d9c39a",px-6+i,py+2+i,1,1); C("#d9c39a",px+37-i,py+2+i,1,1); }   // ropes
         if(TOWN.sleeping && SPR_CV.player){
-          c.save(); c.translate(px+16,py+7+sway); c.rotate(-Math.PI/2); c.drawImage(SPR_CV.player,-8,-9); c.restore();
+          c.save(); c.translate(px+16,py+7+sway); c.rotate(-Math.PI/2); c.drawImage(SPR_CV.player,-12,-15); c.restore();
           for(let i=0;i<2;i++){ const t=((TOWN.now/700)+i*1.5)%3, zx=px+22+i*5+Math.round(t*2), zy=py-2-Math.round(t*5);
             c.globalAlpha=Math.max(0,1-t/3); C("#ffffff",zx,zy,3,1); C("#ffffff",zx+1,zy+1,1,1); C("#ffffff",zx,zy+2,3,1); c.globalAlpha=1; }
         }
@@ -1581,10 +1518,10 @@
   const STRIDE=new Map();
   function strideFrame(cv){
     if(STRIDE.has(cv)) return STRIDE.get(cv);
-    const f=document.createElement("canvas"); f.width=16; f.height=16; const g=f.getContext("2d");
+    const f=document.createElement("canvas"); f.width=SW; f.height=SW; const g=f.getContext("2d");
     g.drawImage(cv,0,0);
-    const L=g.getImageData(0,13,8,3), R=g.getImageData(8,13,8,3);
-    g.clearRect(0,13,16,3); g.putImageData(L,-1,13); g.putImageData(R,1,13);
+    const L=g.getImageData(0,18,12,5), R=g.getImageData(12,18,12,5);   // the legs
+    g.clearRect(0,18,SW,5); g.putImageData(L,-1,18); g.putImageData(R,1,18);
     STRIDE.set(cv,f); return f;
   }
   function drawChar(c,key,x,y,dir,walk){
@@ -1592,10 +1529,10 @@
     const px=Math.round(x*TS), py=Math.round(y*TS);
     let img=base, lift=0;
     if(walk!=null){ const stride=Math.floor(walk*4)%2===1; img = stride ? strideFrame(base) : base; lift = stride ? 0 : 1; }   // 2 steps per tile; idle = stand still
-    c.fillStyle="rgba(0,0,0,.2)"; c.fillRect(px+4,py+13,8,2);
-    const top=py-4-lift-(key==="player" ? TOWN.hopLift||0 : 0);
-    if(dir<0){ c.save(); c.translate(px+16,0); c.scale(-1,1); c.drawImage(img,0,top); c.restore(); }
-    else c.drawImage(img,px,top);
+    c.fillStyle="rgba(0,0,0,.2)"; c.fillRect(px+3,py+12,10,3);   // characters are 24px tall: feet near the bottom of their tile
+    const top=py-10-lift-(key==="player" ? TOWN.hopLift||0 : 0);
+    if(dir<0){ c.save(); c.translate(px+8,0); c.scale(-1,1); c.drawImage(img,-12,top); c.restore(); }
+    else c.drawImage(img,px-4,top);
   }
 
   function townDraw(){
@@ -1643,8 +1580,12 @@
   $("talk").onclick=advanceTalk;
 
   TOWN.cv.onclick=e=>{
+    if(TOWN.talk){ advanceTalk(); return; }   // tapping anywhere moves the conversation on
     const r=TOWN.cv.getBoundingClientRect();
-    townTap(Math.floor(((e.clientX-r.left)/r.width*TOWN.vw+TOWN.cam.x)/TS), Math.floor(((e.clientY-r.top)/r.height*TOWN.vh+TOWN.cam.y)/TS));
+    const tx=Math.floor(((e.clientX-r.left)/r.width*TOWN.vw+TOWN.cam.x)/TS);
+    let ty=Math.floor(((e.clientY-r.top)/r.height*TOWN.vh+TOWN.cam.y)/TS);
+    if(!personAt(tx,ty) && (personAt(tx,ty+1) || (TOWN.x===tx && TOWN.y===ty+1))) ty++;   // characters are taller than a tile: a tap on their head counts
+    townTap(tx,ty);
   };
   document.addEventListener("keydown", e=>{
     if($("cg").dataset.screen!=="town" || !overlay.classList.contains("hidden")) return;
@@ -1676,9 +1617,9 @@
     setScreen("town");
     for(const k in INV) INV[k]=0; TOWN.taken.clear();
     Object.assign(TOWN,{x:1,y:9,px:1,py:9,dir:1,face:[0,1],walk:0,path:[],onArrive:null,talk:null});
-    SPR_CV.player=drawSprite(playerSprite()); STRIDE.clear();
+    SPR_CV.player=makeSprite(P); STRIDE.clear();
     sizeTown(); buildLabels(); renderHud(); showTalk();
-    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap the map to walk (or arrow keys). Face someone or something and press <b>A</b> (or Space) to talk, look or pick it up.</div>`;
+    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap the map to walk (or arrow keys). Tap someone or something to walk up to it, then tap it again to talk, look or pick it up (or press Space).</div>`;
     if(!TOWN.raf){ TOWN.last=0; TOWN.raf=requestAnimationFrame(townLoop); }
     Sound.play("cafe");
     openingScene();
@@ -1744,8 +1685,8 @@
   }
 
   // NPC sprites, built with the same generator as your hero
-  SPR_CV.matthew=drawSprite(SPRITES.matthew);
-  for(const p of PEOPLE) if(p.look) SPR_CV["npc:"+p.name]=drawSprite(playerSprite(p.look));
+  SPR_CV.matthew=makeSprite(CAST.matthew);
+  for(const p of PEOPLE) if(p.look) SPR_CV["npc:"+p.name]=makeSprite(p.look);
 
   const sndBtn=$("snd"); const paintSnd=()=>{ sndBtn.textContent=Sound.on?"🔊":"🔇"; }; paintSnd();
   sndBtn.onclick=()=>{ Sound.init(); Sound.setOn(!Sound.on); paintSnd(); };
