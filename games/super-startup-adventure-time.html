@@ -352,22 +352,22 @@
      ]},
     // The Intern attacks by taking a selfie with you in the background (with a comment). Sometimes he dances instead, which hurts his own team.
     {name:"Intern", spr:"intern", team:"foe", hp:40, mp:0, def:1, mov:2, intern:true,
-     blurb:"Unpaid. Extremely online. Attacks by taking selfies at you. Sometimes dances and hurts his own team.",
+     blurb:"Unpaid. Extremely online. An Aussie on a working holiday. Attacks by taking selfies at you. Sometimes dances and hurts his own team.",
      moves:[ {name:"Selfie Flash", kind:"magic", type:"dmg", pow:5, rng:[1,3], color:"#ff6fae", get quips(){ return SELFIE_LINES; }} ]},
   ];
   // Gaz is just here for a drink. Nobody can target him, and he doesn't count toward winning.
   const GAZ = {name:"Gord", spr:"gord", team:"neutral", hp:99, mp:0, def:9, mov:0, moves:[],
-    blurb:"On holiday. Beach shirt, cold drink, zero interest in this.",
+    blurb:"A very nice Canadian on holiday. Beach shirt, cold drink, zero interest in this, eh.",
     // Gord takes a turn every round: he drinks a beer and says something. Each line is a bit more unhinged than the last.
-    lines:["Ahh. Cheers, mate. Just a quiet beer, nobody mind me.", "Is it just me, or is that CEO bloke's tie looking at me?", "I used to be a lifeguard in Perth. I saw things, mate. THINGS.",
-           "This beer has a face now. His name's Kevin. Kevin says hi.", "I've been to the other side of the bar. It's just more bar.", "Not to brag, but I think I invented the beer. Nobody's proved otherwise.",
-           "THE INTERN KNOWS WHAT I DID IN BALI. HE HAS A PHONE.", "I AM THE BAR. THE BAR IS ME. WHO'S HOLDING MY BEER?!", "I just ate a coaster and I feel FANTASTIC. Ask me about the moon.",
-           "SHEEP. EVERYTHING IS SHEEP. I LOVE YOU ALL. NOBODY LEAVE.", "THE MOON OWES ME MONEY AND IT KNOWS IT. KEVIN, BRING THE BOAT!", "I AM ONE WITH THE FOAM. THE FOAM IS ETERNAL. BEHOLD, MY BEER-SOUL!"]};
-  const SELFIE_LINES=["Hold still, you're ruining my lighting!", "Say 'synergy'!", "This is so going on my story.", "Wait, my good side is the other good side.",
-    "Bestie, you're giving 'background character'.", "Okay but make it a candid.", "Smile! It's for the 'gram. Please don't sue.", "Caption: 'Day 4 of being unpaid 🥲'.", "Photo dump incoming 📸"];
-  const INTERN_LINES=["It's giving… corporate.", "No cap, this co-working space is so 2019.", "I'm literally so cooked rn.", "This meeting could've been a TikTok.",
-    "Lowkey just want a matcha.", "Bestie, that's not very demure.", "Is 'synergy' a vibe or a red flag?", "Wait, are we getting paid in exposure again?",
-    "Ate and left no crumbs. 💅", "Touch grass? We're literally on a beach."];
+    lines:["Ahh. Cheers, buddy. Just a quiet beer, nobody mind me, eh.", "Is it just me, or is that CEO's tie looking at me, eh?", "I played goalie in Moose Jaw for twelve years. I saw things, bud. THINGS.",
+           "This beer has a face now. His name's Kevin. Kevin says sorry, eh.", "I've been to the other side of the bar. It's just more bar. Sorry.", "Not to brag, but I think I invented the double-double. Nobody's proved otherwise.",
+           "THE INTERN KNOWS WHAT I DID AT THE CANADIAN TIRE. HE HAS A PHONE.", "I AM THE BAR. THE BAR IS ME. SORRY. WHO'S HOLDING MY BEER?!", "I just ate a poutine coaster and I feel FANTASTIC. Ask me about the moon, eh.",
+           "MOOSE. EVERYTHING IS MOOSE. I LOVE YOU ALL. SORRY. NOBODY LEAVE.", "THE MOON OWES ME LOONIES AND IT KNOWS IT. KEVIN, BRING THE CANOE!", "I AM ONE WITH THE FOAM. THE FOAM IS ETERNAL. BEHOLD, MY BEER-SOUL, EH!"]};
+  const SELFIE_LINES=["Hold still, mate, you're ruining my lighting!", "Say 'synergy', yeah?", "This is heaps going on my story.", "Nah, my good side's the other good side.",
+    "Bestie, you're giving 'background character'. No worries.", "Okay but make it a candid, hey.", "Smile! It's for the 'gram. Don't sue me, reckon?", "Caption: 'Day 4 of being unpaid 🥲 no dramas'.", "Photo dump incoming 📸 arvo content!"];
+  const INTERN_LINES=["It's giving… corporate, mate.", "No cap, this co-working space is so 2019. Heaps cooked.", "I'm literally so cooked rn, reckon.", "This meeting could've been a TikTok. No worries.",
+    "Lowkey just want a flat white.", "Bestie, that's not very demure. Yeah nah.", "Is 'synergy' a vibe or a red flag? Reckon red flag.", "Wait, are we getting paid in exposure again? Yeah nah.",
+    "Ate and left no crumbs. 💅 Heaps good.", "Touch grass? We're literally on a beach, mate."];
   const STARTS = [[1,2],[6,1],[7,2],[7,3],[6,4],[7,5],[3,0]];   // your hero, then FOES in order, then Gaz
 
   // ── BACKUP ── Matt joins at the start of turn 2. Each move is one of the services he delivers, and does what it says for the team.
@@ -1256,17 +1256,57 @@
     return false;
   }
 
-  function gameOver(win){
+  const TIPS=[
+    "Matt arrives at the start of turn 2 and heals everyone. Keep your hero alive until then.",
+    "Automate the Admin stuns every suit in its blast, and a stunned suit loses their turn.",
+    "Snacks you find around Canggu help a lot. Explore before you walk into The Sloth.",
+    "Take down the consultants first: they hit hard and fall fast. The Intern is tanky and weak.",
+    "Claude can only be summoned once, so save the summon for when it counts.",
+    "Gord can't be hit and doesn't count toward the win. Ignore him and enjoy the show."
+  ];
+  // the closing cutscene: everyone says their piece, and Gord raises a beer either way
+  async function endingScene(win){
+    const me=S.units[0].name, gordU=S.units.find(u=>u.team==="neutral");
+    Sound.play(win?"victory":"defeat");
+    const lines = win ? [
+      ["manager",  "Middle Manager",     "Okay. Okay! We'll circle back on the Sloth Space initiative… offline. Forever."],
+      ["ceo",      "The CEO",            "We are pivoting. To not owning a sloth bar. Synergy is, regrettably, cancelled."],
+      ["consultW", "Brooke, Consultant", "I'll update the deck. Slide one is now just a sloth."],
+      ["consultA", "Grace, Consultant",  "Honestly? Kind of a vibe. Please don't tell the partners."],
+      ["intern",   "Intern",             "Mate, that was HEAPS good. Got the whole thing on my story. Reckon it'll go off."],
+      ...(S.backupIn ? [["matthew","Matt","Told you. Done-for-you."]] : []),
+      ...(S.claudeIn ? [["claude","Claude","Bien joué, eh! The maple syrup's on me."]] : []),
+      ["gord",     "Gord",               "Well, hey, nice work, buddy! Round's on me, eh. Everybody! Even the suits! Sorry about all the yelling earlier."],
+      ["player",   me,                   "Not my Sloppy Sloth. Not today. …Okay, I'll take that beer."]
+    ] : [
+      ["ceo",      "The CEO",            "And that's a wrap. Welcome to Sloth Space™. Hot desks, cold brew, zero personality."],
+      ["manager",  "Middle Manager",     "I'll schedule a retro. Everyone's invited. Except you."],
+      ["consultW", "Brooke, Consultant", "I'm so proud of us. Let's circle back on the rebrand."],
+      ["consultA", "Grace, Consultant",  "Slide forty-two: “We Won.” Please hold your applause."],
+      ["intern",   "Intern",             "Yeah nah, I'm legit filming this. “Day 1 of the new office.” Heaps cooked, mate."],
+      ["gord",     "Gord",               "Well, shoot. Tough break, buddy. But hey, a win's a win, eh! Cheers, everybody! Sorry! Cheers!"],
+      ["player",   me,                   "…We'll be back. With a plan."]
+    ];
+    await cutTalk(lines, i=>{
+      if(lines[i][0]==="gord"){ Sound.sfx("pint"); if(gordU) float(gordU,"🍺","var(--fight)"); flashFx(); }
+      if(win && i===0) flashFx();
+    });
+  }
+
+  async function gameOver(win){
     S.phase="over"; clearSel(); render();
     info.innerHTML = win ? "<b>Victory.</b>" : "<b>Defeat.</b>";
+    try { await endingScene(win); } catch(e){ console.warn("ending scene skipped:", e); Sound.play(win?"victory":"defeat"); }
     const cta = `<a href="/#sec-contact" target="_top">Let's talk →</a>`;
     const assist = S.backupIn ? ` Matt dealt ${S.backupDmg} damage${S.claudeIn?`, Claude ${S.claudeDmg}`:""}.` : "";
     const btns = `<div class="row2"><button class="primary" id="again">${win?"Play again":"Try again"}</button><button id="newHero">New hero</button></div>`;
+    const tipList = [...TIPS].sort(()=>Math.random()-.5);
+    if(S.turn<=2 && !win){ tipList.splice(tipList.indexOf(TIPS[0]),1); tipList.unshift(TIPS[0]); }
+    const tips = win ? "" : `<p style="text-align:left"><b>Tips for next time</b><br>${tipList.slice(0,3).map(t=>"• "+t).join("<br>")}</p>`;
     overlay.innerHTML = win
       ? `<h2>Sloth saved 🦥</h2><p>Won in ${S.turn} turn${S.turn>1?"s":""}. The Sloppy Sloth stays sloppy.${assist}</p><p>Running your own thing? You don't have to hold the line alone. ${cta}</p>${btns}`
-      : `<h2>Acquired.</h2><p>The Sloppy Sloth is now a co-working space with a kombucha tap.</p><p>Some fights need a plan, not just backup. ${cta}</p>${btns}`;
+      : `<h2>Acquired.</h2><p>The Sloppy Sloth is now a co-working space with a kombucha tap.</p>${tips}<p>Some fights need a plan, not just backup. ${cta}</p>${btns}`;
     overlay.classList.remove("hidden");
-    Sound.play(win?"victory":"defeat");
     $("again").onclick=()=>{ overlay.classList.add("hidden"); reset(); Sound.play("battle"); };
     $("newHero").onclick=()=>{ Sound.stop(); showCreator(); };
   }
@@ -1472,12 +1512,18 @@
       info.innerHTML="Your turn. Pick a hero."; render();
     }
   }
+  function enemyOrder(){   // the Intern goes mid-turn; Gord closes the round
+    const foes=alive("foe"), intern=foes.find(f=>f.intern), rest=foes.filter(f=>!f.intern);
+    if(intern) rest.splice(Math.floor(rest.length/2), 0, intern);
+    return rest;
+  }
   async function enemyPhaseRun(){
     S.phase="enemy"; S.busy=true; clearSel(); render();
     info.innerHTML="<b>Enemy turn…</b>";
     for(const e of alive("foe")) e.mp=Math.min(e.maxMp,e.mp+1);
     await wait(300);
-    for(const e of alive("foe")){
+    for(const e of enemyOrder()){
+      if(!e.alive) continue;
       if(!alive("hero").length) break;
       if(e.stun){ e.stun=false; log(`${e.name} is stunned and loses a turn.`); float(e,"💤","var(--magic)"); render(); await wait(500); continue; }
       if(e.intern){ await internTurn(e); await wait(120); continue; }
@@ -2150,8 +2196,8 @@
       ["ceo",      "The CEO",            "By Monday it's “Sloth Space”. Hot desks, cold brew, kombucha on tap."],
       ["consultW", "Brooke, Consultant", "Your vibe is… not on-brand. We'll need you to leave."],
       ["consultA", "Grace, Consultant",  "I've made a deck about it. Forty slides. Please hold your questions."],
-      ["intern",   "Intern",             "Wait, is this a fight? This is so going on my story."],
-      ["gord",     "Gord",               "…Bud, I'm just here for a drink. Leave me out of this."],
+      ["intern",   "Intern",             "Wait, is this a fight? Heaps good, this is so going on my story."],
+      ["gord",     "Gord",               "…Sorry, bud, I'm just here for a drink, eh. Leave me out of this."],
       ["player",   me,                   "Not my Sloppy Sloth. Not today."],
     ], i=>{ if(i===1){ Sound.sfx("thud"); flashFx(); shakeWrap(); } if(i===6){ Sound.sfx("sting"); shakeWrap(); } });
     wrapEl.classList.remove("cine");
