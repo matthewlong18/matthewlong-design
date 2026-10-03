@@ -114,11 +114,32 @@
   </div>
 </section>
 
-<!-- ===================== PRINCIPLES ===================== -->
-<section style="position:relative;z-index:1;background:#fbf8f3;max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px) clamp(40px,6vw,72px)">
-  <div style="border-top:1px solid rgba(22,19,13,.14);padding-top:clamp(28px,3vw,40px)">
-    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">How I work</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:clamp(22px,3vw,44px);margin-top:22px">
+<!-- ===================== JOURNEY ===================== -->
+<section id="sec-journey" style="background:#f4efe6;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
+  <div class="grain"></div>
+
+  <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
+    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">A hero's journey, roughly</div>
+    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;max-width:640px">How a construction-site kid from Toronto ended up building in Copenhagen.</h2>
+
+    <div style="margin-top:clamp(32px,5vw,52px);display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(24px,3vw,40px)">
+      <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="3">
+        <div id="chapter-{{ $index }}" data-reveal class="rv">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:10px;height:10px;border-radius:50%;background:#ec6a26;flex:none"></span>
+            <div style="flex:1;height:0;border-top:1.5px dashed rgba(22,19,13,.3)"></div>
+          </div>
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#a8391a;margin-top:16px">{{ ch.stage }}</div>
+          <h3 style="font:600 clamp(22px,2.6vw,28px)/1.1 'Space Grotesk',sans-serif;margin:8px 0 0">{{ ch.place }}</h3>
+          <div style="font:500 12px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:6px">{{ ch.code }} · {{ ch.years }}</div>
+          <p style="font:400 16px/1.55 'IBM Plex Sans',sans-serif;color:#3a342a;margin:14px 0 0">{{ ch.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="margin-top:clamp(40px,6vw,72px);border-top:1px solid rgba(22,19,13,.14);padding-top:clamp(28px,3vw,40px)">
+      <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">The elixir · what I brought back</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:clamp(22px,3vw,44px);margin-top:22px">
       <div data-reveal class="rv">
         <div style="font:700 14px 'IBM Plex Mono',monospace;color:#2b5fa8">01</div>
         <div style="font:600 clamp(19px,2.4vw,23px)/1.15 'Space Grotesk',sans-serif;margin-top:8px">Action over theory.</div>
@@ -134,38 +155,7 @@
         <div style="font:600 clamp(19px,2.4vw,23px)/1.15 'Space Grotesk',sans-serif;margin-top:8px">Done-for-you, not DIY.</div>
         <p style="font:400 15px/1.5 'IBM Plex Sans',sans-serif;color:#6b5f4d;margin:8px 0 0">You hired a builder so you don't have to become one. I sweat the plumbing.</p>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== JOURNEY ===================== -->
-<section id="sec-journey" style="background:#f4efe6;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
-  <div class="grain"></div>
-
-  <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
-    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">The long way round</div>
-    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;max-width:640px">How a construction-site kid from Toronto ended up building in Copenhagen.</h2>
-
-    <div style="margin-top:clamp(36px,5vw,60px);display:flex;flex-direction:column;gap:clamp(28px,4vw,44px)">
-      <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="3">
-        <div id="chapter-{{ $index }}" data-reveal class="rv" style="display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,44px);align-items:flex-start;border-top:1px solid rgba(22,19,13,.14);padding-top:clamp(24px,3vw,36px)">
-          <div style="flex:0 0 auto;min-width:120px">
-            <div style="font:700 13px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#a8391a">{{ ch.code }}</div>
-            <div style="font:700 clamp(40px,6vw,68px)/0.9 'Space Grotesk',sans-serif;color:#16130d;margin-top:6px">0{{ ch.chNum }}</div>
-            <div style="font:500 12px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:8px">{{ ch.years }}</div>
-          </div>
-          <div style="flex:1 1 320px">
-            <h3 style="font:600 clamp(22px,3vw,30px)/1.1 'Space Grotesk',sans-serif;margin:0">{{ ch.place }}</h3>
-            <div style="font:500 14px 'IBM Plex Sans',sans-serif;color:#2b5fa8;margin-top:4px">{{ ch.role }}</div>
-            <p style="font:400 clamp(16px,1.9vw,18px)/1.55 'IBM Plex Sans',sans-serif;color:#3a342a;margin:14px 0 0;max-width:560px">{{ ch.body }}</p>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
-              <sc-for list="{{ ch.tags }}" as="t" hint-placeholder-count="3">
-                <span style="font:500 12px 'IBM Plex Mono',monospace;color:#6b5f4d;border:1px solid rgba(22,19,13,.2);padding:4px 10px;border-radius:20px">{{ t }}</span>
-              </sc-for>
-            </div>
-          </div>
-        </div>
-      </sc-for>
+      </div>
     </div>
   </div>
 </section>
@@ -205,12 +195,17 @@
   </div>
 </section>
 
-<!-- ===================== TESTIMONIAL ===================== -->
-<section style="background:#f4efe6;padding:clamp(48px,7vw,84px) 0;position:relative;z-index:1">
-  <div style="max-width:820px;margin:0 auto;padding:0 clamp(16px,4vw,40px);text-align:center">
-    <div style="font:700 60px 'Space Grotesk',sans-serif;color:#a8391a;line-height:.5">&ldquo;</div>
-    <blockquote style="font:500 clamp(22px,3.4vw,32px)/1.35 'Space Grotesk',sans-serif;color:#16130d;margin:14px 0 0;letter-spacing:-.01em">My Matty is so handsome and smart, such a good kid.</blockquote>
-    <div style="font:500 14px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:22px">&mdash; Mom</div>
+<!-- ===================== SIDE QUEST (game) ===================== -->
+<section id="sec-play" style="background:#f4efe6;color:#16130d;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
+  <div class="grain"></div>
+  <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
+    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">Side quest</div>
+    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;max-width:680px">Super Start-up Adventure Time.</h2>
+    <p style="font:400 17px/1.5 'IBM Plex Sans',sans-serif;color:#5c5344;margin:14px 0 0;max-width:520px">A tiny tactics adventure I built with Claude. Make a hero, explore a little Bali beach town, find snacks, and save The Sloppy Sloth from the suits. Pixel art, battle scenes, a homemade chiptune soundtrack. Takes about five minutes.</p>
+    <div style="margin:clamp(28px,4vw,44px) auto 0;max-width:640px;background:#f4ede4;border:1px solid rgba(22,19,13,.12);border-radius:14px;overflow:hidden;box-shadow:0 18px 40px -24px rgba(22,19,13,.45)">
+      <iframe src="games/super-startup-adventure-time.html" title="Super Start-up Adventure Time – a tiny tactics game" loading="lazy" style="display:block;width:100%;height:760px;border:0"></iframe>
+    </div>
+    <p style="font:400 12px 'IBM Plex Mono',monospace;color:#8a7d68;text-align:center;margin:14px 0 0">Press start → make a hero → explore → save the Sloth 🦥 · sound on 🔊</p>
   </div>
 </section>
 
@@ -281,17 +276,12 @@
   </div>
 </section>
 
-<!-- ===================== SIDE QUEST (game) ===================== -->
-<section id="sec-play" style="background:#f4efe6;color:#16130d;padding:clamp(50px,8vw,96px) 0;position:relative;z-index:1;overflow:hidden">
-  <div class="grain"></div>
-  <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
-    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">Side quest</div>
-    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;max-width:680px">Super Start-up Adventure Time.</h2>
-    <p style="font:400 17px/1.5 'IBM Plex Sans',sans-serif;color:#5c5344;margin:14px 0 0;max-width:520px">A tiny tactics adventure I built with Claude. Make a hero, explore a little Bali beach town, find snacks, and save The Sloppy Sloth from the suits. Pixel art, battle scenes, a homemade chiptune soundtrack. Takes about five minutes.</p>
-    <div style="margin:clamp(28px,4vw,44px) auto 0;max-width:640px;background:#f4ede4;border:1px solid rgba(22,19,13,.12);border-radius:14px;overflow:hidden;box-shadow:0 18px 40px -24px rgba(22,19,13,.45)">
-      <iframe src="games/super-startup-adventure-time.html" title="Super Start-up Adventure Time – a tiny tactics game" loading="lazy" style="display:block;width:100%;height:760px;border:0"></iframe>
-    </div>
-    <p style="font:400 12px 'IBM Plex Mono',monospace;color:#8a7d68;text-align:center;margin:14px 0 0">Press start → make a hero → explore → save the Sloth 🦥 · sound on 🔊</p>
+<!-- ===================== TESTIMONIAL ===================== -->
+<section style="background:#f4efe6;padding:clamp(48px,7vw,84px) 0;position:relative;z-index:1">
+  <div style="max-width:820px;margin:0 auto;padding:0 clamp(16px,4vw,40px);text-align:center">
+    <div style="font:700 60px 'Space Grotesk',sans-serif;color:#a8391a;line-height:.5">&ldquo;</div>
+    <blockquote style="font:500 clamp(22px,3.4vw,32px)/1.35 'Space Grotesk',sans-serif;color:#16130d;margin:14px 0 0;letter-spacing:-.01em">My Matty is so handsome and smart, such a good kid.</blockquote>
+    <div style="font:500 14px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:22px">&mdash; Mom</div>
   </div>
 </section>
 
@@ -550,15 +540,12 @@ class Component extends DCLogic {
     const dim = '#5c5344', lit = '#a8391a';
 
     const chapterData = [
-      { code: 'YYZ', years: "'14–'19", place: 'Toronto, Canada', role: 'Construction → Telecom marketing',
-        body: "Started supervising construction sites — learned that nothing ships without a plan and someone sweating the details. Jumped to big-telecom marketing, ran real ad budgets, and figured out I liked building systems more than slides about them.",
-        tags: ['site supervisor','ad budgets','BBA, Brock'] },
-      { code: 'SE-ASIA', years: "'19–'21", place: 'Asia & the Pacific', role: 'Nomad, learning out loud',
-        body: "Sold the stuff, bought the ticket. A long stretch of working from cafés across Asia and the Pacific — bad wifi, great coffee, and the realization that a laptop + the right tools beats an office. This is where 'work from anywhere' stopped being a phrase.",
-        tags: ['remote','specialty coffee','too many flights'] },
-      { code: 'CPH', years: "'21–now", place: 'Copenhagen, Denmark', role: 'Builder · Juno College grad',
-        body: "Followed my Danish partner to Copenhagen, did the Juno College web-dev bootcamp, and started building for real. Now I ship done-for-you infrastructure for founders — and lift heavy enough to justify the pastries.",
-        tags: ['Juno College','web dev','StrongLifts'] }
+      { stage: 'The ordinary world', code: 'YYZ', years: "'14–'19", place: 'Toronto, Canada',
+        body: "I supervised construction sites, then ran ad budgets for big telecom. Good training: nothing ships without a plan and someone sweating the details. But I kept liking the systems more than the slides about them." },
+      { stage: 'The call', code: 'SE-ASIA', years: "'19–'21", place: 'Asia & the Pacific',
+        body: "So I sold the stuff and bought the ticket. Two years of working from cafés across Asia and the Pacific: bad wifi, great coffee, and proof that a laptop and the right tools beat an office." },
+      { stage: 'The new world', code: 'CPH', years: "'21–now", place: 'Copenhagen, Denmark',
+        body: "I followed my Danish partner to Copenhagen, did the Juno College web-dev bootcamp, and started building for real. Now I ship done-for-you infrastructure for founders, and lift heavy enough to justify the pastries." }
     ];
 
     const projData = [
