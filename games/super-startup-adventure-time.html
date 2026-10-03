@@ -757,6 +757,7 @@
 
   const Sound = (() => {
     let ctx=null, master, music, fx, noiseBuf, song=null, events=null, step=0, nextT=0, timer=null;
+    let songName=null, hostPaused=false, announced=false;   // the page can pause us when the café's music starts
     let on = true; try { on = localStorage.getItem("cg-sound") !== "off"; } catch(e){}
     const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
     const freq = n => { const m=n.match(/^([A-G])(#|b)?(\d)$/); if(!m) return 0;
@@ -802,7 +803,8 @@
       }
     }
     function play(name){
-      init(); if(!ctx) return; stop(); song=SONGS[name]; if(!song) return;
+      songName=name; if(hostPaused) return;
+      init(); if(!ctx) return; stop(); song=SONGS[name]; if(!song) return; announce();
       events={lead:parse(song.lead), bass:parse(song.bass)}; events.len=Math.max(events.lead.length,events.bass.length);
       step=0; nextT=ctx.currentTime+0.06; timer=setInterval(tick,25); tick();
     }
@@ -858,10 +860,18 @@
       thud:  t=>{ tone("sine",80,t,.35,.8,fx,35); noise(t,.2,.5,fx,"lowpass",500,80); },
       boom:  t=>{ tone("sine",170,t,0.5,0.6,fx,40); noise(t,0.45,0.5,fx,"lowpass",2600,180); [523,659,784].forEach((f,i)=>tone("square",f,t+0.05+i*0.05,0.08,0.06,fx)); },
     };
-    function sfx(name){ if(!ctx||!on) return; const f=SFX[name]; if(f) f(ctx.currentTime+0.01); }
+    // tell the page we're making sound, so the café's Spotify player pauses (and the other way round)
+    function announce(retry=true){
+      if(!ctx||!on||announced||hostPaused) return;
+      if(ctx.state!=="running"){ if(retry && ctx.resume) ctx.resume().then(()=>announce(false)).catch(()=>{}); return; }
+      announced=true; try { if(window.parent!==window) window.parent.postMessage({type:"cg-audio"}, location.origin); } catch(e){}
+    }
+    function hostPause(){ hostPaused=true; announced=false; stop(); try { if(ctx && ctx.state==="running") ctx.suspend(); } catch(e){} }
+    function hostResume(){ if(!hostPaused) return; hostPaused=false; try { if(ctx && ctx.state==="suspended") ctx.resume(); } catch(e){} if(songName && on) play(songName); }
+    function sfx(name){ if(!ctx||!on||hostPaused) return; announce(); const f=SFX[name]; if(f) f(ctx.currentTime+0.01); }
     function setOn(v){ on=v; try{ localStorage.setItem("cg-sound", v?"on":"off"); }catch(e){}
       if(ctx) master.gain.setTargetAtTime(v?0.5:0, ctx.currentTime, 0.05); }
-    return { init, play, stop, sfx, setOn, get on(){ return on; } };
+    return { init, play, stop, sfx, setOn, hostPause, hostResume, get on(){ return on; } };
   })();
 
   // ── ATTACK EFFECTS ── each move name → an effect below. Swap them around freely.
@@ -2162,6 +2172,10 @@
   try { const fe = window.frameElement; if (fe) { let h = 0;
     fitFrame = () => { const n = Math.ceil(document.body.getBoundingClientRect().height); if (n > h) { h = n; fe.style.height = h + "px"; } };
     new ResizeObserver(() => setTimeout(fitFrame)).observe(document.body); } } catch(e) {}
+
+  // the café's music (on the page around us) and this game's audio take turns
+  addEventListener("message", e=>{ if(e.origin===location.origin && e.data && e.data.type==="cg-pause") Sound.hostPause(); });
+  ["pointerdown","keydown"].forEach(ev=>addEventListener(ev, ()=>Sound.hostResume(), true));
 
   reset();
   showTitle();
