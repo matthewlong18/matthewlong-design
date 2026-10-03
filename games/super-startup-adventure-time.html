@@ -32,6 +32,10 @@
   .wrap{position:relative;width:calc(var(--cell)*8);margin:0 auto;border-radius:10px;overflow:hidden;border:3px solid #3b2417}
   .board{position:relative;z-index:1;display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:var(--cell)}
   .arena{position:absolute;left:0;top:0;width:100%;height:calc(var(--cell)*6);image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none}   /* the pixel-art bar floor under the board */
+  html{-webkit-tap-highlight-color:transparent}   /* no blue flash when tapping the map or board on a phone */
+  #townCv,.tile,.battle,.wrap button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  #townCv{outline:none}
+  input{-webkit-user-select:text;user-select:text}
   .tile{position:relative;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;}
   .tile.alt{background:transparent}
   .tile.water{background:var(--water);cursor:default}
@@ -518,6 +522,10 @@
   const $ = id => document.getElementById(id);
   const board=$("board"), fx=$("fx"), overlay=$("overlay"), info=$("info"), menu=$("menu"), logEl=$("log");
   const K = (x,y) => x+","+y;
+  if(window.CanvasRenderingContext2D && !CanvasRenderingContext2D.prototype.roundRect){
+    CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){ r=Math.max(0,Math.min(Array.isArray(r)?r[0]:(r||0),w/2,h/2));
+      this.moveTo(x+r,y); this.arcTo(x+w,y,x+w,y+h,r); this.arcTo(x+w,y+h,x,y+h,r); this.arcTo(x,y+h,x,y,r); this.arcTo(x,y,x+w,y,r); this.closePath(); };
+  }
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const speed = () => S.fast ? 25 : (S.speed || 1);   // enemy scenes run a bit quicker; a tap skips
   const GLOW = !matchMedia("(pointer: coarse)").matches;   // glow (shadowBlur) is slow to draw on phones, so skip it there
@@ -1103,19 +1111,22 @@
   }
 
   function playFx(name, fromEl, toEl){
-    return new Promise(res=>{
+    return new Promise(res0=>{
+      let done=false; const res=()=>{ if(!done){ done=true; res0(); } };
       const make=FX[name]; if(!make) return res();
-      Sound.sfx(name);
+      try { Sound.sfx(name); } catch(e){ console.warn("sfx skipped:", name, e); }
       const bt=$("battle"), cv=$("fxc"), br=bt.getBoundingClientRect(), dpr=Math.min(2, window.devicePixelRatio||1);   // 3x canvases are costly on phones
       const W=br.width, H=br.height; cv.width=W*dpr; cv.height=H*dpr;
       const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
       const ctr=el=>{ const r=el.getBoundingClientRect(); return {x:r.left-br.left+r.width/2, y:r.top-br.top+r.height*.55}; };
-      const A=ctr(fromEl), T=ctr(toEl), fx=make(A,T,W,H);
+      let A,T,fx; try { A=ctr(fromEl); T=ctr(toEl); fx=make(A,T,W,H); } catch(err){ console.warn("fx skipped:", name, err); return res(); }
+      setTimeout(res, fx.dur/(speed()*FX_RATE)*2.5 + 600);   // backstop: if a phone pauses animation frames, the turn still carries on
       if(fx.shake){ bt.classList.remove("quake"); void bt.offsetWidth; setTimeout(()=>bt.classList.add("quake"), fx.dur*.5/(speed()*FX_RATE)); }
       let t=0, last=performance.now();
       (function frame(now){
         t = Math.max(0, t + Math.max(0, now-last)/fx.dur*speed()*FX_RATE); last=Math.max(last,now);
         ctx.clearRect(0,0,W,H);
+        if(done) return;
         if(t>=1){ return res(); }
         try { ctx.save(); fx.draw(ctx,t); }
         catch(err){ console.warn("fx skipped:", name, err); ctx.restore(); ctx.clearRect(0,0,W,H); return res(); }
@@ -1431,6 +1442,16 @@
   }
 
   async function enemyPhase(){
+    try { await enemyPhaseRun(); }
+    catch(err){   // something went wrong mid-turn: log it and hand control back instead of freezing
+      console.warn("enemy turn recovered:", err);
+      $("battle").classList.add("hidden"); $("pBot").classList.remove("hidden"); $("bBot").classList.remove("hidden");
+      S.fast=false; S.busy=false; S.phase="player"; S.turn++;
+      for(const h of alive("hero")){ h.acted=false; }
+      info.innerHTML="Your turn. Pick a hero."; render();
+    }
+  }
+  async function enemyPhaseRun(){
     S.phase="enemy"; S.busy=true; clearSel(); render();
     info.innerHTML="<b>Enemy turn…</b>";
     for(const e of alive("foe")) e.mp=Math.min(e.maxMp,e.mp+1);
