@@ -1145,6 +1145,15 @@
   }
 
   async function typeMsg(text, ms=850){ $("msg").textContent=text; await wait(ms); }
+  let tapNext=null;   // set while the game is waiting for you to tap through a spoken line
+  function advanceDialogue(){ if(tapNext){ const r=tapNext; tapNext=null; r(); return true; } return false; }
+  async function dialogue(text){
+    $("msg").textContent=text; S.fast=false;   // a tap that skipped the animations shouldn't rush the speech
+    const hint=document.querySelector("#battle .skip"); if(hint) hint.textContent="tap to continue ▼";
+    await new Promise(res=>{ tapNext=res; });
+    if(hint) hint.textContent="tap to skip ›";
+  }
+  document.addEventListener("keydown", e=>{ if([" ","Enter","e","E","z","Z"].includes(e.key) && tapNext){ e.preventDefault(); advanceDialogue(); } });
 
   async function battleScene(a,t,m){
     // hero side bottom-left, the other unit top-right (self-heals show only the caster)
@@ -1161,9 +1170,9 @@
     const aPlat = a===heroBottom ? pBot : pTop, tPlat = t===heroBottom ? pBot : pTop;
     const aBox = a===heroBottom ? bBot : bTop, tBox = t===heroBottom ? bBot : bTop;
 
-    S.speed = a.team==="foe" ? 2 : 1;
+    S.speed = a.team==="foe" ? 1.6 : 1;
     await typeMsg(`${a.name} used ${m.name}!`, 120);
-    if(m.quip) await typeMsg(`${a.name}: “${m.quip}”`, 1100);
+    if(m.quip) await dialogue(`${a.name}: “${m.quip}”`);
     const r = resolve(a,t,m);
     aBox.querySelector(".mpb i").style.width=(a.mp/a.maxMp*100)+"%";
     if(!self && m.kind==="fight"){ aPlat.classList.add(a===heroBottom?"lunge-up":"lunge-down"); await wait(100); }
@@ -1187,7 +1196,7 @@
     for(const l of lines){
       if(l.includes("defeated")||l.includes("out of the fight")){ tPlat.classList.add("faint"); Sound.sfx("ko"); }
       if(l.includes("stunned!")) Sound.sfx("stun");
-      await typeMsg(l, 380);
+      await typeMsg(l, 450);
     }
     bt.classList.add("hidden");
     if(S.phase!=="enemy") S.fast=false;
@@ -1293,10 +1302,10 @@
     const bt=$("battle"), pTop=$("pTop"), pBot=$("pBot");
     pBot.className="plat bot hidden"; $("bBot").classList.add("hidden"); $("bTop").classList.add("hidden");
     pTop.className="plat top"; const im=pTop.querySelector("img"); im.src=SPRITE_URL[u.spr]; im.className=u.team==="foe"?"flip":"";
-    S.speed=1.5; bt.classList.remove("quake"); bt.classList.remove("hidden");
+    S.speed=1; bt.classList.remove("quake"); bt.classList.remove("hidden");
     if(fxName){ if(intro) await typeMsg(intro, 200); await playFx(fxName, pTop, pTop); }
     Sound.sfx("quip");
-    await typeMsg(`${u.name}: “${text}”`, 1100);
+    await dialogue(`${u.name}: “${text}”`);
     bt.classList.add("hidden"); pBot.classList.remove("hidden"); $("bBot").classList.remove("hidden");
     if(S.phase!=="enemy") S.fast=false;
   }
@@ -1378,7 +1387,7 @@
       S.fast=false; S.speed=1; bt.classList.remove("hidden");
       await typeMsg(`${a.name} used Summon Claude!`, 500);
       await playFx("maple", pBot, pBot);
-      await typeMsg("Claude: « Allô! Sorry I'm late, eh. On y va! »", 1200);
+      await dialogue("Claude: « Allô! Sorry I'm late, eh. On y va! »");
       bt.classList.add("hidden"); S.fast=false;
     } else await sleep(400);
     float(u,"🍁","var(--fight)");
@@ -1480,7 +1489,7 @@
     if(alive("hero").every(h=>h.acted)) enemyPhase();
   }
 
-  $("battle").onclick=()=>{ S.fast=true; };
+  $("battle").onclick=()=>{ if(!advanceDialogue()) S.fast=true; };   // a tap continues speech, or else skips the animations
   $("end").onclick=()=>{ if(S.phase==="player"&&!S.busy){ alive("hero").forEach(h=>h.acted=true); clearSel(); enemyPhase(); } };
   $("restart").onclick=()=>{ if(S.busy) return; overlay.classList.add("hidden"); reset(); Sound.play("battle"); };
   // ── SCREENS ── title → create a hero → explore Canggu → fight in The Sloppy Sloth
