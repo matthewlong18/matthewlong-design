@@ -1420,89 +1420,174 @@
   }
   addEventListener("resize", ()=>{ if($("cg").dataset.screen==="town") sizeTown(); });
 
-  // ground tiles, drawn as little pixel-art squares
+  // ── TOWN ART ── the same 16-bit treatment as the characters: three-tone shading lit from the top-left,
+  // coloured outlines and soft shadows. Ground tiles, props and buildings are drawn once and cached.
+  // shadeArt(w, h, ramps, build): build() fills a material map with spans; shading and outlines are automatic.
+  function shadeArt(w,h,ramps,build){
+    const M=Array.from({length:h},()=>Array(w).fill(null)), post=[];
+    const span=(y,a,b,m)=>{ y=Math.round(y); if(y<0||y>=h) return; for(let x=Math.max(0,Math.round(a));x<=Math.min(w-1,Math.round(b));x++) M[y][x]=m; };
+    const rect=(x,y,ww,hh,m)=>{ for(let j=y;j<y+hh;j++) span(j,x,x+ww-1,m); };
+    const dot=(x,y,m)=>{ x=Math.round(x); y=Math.round(y); if(x>=0&&y>=0&&x<w&&y<h) M[y][x]=m; };
+    const px=(x,y,col)=>post.push([x,y,col]);
+    build({span,rect,dot,px,M});
+    const other=(x,y,m)=>x<0||y<0||x>=w||y>=h||M[y][x]!==m;
+    const cv=document.createElement("canvas"); cv.width=w; cv.height=h; const g=cv.getContext("2d");
+    for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+      const m=M[y][x]; let col=null;
+      if(m){ const r=ramps[m]; col=r.base;
+        if(r.tex && hsh(x,y,r.tex)>.78) col = hsh(x,y,r.tex+1)>.45 ? r.sh : r.hi;
+        if(r.streak && hsh(x,Math.floor(y/4),r.streak)>.72) col = hsh(x,1,r.streak)>.5 ? r.sh : r.hi;   // thatch: vertical streaks
+        if(!r.flat){ if(other(x,y-1,m)||other(x-1,y,m)) col=r.hi; if(other(x+1,y,m)||other(x,y+1,m)) col=r.sh; } }
+      else for(const [dx,dy] of [[0,1],[-1,0],[1,0],[0,-1]]){ const nx=x+dx, ny=y+dy;
+        if(nx>=0&&ny>=0&&nx<w&&ny<h&&M[ny][nx]&&!ramps[M[ny][nx]].noOl){ col=ramps[M[ny][nx]].ol; break; } }
+      if(col){ g.fillStyle=col; g.fillRect(x,y,1,1); }
+    }
+    for(const [x,y,col] of post){ g.fillStyle=col; g.fillRect(x,y,1,1); }
+    return cv;
+  }
+  const RP=(hex,o={})=>({...ramp(hex),...o});
+
+  // ground tiles: a few cached variants of each, plus edges drawn against neighbours
+  const GR={g:ramp("#6fae4c"), p:ramp("#d6b98a"), s:ramp("#f0d9a2"), w:ramp("#3196cb"), r:ramp("#84c24e"), f:ramp("#cbc1b0")};
+  const TILE={};
+  function tileArt(t,v,f){
+    const key=t+v+"."+f; if(TILE[key]) return TILE[key];
+    const cv=document.createElement("canvas"); cv.width=cv.height=TS; const g=cv.getContext("2d");
+    const R=(col,x,y,w=1,h=1)=>{ g.fillStyle=col; g.fillRect(x,y,w,h); }, h=(i)=>hsh(v*13+i,t.charCodeAt(0),i);
+    const r=GR[t]; R(r.base,0,0,16,16);
+    if(t==="g"){
+      for(let i=0;i<4;i++) R(r.sh,Math.floor(h(i)*14),Math.floor(h(i+20)*14),2,1);
+      for(let i=0;i<3;i++){ const x=1+Math.floor(h(i+5)*12), y=2+Math.floor(h(i+9)*11); R(r.sh,x,y+1); R(r.hi,x+1,y); R(r.sh,x+2,y+1); R(mix(r.sh,.3,"k"),x+1,y+2); }   // tufts
+      if(h(40)>.72){ const x=2+Math.floor(h(41)*11), y=2+Math.floor(h(42)*11), pet=["#fff3b0","#f7b6d2","#ffffff","#f2c14e"][Math.floor(h(43)*4)];
+        R(pet,x,y); R(pet,x+2,y); R(pet,x+1,y-1); R(pet,x+1,y+1); R("#e08a2a",x+1,y); }   // wildflower
+    }
+    if(t==="p"){ for(let i=0;i<3;i++){ const x=1+Math.floor(h(i)*12), y=1+Math.floor(h(i+4)*12); R(r.hi,x,y,2,1); R(r.base,x,y+1); R(r.sh,x+1,y+1); R(r.sh,x+2,y); R(mix(r.sh,.3,"k"),x+2,y+1); }
+      for(let i=0;i<5;i++) R(i%2?r.sh:r.hi,Math.floor(h(i+10)*15),Math.floor(h(i+15)*15)); }
+    if(t==="s"){ for(let i=0;i<3;i++){ const x=Math.floor(h(i)*11), y=2+Math.floor(h(i+3)*12); R(r.hi,x,y,4,1); R(r.sh,x+1,y+1,3,1); } for(let i=0;i<4;i++) R(r.sh,Math.floor(h(i+8)*15),Math.floor(h(i+12)*15)); }
+    if(t==="w"){
+      for(let k=0;k<3;k++){ const x=(Math.floor(h(k)*16)+f*2+k*5)%13, y=2+k*4; R(r.hi,x,y,4,1); R(mix(r.hi,.4,"w"),x+1,y,2,1); }
+      if((f+v)%4===0) R("#ffffff",Math.floor(h(30)*14),1+Math.floor(h(31)*8)); }   // sparkle
+    if(t==="r"){ R(mix(r.sh,.25,"k"),0,0,16,1); R(r.hi,0,1,16,1); R("#9fd6e6",0,9,16,1); R("#c7ecf3",Math.floor(h(1)*10),9,4,1);
+      for(let i=1;i<16;i+=3){ R(r.sh,i,3,1,4); R(r.hi,i,3); R(r.sh,(i+1)%16,11,1,4); R(r.hi,(i+1)%16,11); } }
+    if(t==="f"){ for(const [bx,by] of [[0,0],[8,0],[v%2?4:0,8],[v%2?12:8,8]]){ R(r.hi,bx,by,8,1); R(r.hi,bx,by,1,8); R(r.sh,bx,by+7,8,1); R(r.sh,bx+7,by,1,8); }
+      if(h(5)>.6) R("#7fa35a",3+Math.floor(h(6)*9),3+Math.floor(h(7)*9),2,1); }
+    return (TILE[key]=cv);
+  }
   function drawGround(c,x,y){
-    const g=GROUND[y][x], px=x*TS, py=y*TS, R=(col,a,b,w,h)=>{ c.fillStyle=col; c.fillRect(px+a,py+b,w,h); };
+    const g=GROUND[y][x], px=x*TS, py=y*TS, v=Math.floor(hsh(x,y,77)*4), f=g==="w"?TOWN.frame%8:0;
+    c.drawImage(tileArt(g,v,f),px,py);
+    const R=(col,a,b,w=1,h=1)=>{ c.fillStyle=col; c.fillRect(px+a,py+b,w,h); };
     const nb=(dx,dy)=>{ const xx=x+dx, yy=y+dy; return yy<0||yy>=TH||xx<0||xx>=TW ? g : GROUND[yy][xx]; };
-    if(g==="g"){ R("#78b350",0,0,16,16); for(let i=0;i<5;i++) R(i%2?"#68a344":"#8cc45e", Math.floor(hsh(x,y,i)*15), Math.floor(hsh(x,y,i+9)*14), 1,2);
-      if(hsh(x,y,30)>.8){ const fx=2+Math.floor(hsh(x,y,31)*11), fy=2+Math.floor(hsh(x,y,32)*11); R(["#fff3a6","#f7b6d2","#ffffff"][Math.floor(hsh(x,y,33)*3)],fx,fy,2,2); R("#e0a43a",fx,fy,1,1); } }
-    else if(g==="p"){ R("#d9bc8c",0,0,16,16); for(let i=0;i<4;i++) R(i%2?"#c4a272":"#ead3ab", Math.floor(hsh(x,y,i)*14), Math.floor(hsh(x,y,i+5)*15), 2,1);
-      if(nb(0,-1)==="g") R("#8cc45e",0,0,16,1); if(nb(0,1)==="g") R("#b9965f",0,15,16,1); if(nb(-1,0)==="g") R("#8cc45e",0,0,1,16); if(nb(1,0)==="g") R("#b9965f",15,0,1,16); }
-    else if(g==="s"){ R("#f2dda5",0,0,16,16); for(let i=0;i<4;i++) R("#e3c585", Math.floor(hsh(x,y,i)*15), Math.floor(hsh(x,y,i+7)*15), 1,1);
-      if("gp".includes(nb(0,-1))) R("#e3c585",0,0,16,1); }
-    else if(g==="w"){ const f=TOWN.frame; R("#3a9fd0",0,0,16,16); R("#3594c4",0,11,16,5);
-      for(let k=0;k<3;k++) R("#7fd0ee", (Math.floor(hsh(x,y,k)*16)+f*2+k*5)%13, 2+k*5, 4,1);
-      if(nb(0,-1)==="s"){ R("#ffffff",0,f%2,16,2); R("#bfe8f6",0,2+f%2,16,1); }
-      if(nb(0,-1)==="g") R("#e8f4f8",0,0,16,2); if(nb(0,1)==="g") R("#e8f4f8",0,14,16,2); if(nb(-1,0)==="g") R("#e8f4f8",0,0,2,16); if(nb(1,0)==="g") R("#e8f4f8",14,0,2,16); }
-    else if(g==="r"){ R("#7fc24a",0,0,16,16); R("#5d9a35",0,0,16,1); R("#9fd6e6",0,8,16,1); for(let i=1;i<16;i+=3){ R("#5f9c2e",i,2,1,4); R("#5f9c2e",(i+1)%16,10,1,4); } }
-    else if(g==="f"){ R("#cfc6b6",0,0,16,16); R("#b3a998",0,0,16,1); R("#b3a998",0,8,16,1); R("#b3a998",y%2?0:8,0,1,8); R("#b3a998",y%2?8:0,8,1,8);
-      if(hsh(x,y,3)>.7) R("#7fa35a",Math.floor(hsh(x,y,4)*14),Math.floor(hsh(x,y,5)*14),2,1); }
+    const G=GR.g;
+    if(g==="p"||g==="s"){   // grass grows over the edge of paths and sand, with a little shadow under it
+      if(nb(0,-1)==="g") for(let i=0;i<16;i++){ const d=hsh(x+i,y,3)>.55?2:1; R(G.base,i,0,1,d); R(G.sh,i,d,1,1); }
+      if(nb(0,1)==="g") for(let i=0;i<16;i++) if(hsh(x+i,y,4)>.5) R(G.hi,i,15);
+      if(nb(-1,0)==="g") for(let j=0;j<16;j++){ const d=hsh(x,y+j,5)>.55?2:1; R(G.base,0,j,d,1); R(G.sh,d,j,1,1); }
+      if(nb(1,0)==="g") for(let j=0;j<16;j++) if(hsh(x,y+j,6)>.5) R(G.base,15,j);
+    }
+    if(g==="s" && nb(0,-1)==="p") R(GR.s.sh,0,0,16,1);
+    if(g==="w"){
+      let depth=0; for(let k=1;k<=3;k++) if(nb(0,-k)==="w") depth++; if(depth){ c.fillStyle=`rgba(8,40,90,${depth*.09})`; c.fillRect(px,py,16,16); }   // deeper further from shore
+      if(nb(0,-1)==="s"){ const f2=TOWN.frame%2; R("#ffffff",0,f2,16,2); R("#cdeefa",0,2+f2,16,1); for(let i=0;i<16;i+=3) R("#ffffff",(i+TOWN.frame)%16,3+f2); }   // foam
+      for(const [dx,dy,a,b,w,h] of [[0,-1,0,0,16,2],[0,1,0,14,16,2],[-1,0,0,0,2,16],[1,0,14,0,2,16]]) if(nb(dx,dy)==="g"){ R("#eef4f2",a,b,w,h); R("#b9c6c8",a+(w===2?1:0),b+(h===2?1:0),w===2?1:w,h===2?1:h); }   // pool coping
+    }
+  }
+
+  // shadows cast to the bottom-right (drawn on the ground before anything stands on it)
+  function castShadow(c,o){
+    c.fillStyle="rgba(18,40,20,.22)";
+    const px=o.x*TS, py=o.y*TS;
+    if(o.k==="bld"){ const W=o.w*TS, H=o.h*TS; c.fillRect(px+W,py+6,4,H-4); c.fillRect(px+4,py+H,W,3); }
+    else if(o.k==="palm"){ c.beginPath(); c.ellipse(px+12,py+14,9,3,0,0,7); c.fill(); }
+    else if(o.k==="gate"){ c.fillRect(px+16,py+8,3,40); }
+    else if(o.k!=="offering" && o.k!=="hammock"){ c.beginPath(); c.ellipse(px+9,py+14,7,2,0,0,7); c.fill(); }
   }
 
   const BLD={
-    warung:{roof:"#c0563a", roof2:"#9c4029", wall:"#f3e6cf", trim:"#8a5a32", win:"#9fd3e8"},
-    cafe:  {roof:"#c9a25b", roof2:"#a8803f", wall:"#8a5a3c", trim:"#5a3a22", win:"#f5d68a"},
-    villa: {roof:"#3d4f5c", roof2:"#2e3d48", wall:"#fbf8f1", trim:"#b9a98f", win:"#9fd3e8"},
-    surf:  {roof:"#e8d9b5", roof2:"#cdbb92", wall:"#4aa3c4", trim:"#2f7fa0", win:"#f4ede4"},
-    shala: {roof:"#c9a25b", roof2:"#a8803f", wall:null,      trim:"#8a5a32"},
-    sloth: {roof:"#c9a25b", roof2:"#a8803f", wall:"#d8b56a", trim:"#8a5a32", win:"#f5d68a"},
+    warung:{roof:"#c0563a", wall:"#f1e3c8", trim:"#8a5a32", glass:"#8ed0e6", tile:true},
+    cafe:  {roof:"#c9a25b", wall:"#8a5a3c", trim:"#5a3a22", glass:"#f5d68a", planks:true},
+    villa: {roof:"#3d4f5c", wall:"#f7f3ea", trim:"#b9a98f", glass:"#8ed0e6", tile:true},
+    surf:  {roof:"#e2d3ab", wall:"#4aa3c4", trim:"#2f7fa0", glass:"#f4ede4", wave:true},
+    shala: {roof:"#c9a25b", wall:null,      trim:"#8a5a32"},
+    sloth: {roof:"#c9a25b", wall:"#d8b56a", trim:"#8a5a32", glass:"#f5d68a", bamboo:true},
   };
-  function drawBld(c,o){
-    const s=BLD[o.style], px=o.x*TS, py=o.y*TS, W=o.w*TS, H=o.h*TS, roofH=Math.round(H*.5);
-    const R=(col,a,b,w,h)=>{ c.fillStyle=col; c.fillRect(px+a,py+b,w,h); };
-    R("rgba(0,0,0,.18)",2,H,W,3);
-    if(s.wall){
-      R(s.wall,0,roofH-2,W,H-roofH+2);
-      if(o.style==="sloth"||o.style==="cafe") for(let i=2;i<W;i+=4) R("rgba(0,0,0,.12)",i,roofH,1,H-roofH);   // bamboo / wood slats
-      for(let i=0;i<o.w;i++){ if(o.door && o.x+i===o.door[0]) continue; R(s.trim,i*16+3,roofH+3,10,8); R(s.win,i*16+4,roofH+4,8,6); R("rgba(255,255,255,.5)",i*16+5,roofH+5,2,2); }
-      if(o.door){ const dx=(o.door[0]-o.x)*16; R(s.trim,dx+3,H-13,10,13); R(o.enter?"#3b2a20":"#6b4a2e",dx+4,H-12,8,12); R("#e5b340",dx+10,H-6,1,1); }
-    } else {   // open pavilion: platform, posts, yoga mats
-      R("#c9a77a",0,H-6,W,6); R("#a8875a",0,H-2,W,2); for(const a of [1,W-4]) R(s.trim,a,roofH-2,3,H-roofH-4);
-      R("#7fb3c9",8,H-9,12,3); R("#d96fa8",W-22,H-9,12,3);
-    }
-    R(s.roof,-2,0,W+4,roofH); for(let b=3;b<roofH;b+=4) R(s.roof2,-2,b,W+4,1); R(s.roof2,0,0,W,2); R("rgba(0,0,0,.22)",-2,roofH,W+4,2);
-    if(o.style==="sloth"){   // the sign: a sleepy sloth face
-      const sx=Math.round(W/2)-12, sy=roofH-9; R("#5a3a22",sx,sy,24,12); R("#f4ede4",sx+1,sy+1,22,10);
-      R("#8a6a45",sx+7,sy+2,10,8); R("#d8b88a",sx+8,sy+4,8,5); R("#3b2a20",sx+9,sy+5,2,1); R("#3b2a20",sx+13,sy+5,2,1); R("#1e1612",sx+11,sy+7,2,1);
-      R("#e0782b",sx+2,sy+4,3,2); R("#e0782b",sx+19,sy+4,3,2);
-    }
+  const BLD_ART=new Map();
+  function bldArt(o){
+    if(BLD_ART.has(o)) return BLD_ART.get(o);
+    const s=BLD[o.style], W=o.w*TS+4, H=o.h*TS, roofH=Math.round(H*.55), thatch=!s.tile;
+    const ramps={ roof:RP(s.roof,{streak:thatch?11:0}), wall:RP(s.wall||"#c9a77a",{tex:s.wall?0:3}), trim:RP(s.trim), glass:RP(s.glass||"#8ed0e6"),
+      door:RP(o.enter?"#4a2e1e":"#6b4a2e"), post:RP("#7a5a3a"), plat:RP("#c9a77a"), sign:RP("#5a3a22"), board:RP("#f4ede4",{flat:true,noOl:true}),
+      mat1:RP("#7fb3c9"), mat2:RP("#d96fa8") };
+    const art=shadeArt(W,H+2,ramps,({span,rect,dot,px})=>{
+      if(s.wall){ rect(2,roofH-2,W-4,H-roofH+2,"wall");
+        for(let i=0;i<o.w;i++){ if(o.door && o.x+i===o.door[0]) continue; rect(2+i*16+3,roofH+3,10,8,"trim"); rect(2+i*16+4,roofH+4,8,6,"glass"); }
+        if(o.door){ const dx=2+(o.door[0]-o.x)*16; rect(dx+3,H-13,10,13,"trim"); rect(dx+4,H-12,8,12,"door"); }
+      } else { rect(0,H-6,W,6,"plat"); rect(2,roofH-2,3,H-roofH-4,"post"); rect(W-5,roofH-2,3,H-roofH-4,"post"); rect(10,H-9,12,3,"mat1"); rect(W-24,H-9,12,3,"mat2"); }
+      for(let y=0;y<roofH;y++){ const inset=Math.max(0,Math.round((4-y)*1.2)); span(y,inset,W-1-inset,"roof"); }   // rounded ridge, full-width eaves
+      if(o.style==="sloth"){ const sx=Math.round(W/2)-13, sy=roofH-10; rect(sx,sy,26,13,"sign"); rect(sx+1,sy+1,24,11,"board"); }
+      // details painted after shading
+      const R=ramp(s.roof);
+      for(let y=4;y<roofH-1;y+=4) for(let x=2;x<W-2;x++){ px(x,y,R.sh); if(!thatch && x%6===(y/4%2)*3) px(x,y-1,R.sh); }   // roof courses / tiles
+      if(thatch) for(let x=3;x<W-3;x+=3) px(x,roofH-1,R.sh);                                                           // thatch fringe
+      if(s.wall){ const Wr=ramp(s.wall); for(let x=2;x<W-2;x++){ px(x,roofH-1,Wr.sh); px(x,roofH,Wr.sh); }                // eave shadow
+        if(s.bamboo) for(let x=4;x<W-3;x+=4) for(let y=roofH+1;y<H-1;y++) if(y%7) px(x,y,Wr.sh);
+        if(s.planks) for(let y=roofH+3;y<H-1;y+=3) for(let x=3;x<W-3;x++) if((x+y)%9) px(x,y,Wr.sh);
+        if(s.wave) for(let x=3;x<W-3;x++) px(x,H-4+Math.round(Math.sin(x/3)),"#f4ede4");
+        for(let i=0;i<o.w;i++){ if(o.door && o.x+i===o.door[0]) continue; px(2+i*16+5,roofH+5,"#ffffff"); px(2+i*16+6,roofH+5,"#ffffff"); px(2+i*16+5,roofH+6,"#ffffff"); } }
+      if(o.door){ const dx=2+(o.door[0]-o.x)*16; px(dx+10,H-6,"#e5b340"); }
+      if(o.style==="sloth"){ const sx=Math.round(W/2)-13, sy=roofH-10, B=(x,y,c2,w=1,h=1)=>{ for(let j=0;j<h;j++) for(let i=0;i<w;i++) px(sx+x+i,sy+y+j,c2); };
+        B(8,2,"#8a6a45",10,9); B(9,4,"#d8b88a",8,5); B(10,5,"#3b2a20",2,1); B(14,5,"#3b2a20",2,1); B(12,7,"#1e1612",2,1); B(3,4,"#e0782b",3,2); B(20,4,"#e0782b",3,2); }
+    });
+    BLD_ART.set(o,art); return art;
+  }
+  function drawBld(c,o){ c.drawImage(bldArt(o), o.x*TS-2, o.y*TS); }
+
+  // props, each built once as a small shaded sprite: [art, x offset, y offset]
+  const PROP={};
+  function propArt(k,variant=0){
+    const key=k+variant; if(PROP[key]) return PROP[key];
+    let out;
+    if(k==="palm") out=[shadeArt(26,42,{trunk:RP("#8f6c45"),leaf:RP("#4fa346",{tex:7}),nut:RP("#7a5230")},({span,dot,px})=>{
+        for(let y=10;y<41;y++){ const cx=13+Math.round(Math.sin((40-y)/9)*2); span(y,cx-1,cx+1,"trunk"); if(y%3===0) for(let x=cx-1;x<=cx+1;x++) px(x,y,"#6f5235"); }
+        const L=(dx,dy)=>{ for(let s=0;s<11;s++){ const x=13+dx*s, y=10+dy*s+s*s/12; span(y,x-1,x+1,"leaf"); if(s<7) span(y+1,x-1,x+1,"leaf"); } };
+        L(-1,-.35); L(1,-.35); L(-1,.4); L(1,.4); L(-.35,-.9); L(.45,-.9); L(0,.75);
+        dot(12,12,"nut"); dot(14,12,"nut"); dot(13,13,"nut"); }), -5, -26];
+    if(k==="bush") out=[shadeArt(16,14,{leaf:RP("#4f9e45",{tex:5})},({span,px})=>{
+        [[2,4,11],[3,2,13],[4,1,14],[5,1,14],[6,1,14],[7,1,14],[8,1,14],[9,1,14],[10,2,13],[11,3,12]].forEach(([y,a,b])=>span(y,a,b,"leaf"));
+        for(let i=0;i<4;i++){ const x=3+Math.floor(hsh(variant,i,2)*9), y=3+Math.floor(hsh(variant,i,3)*6); px(x,y,"#ffffff"); px(x+1,y,"#ffffff"); px(x,y+1,"#ffffff"); px(x+1,y+1,"#f5c84a"); } }), 0, 2];
+    if(k==="rock") out=[shadeArt(16,12,{stone:RP("#9a968e",{tex:9})},({span})=>{ [[3,5,10],[4,3,12],[5,2,13],[6,2,13],[7,2,14],[8,2,14],[9,3,13],[10,4,12]].forEach(([y,a,b])=>span(y,a,b,"stone")); }), 0, 4];
+    if(k==="scooter") out=[shadeArt(16,16,{body:RP(variant%2?"#d9452b":"#3a8fd0"),seat:RP("#2a2a30"),tyre:RP("#26262c"),chrome:RP("#c9d1d6"),light:RP("#fff3b0",{flat:true})},({rect,dot})=>{
+        rect(2,11,4,4,"tyre"); rect(10,11,4,4,"tyre"); rect(4,7,8,5,"body"); rect(4,6,5,2,"seat"); rect(11,3,2,6,"chrome"); rect(10,2,4,1,"chrome"); dot(13,5,"light"); }), 0, 0];
+    if(k==="umbrella") out=[shadeArt(18,22,{pole:RP("#d9c39a"),c1:RP("#e0782b"),c2:RP("#f4ede4")},({span,rect})=>{
+        rect(8,6,2,15,"pole"); for(let y=1;y<7;y++){ const w=Math.min(8,1+y*2); for(let x=9-w;x<=8+w;x++) span(y,x,x,(Math.floor((x+18)/3))%2?"c1":"c2"); } }), -1, -6];
+    if(k==="lounger") out=[shadeArt(16,10,{frame:RP("#b38f45"),cush:RP("#f4ede4"),stripe:RP("#3a8fd0")},({rect})=>{ rect(1,7,1,3,"frame"); rect(14,7,1,3,"frame"); rect(1,3,14,4,"cush"); rect(1,4,14,1,"stripe"); rect(11,1,4,2,"cush"); }), 0, 6];
+    if(k==="rack") out=[shadeArt(16,16,{wood:RP("#8a5a32"),a:RP("#e0782b"),b:RP("#3a8fd0"),c:RP("#f4ede4"),d:RP("#4f8a5b")},({rect})=>{
+        rect(0,13,16,2,"wood"); ["a","b","c","d"].forEach((m,i)=>rect(1+i*4,1,3,12,m)); }), 0, 0];
+    if(k==="sign") out=[shadeArt(16,16,{post:RP("#7a5a3a"),board:RP("#c9a25b",{tex:4})},({rect,px})=>{ rect(7,8,2,8,"post"); rect(1,2,14,7,"board"); for(const y of [4,6]) for(let x=3;x<12-(y===6?3:0);x++) px(x,y,"#5a3a22"); }), 0, 0];
+    if(k==="offering") out=[shadeArt(12,8,{tray:RP("#5aa83a")},({rect,px})=>{ rect(1,2,10,5,"tray"); px(3,3,"#f5c84a"); px(4,3,"#f5c84a"); px(7,3,"#d9452b"); px(8,3,"#d9452b"); px(5,5,"#ffffff"); px(6,5,"#ffffff"); px(9,5,"#f7b6d2"); }), 2, 5];
+    if(k==="gate") out=[shadeArt(18,49,{stone:RP("#8f877b",{tex:13}),gold:RP("#e0b84f")},({rect,px})=>{
+        for(const [a,b,w,h] of [[1,39,16,10],[2,29,14,10],[3,19,12,10],[4,10,10,9],[6,3,6,7]]) rect(a,b,w,h,"stone");
+        rect(7,1,4,2,"gold"); px(3,37,"#6a8f4a"); px(4,37,"#6a8f4a"); px(11,25,"#6a8f4a"); px(12,26,"#6a8f4a"); }), -1, 0];
+    return (PROP[key]=out);
   }
 
   function drawObj(c,o){
-    const px=o.x*TS, py=o.y*TS, R=(col,a,b,w,h)=>{ c.fillStyle=col; c.fillRect(px+a,py+b,w,h); };
-    switch(o.k){
-      case "bld": drawBld(c,o); break;
-      case "palm": {
-        R("rgba(0,0,0,.18)",3,13,10,3);
-        for(let i=0;i<22;i++) R(i%4===0?"#6f5235":"#8f6c45", 7+Math.round(Math.sin(i/7)*2), 14-i, 3,1);
-        const tx=px+8+Math.round(Math.sin(3)*2), ty=py-8;
-        for(const [dx,dy] of [[-1,-.35],[1,-.35],[-1,.45],[1,.45],[-.3,-1],[.4,-1]]) for(let s=0;s<9;s++){ c.fillStyle=s%3===2?"#3f8f3a":"#58b04a"; c.fillRect(Math.round(tx+dx*s), Math.round(ty+dy*s+s*s/14), 2, s<6?2:1); }
-        c.fillStyle="#6b4a2e"; c.fillRect(tx-2,ty+1,2,2); c.fillRect(tx+1,ty+2,2,2); break; }
-      case "bush": R("rgba(0,0,0,.15)",2,12,12,3); R("#3f8a3a",2,4,12,10); R("#4fa24a",3,3,10,9); R("#62b85a",5,4,5,4);
-        for(let i=0;i<4;i++){ const fx=3+Math.floor(hsh(o.x,o.y,i)*9), fy=4+Math.floor(hsh(o.x,o.y,i+4)*7); R("#ffffff",fx,fy,2,2); R("#f5c84a",fx,fy,1,1); } break;
-      case "scooter": R("rgba(0,0,0,.18)",1,13,14,2); R("#1e1612",2,10,4,4); R("#1e1612",10,10,4,4); R("#666",3,11,2,2); R("#666",11,11,2,2);
-        R(o.x%2?"#d9452b":"#3a8fd0",4,6,8,5); R("#f4ede4",5,7,3,2); R("#1e1612",11,3,1,4); R("#1e1612",10,3,3,1); break;
-      case "umbrella": R("rgba(0,0,0,.12)",2,13,12,3); R("#d9c39a",7,4,2,12); for(let i=0;i<7;i++) R(i%2?"#f4ede4":"#e0782b",1+i*2,2,2,4); R("#e0782b",3,1,10,1); R("#c25e22",1,6,14,1); break;
-      case "lounger": R("rgba(0,0,0,.12)",1,12,14,3); R("#f4ede4",1,8,14,4); R("#3a8fd0",1,8,14,1); R("#3a8fd0",1,10,14,1); R("#b38f45",2,12,1,3); R("#b38f45",13,12,1,3); break;
-      case "rack": R("#8a5a32",1,13,14,2); ["#e0782b","#3a8fd0","#f4ede4","#4f8a5b"].forEach((col,i)=>{ R(col,1+i*4,1,3,12); R("rgba(0,0,0,.35)",2+i*4,2,1,10); }); break;
-      case "rock": R("rgba(0,0,0,.15)",2,12,12,3); R("#8d8a84",2,6,12,8); R("#a9a6a0",3,5,9,5); R("#c2bfb9",5,6,3,2); break;
-      case "sign": R("#8a5a32",7,8,2,8); R("#c9a25b",2,3,12,7); R("#8a5a32",2,3,12,1); R("#8a5a32",2,9,12,1); R("#5a3a22",4,5,8,1); R("#5a3a22",4,7,6,1); break;
-      case "offering": R("#5aa83a",5,6,6,6); R("#3f8a3a",5,11,6,1); R("#f5c84a",6,7,2,2); R("#d9452b",9,7,2,2); R("#ffffff",7,9,2,2); break;
-      case "hammock": {   // strung between the two palms either side; you sleep in it during the opening
-        const sway=Math.round(Math.sin(TOWN.now/600)), C=(col,x,y,w,h)=>{ c.fillStyle=col; c.fillRect(x,y,w,h); };
-        R("rgba(0,0,0,.12)",4,13,24,2);
-        for(let i=0;i<6;i++){ C("#d9c39a",px-6+i,py+2+i,1,1); C("#d9c39a",px+37-i,py+2+i,1,1); }   // ropes
-        if(TOWN.sleeping && SPR_CV.player){
-          c.save(); c.translate(px+16,py+7+sway); c.rotate(-Math.PI/2); c.drawImage(SPR_CV.player,-12,-15); c.restore();
-          for(let i=0;i<2;i++){ const t=((TOWN.now/700)+i*1.5)%3, zx=px+22+i*5+Math.round(t*2), zy=py-2-Math.round(t*5);
-            c.globalAlpha=Math.max(0,1-t/3); C("#ffffff",zx,zy,3,1); C("#ffffff",zx+1,zy+1,1,1); C("#ffffff",zx,zy+2,3,1); c.globalAlpha=1; }
-        }
-        for(let i=0;i<28;i++){ const yy=py+7+Math.round(Math.sin(i/27*Math.PI)*4)+sway; C(i%4<2?"#e0782b":"#3aa0a0",px+2+i,yy,1,4); }
-        break; }
-      case "gate": R("rgba(0,0,0,.15)",0,45,16,3);
-        for(const [a,b,w,h] of [[0,38,16,10],[1,28,14,10],[2,18,12,10],[3,9,10,9],[5,2,6,7]]){ R("#8d8478",a,b,w,h); R("#a69d90",a,b,w,2); R("#6e665b",a+w-2,b,2,h); }
-        R("#6a8f4a",2,36,2,1); R("#6a8f4a",10,24,2,1); R("#e0b84f",6,2,4,2); break;
+    const px=o.x*TS, py=o.y*TS;
+    if(o.k==="bld"){ drawBld(c,o); return; }
+    if(o.k==="hammock"){   // strung between the two palms either side; you sleep in it during the opening
+      const sway=Math.round(Math.sin(TOWN.now/600)), C=(col,x,y,w,h)=>{ c.fillStyle=col; c.fillRect(x,y,w,h); };
+      C("rgba(18,40,20,.2)",px+4,py+13,24,2);
+      for(let i=0;i<6;i++){ C("#d9c39a",px-6+i,py+2+i,1,1); C("#d9c39a",px+37-i,py+2+i,1,1); }   // ropes
+      if(TOWN.sleeping && SPR_CV.player){
+        c.save(); c.translate(px+16,py+7+sway); c.rotate(-Math.PI/2); c.drawImage(SPR_CV.player,-12,-15); c.restore();
+        for(let i=0;i<2;i++){ const t=((TOWN.now/700)+i*1.5)%3, zx=px+22+i*5+Math.round(t*2), zy=py-2-Math.round(t*5);
+          c.globalAlpha=Math.max(0,1-t/3); C("#ffffff",zx,zy,3,1); C("#ffffff",zx+1,zy+1,1,1); C("#ffffff",zx,zy+2,3,1); c.globalAlpha=1; }
+      }
+      for(let i=0;i<28;i++){ const yy=py+7+Math.round(Math.sin(i/27*Math.PI)*4)+sway; C(i%4<2?"#e0782b":"#3aa0a0",px+2+i,yy,1,4); C("#7a3b1e",px+2+i,yy+4,1,1); }
+      return;
     }
+    const [art,ox,oy]=propArt(o.k, o.k==="bush"||o.k==="scooter" ? o.x+o.y : 0);
+    c.drawImage(art, px+ox, py+oy);
   }
 
   function drawPickup(c,p){
@@ -1540,6 +1625,7 @@
     c.setTransform(1,0,0,1,-cam.x,-cam.y);
     const x0=Math.floor(cam.x/TS), y0=Math.floor(cam.y/TS), x1=Math.min(TW-1,x0+Math.ceil(TOWN.vw/TS)), y1=Math.min(TH-1,y0+Math.ceil(TOWN.vh/TS));
     for(let y=y0;y<=y1;y++) for(let x=x0;x<=x1;x++) drawGround(c,x,y);
+    for(const o of TOWN_OBJS) castShadow(c,o);
     const things=[];   // y-sorted so things lower on the map draw in front
     for(const o of TOWN_OBJS) things.push({by:o.k==="bld"?o.y+o.h-1 : o.k==="gate"?o.y+2 : o.y, z:o.k==="offering"?-1:0, draw:()=>drawObj(c,o)});
     for(const p of PICKUPS) if(!TOWN.taken.has(p.item)) things.push({by:p.y, z:0, draw:()=>drawPickup(c,p)});
