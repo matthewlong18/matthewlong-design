@@ -1,15 +1,10 @@
 # matthewlong.design
 
-Static portfolio, exported from Claude Design, plus the Copenhagen Grind game.
+Matthew's portfolio. A static site: no build step, deployed to Vercel on every push to `main`.
 
-- index.html: the portfolio (renders with support.js, which loads React from unpkg)
-- games/copenhagen-grind.html: the game, embedded in the "Side quest" section (#sec-play)
-- assets/matthew.jpg: headshot (resized for web)
+- `index.html`: the portfolio (exported from Claude Design; renders with `support.js`, which loads React from unpkg)
+- `games/super-startup-adventure-time.html`: the tactics game, embedded in the "Side quest" section (`#sec-play`)
+- `assets/`: the headshot (also the link-preview image) and the favicon
 
-No build step. Deploys to Vercel on every push to main.
-
-## Go live
-1. github.com/new, repo name `matthewlong-design`, Create
-2. Upload the contents of this folder (not the folder itself), then Commit
-3. vercel.com/new, Import `matthewlong-design`, Deploy
-4. Vercel project: Settings, Domains, add `matthewlong.design`, then copy the DNS records Vercel shows into your domain registrar
+## Editing
+Preview with `npx serve .` and open http://localhost:3000, check desktop and a 375px phone width, then commit and push. Vercel redeploys in about a minute. See `CLAUDE.md` for the template rules.

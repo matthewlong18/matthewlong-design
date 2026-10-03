@@ -11,7 +11,7 @@ Matthew's personal portfolio. Matthew is a beginner: explain changes simply, kee
 - Sections, in order: sec-hero, sec-journey, sec-work, sec-cafe, sec-play (game), sec-contact.
 
 ## The game
-- `games/copenhagen-grind.html` is "Super Start-up Adventure Time", a self-contained tactics RPG set in Canggu, Bali (pixel art, battle scenes, synth audio). Embedded in `#sec-play` via an iframe. (The file name is left over from the old title.)
+- `games/super-startup-adventure-time.html` is "Super Start-up Adventure Time", a self-contained tactics RPG set in Canggu, Bali (pixel art, battle scenes, synth audio). Embedded in `#sec-play` via an iframe.
 - The iframe resizes itself (script at the end of the game file). Keep that.
 - The win-screen link is `href="/#sec-contact" target="_top"`. Keep `target="_top"`.
 - Flow: title screen → character creator (default hero: Rikke) → opening cutscene (waking up in a hammock) → explore Canggu (no hints; snacks are hidden) → fight cutscene inside The Sloppy Sloth → battle. You start alone; Matt joins on turn 2 and can summon Claude once. Cutscene text lives in `openingScene()` and `fightScene()`.
