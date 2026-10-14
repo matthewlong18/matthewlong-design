@@ -20,6 +20,12 @@ Matthew's personal portfolio. Matthew is a beginner: explain changes simply, kee
 - The suits: Middle Manager, The CEO, Brooke and Grace (consultants), and the Intern (`intern:true`: attacks with "Selfie Flash", a magic hit with a random caption from `SELFIE_LINES`; 1 turn in 5 he does a TikTok Dance instead, which hurts his own team). `GAZ` is Gord, a bystander at the bar (`team:"neutral"`): untargetable, doesn't count toward winning. He gets a turn every round (`gordTurn`): drinks a beer (`beer` animation) and says the next line in `lines`, which get steadily more unhinged.
 - Battle art: `drawArena()` (the bar floor under the board) and `BACKDROP` (behind attack cutscenes). Each hero move has its own animation in `FX` (mapped in `MOVE_FX`) and sound in `SFX`.
 
+## Slothdoku
+- `games/slothdoku/` is Slothdoku, a sloth logic-puzzle game (built as a Claude artifact). It's linked from a card under the iframe in `#sec-play`, and `/slothdoku` redirects there (`vercel.json`).
+- It installs like an app (PWA): `manifest.webmanifest`, icons, and `sw.js` (offline cache, network-first for the page). On iPhone a one-time "Add to Home Screen" hint shows at the bottom.
+- To ship a new version of the game, replace `index.html` but keep everything from the first `<!doctype` down to the main `</style>`'s `</head><body>` and the install block at the end. Then bump `VERSION` in `sw.js`.
+- The Nomad Café house ad links with `utm_source=slothdoku`.
+
 ## Workflow
 1. Make the change.
 2. Preview locally: `npx serve .` then open http://localhost:3000 (needs internet for the unpkg scripts and Google Fonts).

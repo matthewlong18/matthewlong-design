@@ -1,0 +1,1885 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slothdoku</title>
+<meta name="description" content="A slow logic puzzle. Help Mocha the sloth open a café, then travel the world one puzzle at a time.">
+<meta name="theme-color" content="#efe9da">
+<link rel="manifest" href="/games/slothdoku/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/games/slothdoku/favicon-32.png">
+<link rel="apple-touch-icon" href="/games/slothdoku/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Slothdoku">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Matthew Long">
+<meta property="og:title" content="Slothdoku: a slow logic puzzle">
+<meta property="og:description" content="Help Mocha the sloth open a café, then travel the world one puzzle at a time.">
+<meta property="og:url" content="https://matthewlong.design/slothdoku">
+<meta property="og:image" content="https://matthewlong.design/games/slothdoku/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Karla:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: café table — mascot header with speech bubble, mode tabs, a big board on a tray (cutscenes play on the same tray), a scatter of jigsaw pieces, toolbar, then a paper slip for the tip jar. One warm light look on purpose (Nomad Café brand). */
+:root{
+  --bg:#efe9da; --tray:#fbf8f0; --ink:#1f3a2c; --muted:#5d6f61; --forest:#2f5d44; --sage:#a9bfa4; --line:#1f3a2c;
+  --heart:#c0563f; --gold:#c9962f; --gold-dk:#8a6416;
+  --r0:#c9dcc0; --r1:#e9d6a9; --r2:#d9c3dd; --r3:#bfd7df; --r4:#ecc3b4; --r5:#d6dba0; --r6:#d2cab5; --r7:#a9cbb0; --r8:#f0cfd8; --r9:#c7cbe6; --fog:#e2dccd;
+  --f-display:"Fraunces", Georgia, "Times New Roman", serif;
+  --f-body:"Karla", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:light;
+}
+html,body{background:var(--bg);color:var(--ink)}
+[hidden]{display:none!important} /* hidden overlays must never block taps */
+body{font-family:var(--f-body);font-size:16px;padding-inline:16px;padding-block:14px 32px}
+.wrap{max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+header{display:flex;align-items:center;gap:10px}
+.mascot{width:56px;height:56px;flex:none;border:0;background:none;padding:0;cursor:pointer}
+.mascot svg{width:100%;height:100%;display:block;transform-origin:50% 90%}
+.mascot.happy svg{animation:hop .5s}
+.mascot.sad svg{animation:shake .4s}
+.mascot.party svg{animation:spin .8s}
+.who{min-width:0;flex:1}
+h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-spacing:-.01em;line-height:1}
+.bubble{margin-top:5px;font-size:13.5px;color:var(--ink);background:var(--tray);border-radius:10px;padding:5px 9px;display:inline-block;position:relative;max-width:100%}
+.bubble::before{content:"";position:absolute;left:-6px;top:9px;border:6px solid transparent;border-right-color:var(--tray);border-left:0}
+.icon{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);background:var(--tray);color:var(--ink);font-size:17px;cursor:pointer;display:grid;place-items:center;padding:0;flex:none}
+.icon[aria-pressed="false"]{opacity:.45}
+.tabs{display:flex;background:var(--tray);border-radius:999px;padding:4px;gap:4px;border:2px solid var(--ink)}
+.tabs button{flex:1;border:0;border-radius:999px;padding:9px 4px;font:700 15px var(--f-body);background:transparent;color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--forest);color:var(--tray)}
+.tabs .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--heart);margin-left:5px;vertical-align:middle}
+#game{display:flex;flex-direction:column;gap:12px}
+.diff{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.diff .lab,.seg .lab{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.diff button,.seg button{border:2px solid var(--ink);background:transparent;border-radius:999px;padding:5px 12px;font:700 13.5px var(--f-body);color:var(--ink);cursor:pointer}
+.diff button[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--ink);color:var(--tray)}
+.diff .note{font-size:12.5px;color:var(--muted);flex-basis:100%}
+.bar{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.lvl{font-family:var(--f-display);font-weight:800;font-size:22px}
+.lvl small{font-family:var(--f-body);font-weight:600;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-left:6px}
+.stats{display:flex;gap:12px;align-items:center;font-weight:700}
+.coins{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-variant-numeric:tabular-nums}
+.coin{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f0cf7a,var(--gold) 60%,var(--gold-dk));box-shadow:inset 0 0 0 1.5px var(--gold-dk);display:inline-block;flex:none}
+.coins.bump{animation:hop .4s}
+.combo{font-size:13px;background:var(--gold);color:var(--tray);border-radius:999px;padding:2px 8px}
+.combo.bump{animation:hop .35s}
+.hearts{font-size:22px;letter-spacing:2px;color:var(--forest)}
+.hearts .gone{color:var(--sage);opacity:.5}
+.hearts.hit{animation:shake .35s}
+.time{color:var(--muted);font-size:15px;min-width:3.2em;text-align:right}
+.time.urgent{color:var(--heart)}
+.tray{background:var(--tray);border-radius:16px;padding:10px;box-shadow:0 1px 0 #d8d0bb,0 10px 24px -14px rgba(31,58,44,.4);display:flex;justify-content:center;position:relative}
+.board{display:grid;width:min(100%,62vh);aspect-ratio:1;max-width:100%;border:3px solid var(--line);border-radius:8px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.cell{position:relative;border:0 solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font:inherit;line-height:1;color:var(--ink);outline:none;-webkit-tap-highlight-color:transparent;min-width:0;min-height:0;overflow:visible}
+.cell .x{position:absolute;inset:0;display:grid;place-items:center;line-height:1}
+.cell > svg{position:absolute;inset:9%;width:82%;height:82%}
+.cell::after{content:"";position:absolute;inset:0;pointer-events:none;background:transparent;transition:background .12s}
+.cell.hl::after{background:rgba(31,58,44,.09)}
+.cell.hlreg::after{background:rgba(255,255,255,.28)}
+.cell.press::after{background:rgba(31,58,44,.12)}
+.cell.press::before{content:"";position:absolute;inset:12%;border-radius:50%;border:3px solid var(--forest);z-index:2;pointer-events:none;animation:hold .42s linear forwards}
+@keyframes hold{from{transform:scale(.15);opacity:.15}to{transform:scale(1);opacity:.95}}
+/* jigsaw phase: smaller board so board and pieces fit on one screen */
+.tray.building .board{width:min(100%,44vh)}
+.cell:focus-visible{box-shadow:inset 0 0 0 3px var(--forest);z-index:1}
+.cell .x{font-weight:700;font-size:clamp(13px,4vw,24px);color:var(--muted);opacity:.7}
+.cell svg{z-index:1}
+.cell.pop svg{animation:pop .3s ease-out}
+.cell.bad{animation:shake .35s}
+.cell.bad::after{background:rgba(192,86,63,.4)}
+.cell.clash::after{background:repeating-linear-gradient(45deg,rgba(192,86,63,.38) 0 6px,transparent 6px 12px)}
+.cell.ghost::after{background:rgba(31,58,44,.22)}
+.cell.reveal{animation:revealIn .55s ease-out both}
+.board.won .cell svg{animation:wave .7s ease-in-out both}
+.brew{position:absolute;inset:10px;display:grid;place-items:center;background:var(--tray);border-radius:8px;font-family:var(--f-display);font-weight:600;font-size:20px;color:var(--muted)}
+/* jigsaw tray */
+.pieces{display:flex;flex-wrap:wrap;gap:12px 16px;justify-content:center;align-items:flex-start;padding:12px 8px;border:2px dashed var(--sage);border-radius:16px}
+.piece{display:grid;touch-action:none;cursor:grab;filter:drop-shadow(0 3px 0 rgba(31,58,44,.25));transition:transform .18s}
+.piece .pc{border:2px solid var(--line);margin:-1px}
+.piece .hole{visibility:hidden}
+.piece:hover{transform:translateY(-2px) rotate(var(--tilt,0deg))}
+.piece.lift{position:fixed;z-index:30;cursor:grabbing;filter:drop-shadow(0 10px 8px rgba(31,58,44,.35));transition:none}
+.piece.back{transition:left .25s ease,top .25s ease}
+/* cutscene stage */
+.stage{position:absolute;inset:10px;border-radius:8px;overflow:hidden;z-index:5;cursor:pointer;background:var(--tray);user-select:none;-webkit-user-select:none}
+.stage.out{animation:fadeOut .3s ease-in both}
+.stage .bg{position:absolute;inset:0}
+.stage .bg svg{width:100%;height:100%;display:block}
+.actor{position:absolute;bottom:31%;width:36%;aspect-ratio:1}
+.actor svg{width:100%;height:100%;display:block;transform-origin:50% 90%}
+.actor.l{left:3%;animation:inL .6s cubic-bezier(.2,.8,.3,1.1) both}
+.actor.r{right:3%;animation:inR .6s cubic-bezier(.2,.8,.3,1.1) .15s both}
+.actor.r svg{transform:scaleX(-1)}
+.actor.crowd{width:19%;bottom:30%;animation:inUp .5s ease-out both}
+.actor.talk svg{animation:bob .45s ease-in-out infinite alternate}
+.actor.r.talk svg{animation:bobR .45s ease-in-out infinite alternate}
+.actor .nm{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);background:var(--ink);color:var(--tray);font:700 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.dlg{position:absolute;left:3%;right:3%;bottom:3%;min-height:25%;background:var(--tray);border:2px solid var(--ink);border-radius:12px;padding:9px 12px 10px;font-size:clamp(14px,3.7vw,17px);line-height:1.35;box-shadow:0 4px 0 rgba(31,58,44,.2)}
+.dlg b{display:block;font:800 12px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--forest);margin-bottom:2px}
+.dlg .more{position:absolute;right:10px;bottom:6px;color:var(--muted);font-size:12px;animation:blink 1s infinite}
+.skip{position:absolute;top:8px;right:8px;border:2px solid var(--ink);background:var(--tray);color:var(--ink);border-radius:999px;padding:4px 12px;font:700 13px var(--f-body);cursor:pointer;z-index:2}
+.title-card{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:rgba(31,58,44,.82);color:var(--tray);animation:fadeIn .4s both;padding:20px;z-index:1}
+.title-card .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+.title-card .tapon{margin-top:14px;opacity:.75;animation:blink 1.2s infinite}
+.title-card h2{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,7vw,38px);margin:6px 0 0;text-wrap:balance}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+.btn{flex:1 1 0;min-width:84px;font:700 15px var(--f-body);padding:12px 10px;border-radius:12px;border:2px solid var(--ink);background:var(--tray);color:var(--ink);cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.go{background:var(--forest);color:var(--tray);border-color:var(--forest)}
+.btn.gold{background:var(--gold);color:var(--tray);border-color:var(--gold-dk)}
+.btn[aria-pressed="true"]{background:var(--sage)}
+.btn:focus-visible,.icon:focus-visible,.tabs button:focus-visible,.diff button:focus-visible,.seg button:focus-visible,.mascot:focus-visible,.slip a:focus-visible,.skip:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.how{font-size:13.5px;color:var(--muted);line-height:1.5;max-width:65ch;margin:0}
+.how b{color:var(--ink)}
+.slip{background:var(--tray);border:2px dashed var(--forest);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.slip h2{font-family:var(--f-display);font-weight:800;margin:0;font-size:26px;text-wrap:balance}
+.slip p{margin:0;line-height:1.45}
+.slip .row{display:flex;gap:8px;flex-wrap:wrap}
+.stars{font-size:30px;letter-spacing:4px;color:var(--gold)}
+.stars .off{color:var(--sage);opacity:.5}
+.quip{font-style:italic;color:var(--muted)}
+/* tip jar */
+.tipjar{display:flex;gap:14px;align-items:flex-end}
+.tipjar .jar{width:84px;flex:none}
+.tally{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;font-variant-numeric:tabular-nums}
+.tally div{display:flex;justify-content:space-between;gap:10px;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s}
+.tally div.in{opacity:1;transform:none}
+.tally .tot{border-top:2px solid var(--ink);padding-top:4px;margin-top:3px;font-weight:800;font-size:18px}
+/* page scenery: the current stop's backdrop, washed out behind everything */
+.scenery{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.34;transition:opacity .45s ease}
+.scenery svg{width:100%;height:100%;display:block}
+.scenery::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(239,233,218,.6),rgba(239,233,218,.1) 45%,rgba(239,233,218,.3))}
+.scenery.swap{opacity:0}
+.wrap{position:relative;z-index:1}
+/* travel scenes between stops */
+.travel{position:absolute;inset:0;overflow:hidden}
+.travel .sky{position:absolute;inset:0}
+.travel .sun{position:absolute;width:15%;aspect-ratio:1;border-radius:50%;top:12%;right:14%}
+.travel .layer{position:absolute;left:0;width:200%;display:flex;animation:pan linear infinite}
+.travel .layer svg{width:50%;height:100%;flex:none;display:block}
+.travel .far{bottom:30%;height:34%;animation-duration:26s}
+.travel .near{bottom:20%;height:22%;animation-duration:9s}
+.travel .clouds{top:6%;height:30%;animation-duration:38s}
+.travel .low{bottom:24%;height:34%;animation-duration:11s}
+.travel .ground{position:absolute;left:0;right:0;bottom:0;height:24%}
+.travel .ground.road::after{content:"";position:absolute;left:0;width:200%;top:42%;height:4px;background:repeating-linear-gradient(90deg,rgba(251,248,240,.85) 0 22px,transparent 22px 44px);animation:pan 1.6s linear infinite}
+.travel .ground.rails::after{content:"";position:absolute;left:0;width:200%;top:22%;height:10px;border-top:3px solid #5d6f61;border-bottom:3px solid #5d6f61;background:repeating-linear-gradient(90deg,#7a5a3e 0 6px,transparent 6px 22px);animation:pan 1.2s linear infinite}
+.travel .ground.sea::after{content:"";position:absolute;left:0;width:200%;top:8%;height:12px;background:repeating-linear-gradient(90deg,rgba(251,248,240,.55) 0 18px,transparent 18px 40px);border-radius:6px;animation:pan 3s linear infinite}
+.travel .ride{position:absolute;left:50%;bottom:17%;width:46%;transform:translateX(-50%);animation:ride .7s ease-in-out infinite alternate}
+.travel .ride.air{bottom:42%;width:52%;animation:fly 2.4s ease-in-out infinite alternate}
+.travel .ride.sail{bottom:15%;animation:sail 2s ease-in-out infinite alternate}
+.travel .ride svg{width:100%;height:auto;display:block;overflow:visible}
+.travel .leg{transform-box:fill-box;transform-origin:50% 0;animation:step .5s ease-in-out infinite alternate}
+.travel .leg.l2{animation-direction:alternate-reverse}
+@keyframes step{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+.travel .spin{transform-box:fill-box;transform-origin:center;animation:spin .7s linear infinite}
+.route{position:absolute;top:9px;left:10px;right:74px;background:var(--tray);border:2px solid var(--ink);border-radius:999px;padding:4px 12px;display:flex;align-items:center;gap:8px;font:700 12.5px var(--f-body);z-index:2}
+.route span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.route .track{flex:1;min-width:28px;height:2px;background:repeating-linear-gradient(90deg,var(--muted) 0 4px,transparent 4px 8px);position:relative}
+.route .track i{position:absolute;top:50%;left:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--heart);animation:trip 3.8s ease-in-out forwards}
+@keyframes pan{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes ride{from{transform:translateX(-50%) translateY(0)}to{transform:translateX(-50%) translateY(-2.5%)}}
+@keyframes fly{from{transform:translateX(-50%) translateY(0) rotate(-1deg)}to{transform:translateX(-50%) translateY(-9%) rotate(1.5deg)}}
+@keyframes sail{from{transform:translateX(-50%) rotate(-2.5deg)}to{transform:translateX(-50%) rotate(2.5deg)}}
+@keyframes trip{to{left:100%}}
+/* lesson + travel notes cards */
+.lesson{background:var(--tray);border:2px solid var(--gold);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.slip .lesson{background:#fff8e8}
+.lesson .tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dk);font-weight:800}
+.lesson > p:first-of-type{font-family:var(--f-display);font-weight:600;font-size:18px;line-height:1.3;text-wrap:balance}
+.notes-card > p:first-of-type{font-family:var(--f-body);font-size:14px}
+.lesson ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:2px;font-size:14.5px}
+.lesson .where{color:var(--muted);font-size:13px}
+.chapter .learned{font-size:14px;color:var(--ink);background:#fff8e8;border-radius:8px;padding:6px 10px}
+.chapter .learned b{color:var(--gold-dk)}
+.notes-list{display:flex;flex-direction:column;gap:10px}
+/* out-of-leaves pop-up */
+.sadpop{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(31,58,44,.55);animation:fadeIn .35s ease-out both}
+.sadcard{background:var(--tray);border-radius:20px;padding:22px 20px 18px;max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 20px 50px -20px rgba(0,0,0,.5);animation:sadIn .5s cubic-bezier(.2,1.2,.4,1) both}
+.sadcard h2{font-family:var(--f-display);font-weight:800;font-size:26px;margin:0}
+.sadcard p{margin:0;line-height:1.45;max-width:30ch}
+.sadcard .btn{flex:none;width:100%}
+.sadnote{font-size:12.5px;color:var(--muted)}
+.sadface{width:150px;aspect-ratio:1}
+.sadface svg{width:100%;height:100%;display:block;overflow:visible;animation:sigh 3.2s ease-in-out infinite}
+.sadface .tear{transform-box:fill-box;transform-origin:50% 0;animation:tear 4.2s ease-in .6s infinite}
+@keyframes sadIn{from{transform:translateY(24px) scale(.94);opacity:0}to{transform:none;opacity:1}}
+@keyframes sigh{0%,100%{transform:none}50%{transform:translateY(3%) scale(.985)}}
+@keyframes tear{0%{transform:translateY(0) scale(.15);opacity:0}18%{transform:translateY(0) scale(1);opacity:1}30%{transform:translateY(1px) scale(1)}85%{transform:translateY(18px);opacity:1}100%{transform:translateY(22px);opacity:0}}
+/* ---------- the pop-up ---------- */
+.ppov{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:16px;background:rgba(31,58,44,.55);overflow-y:auto;animation:ppfade .3s ease-out both}
+.pp{position:relative;width:100%;max-width:380px;background:var(--paper);border-radius:18px;overflow:hidden;box-shadow:0 24px 60px -24px rgba(0,0,0,.55);animation:pprise .55s cubic-bezier(.2,1.2,.4,1) both;
+  background-image:repeating-radial-gradient(circle at 50% 120%,transparent 0 10px,rgba(31,58,44,.035) 10px 11px)}
+.pp::after{content:"";position:absolute;inset:7px;border:1.5px dashed color-mix(in srgb,var(--accent) 40%,transparent);border-radius:13px;pointer-events:none}
+.pp .scene{position:relative;height:150px;overflow:hidden}
+.pp .scene .bgart{position:absolute;inset:0}
+.pp .scene .bgart svg{width:100%;height:100%;display:block}
+.scene::after{content:"";position:absolute;inset:auto 0 0 0;height:46px;background:linear-gradient(transparent,var(--paper))}
+.pp .scene .who{position:absolute;bottom:10px;width:74px;z-index:1}
+.pp .scene .who svg{width:100%;display:block}
+.pp .scene .who.m{left:16px;animation:ppwave 1.6s ease-in-out .8s 2}
+.pp .scene .who.c{left:86px;transform:scaleX(-1)}
+.pp .stamp{position:absolute;top:96px;right:14px;width:108px;z-index:3;animation:slam .55s cubic-bezier(.3,1.6,.5,1) .45s both;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}
+.pp .stamp svg{width:100%;display:block}
+.pp .body{position:relative;padding:4px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.pp .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.pp .body h2{font-family:var(--f-display);font-weight:800;font-size:32px;margin:2px 0 0;line-height:1}
+.pp .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pp .tile{background:var(--tray);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0;box-shadow:0 1px 0 #e3dac6;border:1.5px solid #e6dcc7;animation:tileIn .45s ease-out both}
+.pp .tile.wide{grid-column:1/-1}
+.pp .tile .lab{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--muted);display:flex;align-items:center;gap:6px}
+.pp .tile .lab i{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block}
+.pp .words{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:2px}
+.pp .word{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pp .word b{font-family:var(--f-display);font-weight:800;font-size:17px;line-height:1.1;overflow-wrap:anywhere}
+.pp .word span{font-size:12px;color:var(--muted);line-height:1.3}
+.pp .vig{height:62px;border-radius:9px;overflow:hidden;margin:2px 0 4px;background:color-mix(in srgb,var(--accent) 14%,var(--tray))}
+.pp .vig svg{width:100%;height:100%;display:block}
+.pp .tile .nm{font-weight:800;font-size:14.5px;line-height:1.25}
+.pp .tile .wh{font-size:12px;color:var(--muted);line-height:1.35}
+.pp .foot{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.pp .go{border:0;border-radius:12px;padding:13px;font:800 15px var(--f-body);background:var(--forest);color:var(--tray);cursor:pointer}
+.pp .small{font-size:12px;color:var(--muted);text-align:center}
+@keyframes ppfade{from{opacity:0}}
+@keyframes pprise{from{transform:translateY(30px) scale(.95);opacity:0}}
+@keyframes slam{0%{transform:scale(2.4) rotate(-30deg);opacity:0}60%{transform:scale(.92) rotate(-6deg);opacity:1}100%{transform:scale(1) rotate(-8deg)}}
+@keyframes tileIn{from{transform:translateY(10px);opacity:0}}
+@keyframes ppwave{0%,100%{transform:none}30%{transform:rotate(-8deg)}60%{transform:rotate(6deg)}}
+@media (prefers-reduced-motion:reduce){.ppov,.pp,.stamp,.tile,.pp .scene .who{animation:none!important}.pp .stamp{transform:rotate(-8deg)}}
+
+/* trip gear rows */
+.gearlist{display:flex;flex-direction:column;gap:8px}
+.gearrow{display:grid;grid-template-columns:minmax(0,1fr) 98px 98px;gap:8px;align-items:center;background:var(--tray);border-radius:12px;padding:8px 10px}
+.gearrow .gname{min-width:0}
+.gearrow .gname small{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.gearrow .gname b{font-family:var(--f-display);font-weight:800;font-size:16px;line-height:1.2}
+.gearrow .item{padding:6px 4px}
+.gearrow .item svg{width:46px;height:46px}
+.gearrow.far{opacity:.6}
+.gearrow.far .item svg{filter:brightness(0) opacity(.18)}
+/* passport book in your Napsack */
+.pbook{background:linear-gradient(160deg,#2f5d44,#244a37);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 24px -14px rgba(31,58,44,.6)}
+.pbook .cover{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#e3c27a;padding:2px 6px}
+.pbook .cover b{font-family:var(--f-display);font-weight:800;font-size:18px;letter-spacing:.14em}
+.pbook .cover span{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.85;text-align:right}
+.ppage{position:relative;background:#fbf6ea;border-radius:11px;padding:14px;background-image:repeating-radial-gradient(circle at 0 100%,transparent 0 12px,rgba(47,95,158,.05) 12px 13px),repeating-radial-gradient(circle at 100% 0,transparent 0 12px,rgba(201,150,47,.06) 12px 13px)}
+.ppage .pno{position:absolute;bottom:6px;right:12px;font:600 10.5px "IBM Plex Mono",ui-monospace,monospace;color:var(--muted)}
+.ppage h4{margin:0 0 10px;font:800 11px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.idpage{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start}
+.idpage .photo{background:#dbe8ec;border:1.5px solid #c9d6da;border-radius:6px;aspect-ratio:4/5;display:grid;place-items:center;overflow:hidden}
+.idpage .photo svg{width:92%}
+.idpage dl{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px}
+.idpage dt{font:800 9.5px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.idpage dd{margin:0;font:600 13.5px "IBM Plex Mono",ui-monospace,monospace;color:var(--ink);overflow-wrap:anywhere}
+.mrz{grid-column:1/-1;font:600 12px/1.5 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.06em;color:#5d6f61;border-top:1px dashed #d2cab5;padding-top:8px;overflow:hidden;white-space:nowrap;text-overflow:clip}
+.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;padding-bottom:12px}
+@media (min-width:520px){.sgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.sslot{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;background:none;border:0;padding:4px;font:inherit;color:inherit;border-radius:10px}
+button.sslot{cursor:pointer}
+button.sslot:hover svg{transform:var(--rot) scale(1.06)}
+button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.sslot svg{width:min(100%,104px);transform:var(--rot);transition:transform .2s;mix-blend-mode:multiply}
+.sslot b{font-size:13px}
+.sslot small{font:600 10.5px "IBM Plex Mono",ui-monospace,monospace;color:var(--muted)}
+.sslot.empty svg{opacity:.55}
+.sslot.empty b{color:var(--muted);font-weight:600}
+/* trip bar, passport */
+.trip{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--tray);border-radius:12px;padding:8px 10px 8px 12px}
+.where{min-width:0;font-size:13px;line-height:1.35;color:var(--muted)}
+.where b{font-family:var(--f-display);font-weight:800;font-size:16px;display:block;color:var(--ink)}
+.where .dots{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle;flex-wrap:wrap}
+.where .dots i{width:8px;height:8px;border-radius:50%;background:var(--sage);display:inline-block;opacity:.6}
+.where .dots i.on{background:var(--forest);opacity:1}
+.pill{border:2px solid var(--ink);background:transparent;border-radius:999px;padding:6px 12px;font:700 13px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap;flex:none}
+.pill.done{border-color:var(--sage);color:var(--muted)}
+.pill:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.stamp{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:12.5px;text-align:center}
+.stamp svg{width:92px;height:92px}
+.stamp small{font-weight:400;color:var(--muted);font-size:11.5px}
+.stampbig{display:flex;gap:12px;align-items:center}
+.stampbig svg{width:88px;height:88px;flex:none;animation:stampIn .55s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes stampIn{0%{transform:scale(1.9);opacity:0}100%{transform:none;opacity:1}}
+.notes{border-left:4px solid var(--forest);padding-left:12px;display:flex;flex-direction:column;gap:4px}
+/* tip-jar trivia */
+.quiz{background:var(--bg);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.quiz .qhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.quiz .tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.quiz .qq{font-family:var(--f-display);font-weight:600;font-size:18px;line-height:1.3;text-wrap:balance}
+.qopts{display:grid;grid-template-columns:1fr;gap:6px}
+@media (min-width:520px){.qopts{grid-template-columns:1fr 1fr}}
+.qopt{text-align:left;border:2px solid var(--ink);background:var(--tray);color:var(--ink);border-radius:10px;padding:9px 11px;font:600 14.5px/1.3 var(--f-body);cursor:pointer;min-width:0}
+.qopt:hover:not(:disabled){background:#fff}
+.qopt:disabled{cursor:default}
+.qopt.right{background:var(--forest);border-color:var(--forest);color:var(--tray)}
+.qopt.wrong{background:var(--heart);border-color:var(--heart);color:var(--tray)}
+.qopt:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.qwhy{font-size:14px}
+/* wrong-answer feedback */
+.cell.wx .x{color:var(--heart);opacity:1;font-weight:800}
+.cell .nope{position:absolute;inset:4%;z-index:3;pointer-events:none;animation:nope 1.1s ease-in forwards}
+.cell .nope svg{width:100%;height:100%}
+.float{position:absolute;z-index:4;pointer-events:none;font:800 clamp(15px,4vw,20px) var(--f-body);color:var(--heart);background:var(--tray);border:2px solid var(--heart);border-radius:999px;padding:1px 8px;white-space:nowrap;transform:translate(-50%,-50%);animation:floatUp 1.1s ease-out forwards}
+.board.hurt{animation:shake .4s}
+.tray.hurt{animation:hurt .7s ease-out}
+@keyframes nope{0%{transform:scale(.4);opacity:0}18%{transform:scale(1.12);opacity:1}55%{transform:scale(1) rotate(-6deg);opacity:1}100%{transform:translateY(40%) scale(.7) rotate(10deg);opacity:0}}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,-30%)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,-190%)}}
+@keyframes hurt{0%{box-shadow:0 0 0 0 rgba(192,86,63,0)}20%{box-shadow:0 0 0 6px rgba(192,86,63,.75)}100%{box-shadow:0 0 0 0 rgba(192,86,63,0)}}
+.chapter{border-left:4px solid var(--gold);padding-left:12px;display:flex;flex-direction:column;gap:6px}
+.chapter .eyebrow{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.chapter h3{font-family:var(--f-display);font-weight:800;font-size:22px;margin:0}
+.chapter p{max-width:60ch}
+.unlocks{display:flex;gap:8px;flex-wrap:wrap}
+.unlock{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:999px;padding:3px 10px 3px 3px;font-weight:700;font-size:13.5px}
+.unlock svg{width:30px;height:30px}
+.ad{border-top:1px solid var(--sage);padding-top:10px;display:flex;gap:10px;align-items:flex-start}
+.ad .tag{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ad a{color:var(--forest);font-weight:700}
+.ad svg{width:44px;height:44px;flex:none}
+/* closet */
+.closet{display:flex;flex-direction:column;gap:16px}
+.preview{display:flex;gap:16px;align-items:center;background:var(--tray);border-radius:16px;padding:14px;box-shadow:0 1px 0 #d8d0bb}
+.preview .big{width:min(34vw,150px);aspect-ratio:1;flex:none}
+.preview .big svg{width:100%;height:100%;animation:hop 2.6s ease-in-out infinite}
+.preview h2{font-family:var(--f-display);font-weight:800;font-size:26px;margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.preview p{margin:4px 0 0;color:var(--muted);line-height:1.4}
+.meter{height:8px;border-radius:99px;background:var(--bg);overflow:hidden;margin-top:8px}
+.meter span{display:block;height:100%;background:var(--forest)}
+.closet h3.sec{font-family:var(--f-display);font-weight:600;font-size:18px;margin:0}
+.closet .secnote{font-size:13px;color:var(--muted);margin:-10px 0 0}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
+.item{border:2px solid var(--ink);border-radius:12px;background:var(--tray);padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;font:700 12.5px var(--f-body);color:var(--ink);cursor:pointer;text-align:center;line-height:1.2}
+.item svg{width:54px;height:54px}
+.item small{font-weight:400;color:var(--muted);font-size:11.5px;display:inline-flex;align-items:center;gap:4px}
+.item small .coin{width:12px;height:12px}
+.item.locked{border-style:dashed;border-color:var(--sage);cursor:default}
+.item.locked svg{filter:grayscale(1) brightness(1.2);opacity:.45}
+.item.shop{border-color:var(--gold)}
+.item.shop.poor{opacity:.55;cursor:not-allowed}
+.item[aria-pressed="true"]{background:var(--sage)}
+.item:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.story{display:flex;flex-direction:column;gap:10px}
+.story .chapter.locked{border-left-color:var(--sage);opacity:.6}
+.regulars{display:flex;gap:10px;flex-wrap:wrap}
+.regular{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:12.5px;width:72px;text-align:center}
+.regular svg{width:56px;height:56px}
+.regular.unmet svg{filter:brightness(0) opacity(.15)}
+.seg{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--tray);padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px;z-index:50;max-width:calc(100% - 32px);text-align:center}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:40;width:100%;height:100%}
+@keyframes pop{0%{transform:scale(.3) rotate(-15deg)}70%{transform:scale(1.15)}100%{transform:none}}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes hop{0%,100%{transform:none}40%{transform:translateY(-18%) scale(1.06)}}
+@keyframes spin{0%{transform:none}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg)}}
+@keyframes wave{0%,100%{transform:none}40%{transform:translateY(-14%) rotate(-8deg)}70%{transform:translateY(0) rotate(5deg)}}
+@keyframes revealIn{0%{filter:saturate(0) brightness(1.15);transform:scale(.92)}60%{transform:scale(1.04)}100%{filter:none;transform:none}}
+@keyframes inL{from{transform:translateX(-130%)}to{transform:none}}
+@keyframes inR{from{transform:translateX(130%)}to{transform:none}}
+@keyframes inUp{from{transform:translateY(60%);opacity:0}to{transform:none;opacity:1}}
+@keyframes bob{from{transform:none}to{transform:translateY(-5%) rotate(-3deg)}}
+@keyframes bobR{from{transform:scaleX(-1)}to{transform:scaleX(-1) translateY(-5%) rotate(-3deg)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cell.pop svg,.cell.bad,.board.won .cell svg,.hearts.hit,.mascot svg,.combo.bump,.coins.bump,.preview .big svg,.actor,.actor svg,.title-card,.stage.out,.cell.reveal,.board.hurt,.tray.hurt,.stampbig svg,.travel *,.sadface svg,.sadcard,.sadpop{animation:none!important}.cell .nope{animation-duration:.01s!important}.piece.back{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="scenery" id="scenery" aria-hidden="true"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header>
+    <button class="mascot" id="mascot" type="button" aria-label="Poke the sloth"></button>
+    <div class="who"><h1>Slothdoku</h1><div class="bubble" id="bubble" aria-live="polite">Slow down. Think. Place a sloth.</div></div>
+    <button class="icon" id="sound" type="button" aria-pressed="true" aria-label="Sound" title="Sound">♪</button>
+  </header>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-journey" aria-selected="true" type="button">Journey</button>
+    <button role="tab" id="tab-closet" aria-selected="false" type="button">Napsack<span class="dot" id="newdot" hidden></span></button>
+  </div>
+  <div class="closet" id="closet" hidden></div>
+  <div id="game">
+    <div class="trip" id="trip"><div class="where" id="where"></div><button class="pill" id="dailyBtn" type="button">Today's puzzle</button></div>
+    <div class="bar">
+      <div class="lvl" id="lvl">Level 1</div>
+      <div class="stats"><span class="coins" id="coins" title="Coins"><span class="coin"></span><span id="coinN">0</span></span><span class="combo" id="combo" hidden></span><div class="hearts" id="hearts"></div><div class="time" id="time">0:00</div></div>
+    </div>
+    <div class="tray"><div class="board" id="board" role="grid" aria-label="Puzzle board"></div><div class="brew" id="brew" hidden>Brewing a puzzle…</div><div class="stage" id="stage" hidden></div></div>
+    <div class="pieces" id="pieces" hidden aria-label="Pieces to place"></div>
+    <div class="controls">
+      <button class="btn" id="undo" type="button">Undo</button>
+      <button class="btn" id="hint" type="button">Hint</button>
+      <button class="btn" id="autox" type="button" aria-pressed="true">Auto-X</button>
+      <button class="btn" id="restart" type="button">Restart</button>
+    </div>
+    <div class="slip" id="slip" hidden></div>
+    <p class="how" id="how"></p>
+  </div>
+</div>
+<div class="sadpop" id="sadpop" hidden role="dialog" aria-modal="true" aria-labelledby="sadTitle">
+  <div class="sadcard">
+    <div class="sadface" id="sadface"></div>
+    <h2 id="sadTitle">Out of leaves</h2>
+    <p id="sadMsg"></p>
+    <button class="btn go" type="button" id="sadRetry">Try again</button>
+    <p class="sadnote">Your board stays built. Just the sloths start over.</p>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ================= art ================= */
+const FUR_DEFAULT='#7a5a3e';
+const base=fur=>`<ellipse cx="32" cy="34" rx="27" ry="25" fill="${fur}"/><ellipse cx="32" cy="37" rx="20" ry="17" fill="#ead8b6"/><path d="M14 33c3-7 10-8 13-3 1 3-2 7-6 8-4 1-8-1-7-5z" fill="#3b2a1d"/><path d="M50 33c-3-7-10-8-13-3-1 3 2 7 6 8 4 1 8-1 7-5z" fill="#3b2a1d"/><circle cx="21.5" cy="33" r="2.6" fill="#fbf8f0"/><circle cx="42.5" cy="33" r="2.6" fill="#fbf8f0"/><ellipse cx="32" cy="41" rx="3.6" ry="2.6" fill="#3b2a1d"/><path d="M27 46c3 3 7 3 10 0" stroke="#3b2a1d" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M24 12c4-4 12-4 16 0" stroke="#3b2a1d" stroke-opacity=".55" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+const SLOTH=`<svg viewBox="-4 -8 72 76" aria-hidden="true">${base(FUR_DEFAULT)}</svg>`; /* plain sloth: used on the board */
+const SAD=`<svg viewBox="-4 -8 72 76" aria-hidden="true">${base('#9a8f86')}<path d="M6 2L58 62M58 2L6 62" stroke="#c0563f" stroke-width="7" stroke-linecap="round"/></svg>`;
+/* Accessories. Items with a price live in the shop; items with only `need` are trophies earned by doing something. */
+const ITEMS=[
+ {id:'beanie',slot:'head',name:'Barista beanie',price:10,svg:`<path d="M9 22Q32-4 55 22Z" fill="#2f5d44"/><rect x="8" y="18" width="48" height="7" rx="3.5" fill="#a9bfa4"/><circle cx="32" cy="5" r="4.5" fill="#ead8b6"/>`},
+ {id:'cup',slot:'hand',name:'Flat white',price:20,svg:`<path d="M48 56l2 10h10l2-10z" fill="#fbf8f0" stroke="#1f3a2c" stroke-width="1.5"/><rect x="48.5" y="59" width="13" height="4" fill="#a9bfa4"/><rect x="47" y="53" width="16" height="4" rx="1.5" fill="#1f3a2c"/><path d="M53 50c-2-2 2-4 0-6M58 50c-2-2 2-4 0-6" stroke="#5d6f61" stroke-width="1.4" fill="none" stroke-linecap="round"/>`},
+ {id:'bowtie',slot:'neck',name:'Bow tie',price:25,svg:`<path d="M32 60l-11-6v12zM32 60l11-6v12z" fill="#c0563f"/><circle cx="32" cy="60" r="3.2" fill="#8e3b2b"/>`},
+ {id:'readers',slot:'face',name:'Reading glasses',price:30,svg:`<circle cx="21.5" cy="33" r="7.5" fill="rgba(255,255,255,.18)" stroke="#c9962f" stroke-width="2.2"/><circle cx="42.5" cy="33" r="7.5" fill="rgba(255,255,255,.18)" stroke="#c9962f" stroke-width="2.2"/><path d="M29 32q3-2 6 0" stroke="#c9962f" stroke-width="2" fill="none"/>`},
+ {id:'sunnies',slot:'face',name:'Sunnies',price:40,svg:`<rect x="11.5" y="27" width="18" height="12" rx="5" fill="#1b1b1b"/><rect x="34.5" y="27" width="18" height="12" rx="5" fill="#1b1b1b"/><path d="M29 31h6" stroke="#1b1b1b" stroke-width="2.5"/><path d="M14 30l6-1" stroke="#fff" stroke-width="1.5" opacity=".5" stroke-linecap="round"/>`},
+ {id:'strawhat',slot:'head',name:'Straw hat',price:50,svg:`<ellipse cx="32" cy="16" rx="31" ry="6.5" fill="#d9b765"/><path d="M18 16q1-15 14-15t14 15z" fill="#e9cf8d"/><rect x="18.5" y="10" width="27" height="4.5" fill="#c0563f"/>`},
+ {id:'lei',slot:'neck',name:'Leaf lei',price:55,svg:`${[[14,54],[20,59],[26,62],[32,63],[38,62],[44,59],[50,54]].map(([x,y],i)=>`<ellipse cx="${x}" cy="${y}" rx="4.5" ry="3" transform="rotate(${-40+i*13} ${x} ${y})" fill="${i%2?'#7a9f6a':'#2f5d44'}"/>`).join('')}<circle cx="32" cy="63" r="3" fill="#f0cfd8"/>`},
+ {id:'flowers',slot:'head',name:'Flower crown',price:60,svg:`${[[13,18],[20,12],[28,9],[36,9],[44,12],[51,18]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="4.6" fill="${['#f0cfd8','#e9d6a9','#fbf8f0'][i%3]}" stroke="#7a9f6a" stroke-width="1.4"/><circle cx="${x}" cy="${y}" r="1.6" fill="#c9962f"/>`).join('')}`},
+ {id:'headphones',slot:'head',name:'Headphones',price:70,svg:`<path d="M8 32Q8 4 32 4t24 28" stroke="#1f3a2c" stroke-width="4.5" fill="none"/><rect x="1" y="25" width="11" height="16" rx="4" fill="#2f5d44"/><rect x="52" y="25" width="11" height="16" rx="4" fill="#2f5d44"/>`},
+ {id:'laptop',slot:'hand',name:'Tiny laptop',price:80,svg:`<rect x="-1" y="49" width="20" height="13" rx="1.5" fill="#5d6f61"/><rect x="1" y="51" width="16" height="9" fill="#bfd7df"/><path d="M-4 62h26l-2 3H-2z" fill="#1f3a2c"/><circle cx="9" cy="55.5" r="1.6" fill="#fbf8f0"/>`},
+ {id:'scarf',slot:'neck',name:'Canal scarf',price:95,svg:`<path d="M10 51q22 13 44 0v7q-22 13-44 0z" fill="#c0563f"/><path d="M14 54l2 7M20 57l1 7M44 57l-1 7M50 54l-2 7" stroke="#8e3b2b" stroke-width="1.5"/><path d="M42 58l4 12h-7l-2-11z" fill="#c0563f"/>`},
+ {id:'gradcap',slot:'head',name:'Sloth scholar cap',price:125,svg:`<path d="M18 11v8q14 6 28 0v-8z" fill="#1f3a2c"/><path d="M6 9L32 0l26 9-26 9z" fill="#2a4a39"/><path d="M50 11v12" stroke="#c9962f" stroke-width="2"/><circle cx="50" cy="24" r="2.5" fill="#c9962f"/>`},
+ {id:'blush',slot:'face',name:'Rosy cheeks',price:10,svg:`<ellipse cx="18" cy="41.5" rx="4.2" ry="2.6" fill="#e07a9f" opacity=".55"/><ellipse cx="46" cy="41.5" rx="4.2" ry="2.6" fill="#e07a9f" opacity=".55"/>`},
+ {id:'bandana',slot:'head',name:'Bandana',price:15,svg:`<path d="M6 21q26-11 52 0v6q-26-11-52 0z" fill="#2f5f9e"/><path d="M56 23l8-6M56 25l9 2" stroke="#2f5f9e" stroke-width="4" stroke-linecap="round"/><circle cx="20" cy="20" r="1.3" fill="#fbf8f0"/><circle cx="32" cy="17.5" r="1.3" fill="#fbf8f0"/><circle cx="44" cy="20" r="1.3" fill="#fbf8f0"/>`},
+ {id:'kerchief',slot:'neck',name:'Neckerchief',price:20,svg:`<path d="M13 52q19 8 38 0l-19 15z" fill="#e9b949"/><circle cx="24" cy="56" r="1.3" fill="#c0563f"/><circle cx="39" cy="56" r="1.3" fill="#c0563f"/><circle cx="31.5" cy="61" r="1.3" fill="#c0563f"/>`},
+ {id:'croissant',slot:'hand',name:'Croissant',price:20,svg:`<path d="M44 63q9-15 19 0q-3-4-6-1q-3-6-7 0q-3-4-6 1z" fill="#d9a35b" stroke="#a8743a" stroke-width="1.2" stroke-linejoin="round"/>`},
+ {id:'bean',slot:'neck',name:'Bean pendant',price:20,svg:`<path d="M15 54q17 11 34 0" stroke="#c9962f" stroke-width="1.6" fill="none"/><ellipse cx="32" cy="64" rx="4.2" ry="5.6" fill="#5a3f2c"/><path d="M32 59q-2 5 0 10" stroke="#2a1c12" stroke-width="1.1" fill="none"/>`},
+ {id:'necktie',slot:'neck',name:'Office tie',price:25,svg:`<g transform="translate(0 3.5)"><path d="M29 54h6l-1.5 3.5 3 12-4.5 5-4.5-5 3-12z" fill="#2f5f9e"/><path d="M29 54h6l-1.5 3.5h-3z" fill="#1f3a5e"/><path d="M30 63l4 3M30 68l4 3" stroke="#bfd7df" stroke-width="1"/></g>`},
+ {id:'beret',slot:'head',name:'Beret',price:30,svg:`<g transform="rotate(-12 30 13)"><ellipse cx="30" cy="13" rx="23" ry="8.5" fill="#c0563f"/><path d="M9 15q21 8 43 0" stroke="#8e3b2b" stroke-width="2" fill="none"/><path d="M30 5V1" stroke="#8e3b2b" stroke-width="3" stroke-linecap="round"/></g>`},
+ {id:'monocle',slot:'face',name:'Monocle',price:30,svg:`<circle cx="42.5" cy="33" r="7.5" fill="rgba(255,255,255,.22)" stroke="#c9962f" stroke-width="2.4"/><path d="M48 39q5 10 0 21" stroke="#c9962f" stroke-width="1.2" fill="none"/>`},
+ {id:'bucket',slot:'head',name:'Bucket hat',price:30,svg:`<path d="M15 19l4-15h26l4 15z" fill="#a9bfa4"/><path d="M3 21q29-9 58 0l-3 5q-26-7-52 0z" fill="#8fa98a"/><path d="M17 14h30" stroke="#7a9f6a" stroke-width="1.5"/>`},
+ {id:'plant',slot:'hand',name:'Tiny plant',price:35,svg:`<path d="M49 58h13l-2 10h-9z" fill="#c0563f"/><path d="M55.5 58q-5-6-1-12M55.5 58q4-7 2-13" stroke="#2f5d44" stroke-width="2" fill="none"/><ellipse cx="51" cy="47" rx="3.2" ry="5.5" fill="#5d8a4e" transform="rotate(-30 51 47)"/><ellipse cx="60" cy="46" rx="3.2" ry="5.5" fill="#5d8a4e" transform="rotate(28 60 46)"/><ellipse cx="55.5" cy="43" rx="2.8" ry="5" fill="#7a9f6a"/>`},
+ {id:'boba',slot:'hand',name:'Bubble tea',price:40,svg:`<path d="M49 51h12l-2 16h-8z" fill="#e9d6a9" stroke="#1f3a2c" stroke-width="1.3"/><circle cx="53" cy="64" r="1.6" fill="#3b2a1d"/><circle cx="57" cy="63.5" r="1.6" fill="#3b2a1d"/><circle cx="55" cy="60.5" r="1.6" fill="#3b2a1d"/><path d="M56 50l3-10" stroke="#c0563f" stroke-width="2.6" stroke-linecap="round"/><rect x="48" y="49" width="14" height="3" rx="1" fill="#1f3a2c"/>`},
+ {id:'hearts',slot:'face',name:'Heart glasses',price:40,svg:`<path d="M21.5 35l-7.5-7.5a4.3 4.3 0 0 1 7.5-5 4.3 4.3 0 0 1 7.5 5z" fill="#e07a9f" stroke="#a8466c" stroke-width="1.4"/><path d="M42.5 35l-7.5-7.5a4.3 4.3 0 0 1 7.5-5 4.3 4.3 0 0 1 7.5 5z" fill="#e07a9f" stroke="#a8466c" stroke-width="1.4"/><path d="M29 31h6" stroke="#a8466c" stroke-width="1.6"/>`},
+ {id:'aviators',slot:'face',name:'Aviators',price:50,svg:`<path d="M11 28h18q0 11-9 11t-9-11zM35 28h18q0 11-9 11t-9-11z" fill="#3b4a57" stroke="#c9962f" stroke-width="1.5"/><path d="M29 29.5h6" stroke="#c9962f" stroke-width="1.6"/><path d="M15 31l5-1" stroke="#fff" stroke-width="1.4" opacity=".45" stroke-linecap="round"/>`},
+ {id:'camera',slot:'hand',name:'Film camera',price:55,svg:`<rect x="-2" y="52" width="21" height="13" rx="2" fill="#3b4a57"/><rect x="1" y="49" width="6" height="4" fill="#3b4a57"/><circle cx="8.5" cy="58.5" r="4.6" fill="#bfd7df" stroke="#1f3a2c" stroke-width="1.6"/><circle cx="16" cy="54.5" r="1.2" fill="#c0563f"/>`},
+ {id:'passport',slot:'hand',name:'Passport',price:60,svg:`<rect x="0" y="49" width="16" height="20" rx="2" fill="#2f5d44"/><circle cx="8" cy="57.5" r="3.6" fill="none" stroke="#c9962f" stroke-width="1.3"/><rect x="3.5" y="64" width="9" height="1.6" fill="#c9962f"/>`},
+ {id:'chef',slot:'head',name:'Chef hat',price:65,svg:`<rect x="17" y="6" width="30" height="13" rx="1.5" fill="#fbf8f0" stroke="#d2cab5"/><circle cx="20" cy="2" r="8" fill="#fbf8f0" stroke="#d2cab5"/><circle cx="44" cy="2" r="8" fill="#fbf8f0" stroke="#d2cab5"/><circle cx="32" cy="-2" r="10" fill="#fbf8f0" stroke="#d2cab5"/><rect x="18" y="0" width="28" height="12" fill="#fbf8f0"/>`},
+ {id:'stache',slot:'face',name:'Barista stache',how:'Hit an 8-sloth combo',need:s=>[s.combo,8],svg:`<path d="M32 42.5c-4-3-10-2-13 3 4-1 9-0.5 13 1.5 4-2 9-2.5 13-1.5-3-5-9-6-13-3z" fill="#2a1c12"/>`},
+ {id:'partyhat',slot:'head',name:'Party hat',how:'Finish 3 daily puzzles',need:s=>[s.dailies,3],svg:`<path d="M22 14L32-7l10 21z" fill="#c9962f"/><path d="M25 8l11-5M23.5 11.5l15-6" stroke="#c0563f" stroke-width="2.5"/><circle cx="32" cy="-7" r="3.5" fill="#d9c3dd"/>`},
+ {id:'crown',slot:'head',name:'Wild crown',how:'Reach the Wild stretch (level 71)',need:s=>[s.cleared,70],svg:`<path d="M16 15l2-14 7 8 7-10 7 10 7-8 2 14z" fill="#c9962f" stroke="#8a6416" stroke-width="1.2"/><circle cx="32" cy="10" r="2.4" fill="#c0563f"/><circle cx="22" cy="11" r="1.8" fill="#2f5d44"/><circle cx="42" cy="11" r="1.8" fill="#2f5d44"/>`},
+ {id:'napmask',slot:'face',name:'Nap mask',how:'Secret: bother the barista',secret:true,need:s=>[s.pokes,10],svg:`<path d="M5 30q1-5 6-5h42q5 0 6 5" stroke="#b7a2c4" stroke-width="2.5" fill="none"/><rect x="9" y="25" width="46" height="15" rx="7.5" fill="#d9c3dd"/><path d="M15 33q5 4 10 0M39 33q5 4 10 0" stroke="#7a5a8a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M31 27v11" stroke="#c7aed0" stroke-width="1"/>`}
+];
+const ITEM=Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+const FURS=[
+ {id:'classic',name:'Classic',color:'#7a5a3e',price:0},
+ {id:'honey',name:'Honey',color:'#a87b4f',price:40},
+ {id:'cocoa',name:'Cocoa',color:'#55392a',price:40},
+ {id:'silver',name:'Silver',color:'#8d8579',price:80},
+ {id:'algae',name:'Algae',color:'#6d7d4f',price:100,note:'Real sloths grow algae in their fur.'},
+ {id:'ginger',name:'Ginger',color:'#b5703d',price:35},
+ {id:'cream',name:'Cream',color:'#c9b79a',price:35},
+ {id:'midnight',name:'Midnight',color:'#3d3530',price:75},
+ {id:'strawberry',name:'Strawberry',color:'#b07a7a',price:90,note:'Not found in nature. Yet.'},
+];
+const SLOT_ORDER=['neck','hand','face','head'];
+const SLOT_NAMES={head:'Head',face:'Face',neck:'Neck',hand:'Paws'};
+function slothSVG(eq,only,fur){
+  fur=fur||furColor();
+  const ids=only?[only]:SLOT_ORDER.map(s=>eq&&eq[s]).filter(Boolean);
+  const extra=SLOT_ORDER.flatMap(s=>ids.map(id=>ITEM[id]).filter(i=>i&&i.slot===s).map(i=>i.svg)).join('');
+  return `<svg viewBox="-4 -8 72 76" aria-hidden="true">${base(fur)}${extra}</svg>`;
+}
+
+/* ================= story ================= */
+const CUST={
+  dale:{name:'Dale',fur:'#8d8579',eq:{face:'readers',neck:'bowtie'}},
+  juniper:{name:'Juniper',fur:'#a87b4f',eq:{head:'headphones',face:'sunnies'}},
+  pablo:{name:'Pablo',fur:'#55392a',eq:{head:'strawhat',face:'stache'}},
+  kai:{name:'Kai',fur:'#b08a62',eq:{neck:'lei'}},
+  mei:{name:'Mei',fur:'#6b4a33',eq:{head:'flowers'}},
+  freja:{name:'Freja',fur:'#8a6d55',eq:{neck:'scarf'}}
+};
+const STORY_CAST=Object.keys(CUST);
+const custSVG=id=>slothSVG(CUST[id].eq,null,CUST[id].fur);
+/* Each beat: intro lines before the level, one exit line after. m = Mocha, c = the chapter's customer. */
+const CHAPTERS=[
+ {at:0,title:'The Corporate Canopy',cust:'dale',tease:'Another day in the canopy. Another spreadsheet.',
+  text:"Mocha has spent six years in the Corporate Canopy, the busiest tree in the jungle. Every branch is crowded, every meeting could have been a nap, and every day ends in a spreadsheet. Help the office sloths each find a branch of their own. Maybe then Mocha can leave.",
+  beats:[
+   {i:[['c',"Mocha! The 9am meeting is a disaster. Nobody can agree where to sit."],['m',"Leave it to me. One sloth per branch."]],x:['c',"Huh. That was efficient. Don't let it happen again."]},
+   {i:[['c',"Accounts and Marketing are fighting over the window branch again."],['m',"Classic. Let's seat them far apart."]],x:['c',"Peace in the canopy. For now."]},
+   {i:[['c',"The printer's jammed and everyone's crowding around it."],['m',"No touching, people. Not even diagonally."]],x:['m',"Six years of this. Something has to change."]},
+   {i:[['c',"Big quarterly review today. Spreadsheets for everyone!"],['m',"I'm going to need a bigger nap."]],x:['m',"That's it. I'm writing a note."]},
+   {i:[['c',"Mocha, is that a resignation letter?"],['m',"It says 'Gone slow.' It's two words, Dale."]],x:['c',"Fine. Take your stapler."]}
+  ]},
+ {at:5,title:'Gone Slow',cust:'juniper',tease:'Gone slow. Where do I even start?',
+  text:"Mocha prints one sentence, pins it to the boss's branch and walks out: Gone slow. Packing the backpack takes three days. Totally normal.",
+  beats:[
+   {i:[['c',"First time at the bus station? You look terrified."],['m',"I've never left the canopy before."]],x:['c',"Stick with me. I'm Juniper. I've been slow-travelling for years."]},
+   {i:[['c',"The overnight bus is packed. Find us seats that aren't elbow to elbow."],['m',"This is basically a meeting with wheels."]],x:['c',"You're weirdly good at this."]},
+   {i:[['m',"Do you ever miss having a plan?"],['c',"I have a plan. It's just very, very slow."]],x:['m',"I like that plan."]},
+   {i:[['c',"Where are you headed, anyway?"],['m',"Somewhere I can open a café. Somewhere warm."]],x:['c',"Then go up the mountain first. Learn coffee from Pablo."]},
+   {i:[['c',"This is my stop. Send me a postcard from your café."],['m',"Promise. You'll get the first flat white."]],x:['c',"Slowly!"]}
+  ]},
+ {at:10,title:'Misty Mountains',cust:'pablo',tease:'Thin air, thick mist. Smells like coffee.',
+  text:"First stop is a cloud-wrapped mountain town. An old barista named Pablo teaches Mocha the pour-over: patience, a slow circle, and never rushing the bloom. Mocha has never felt more qualified for anything.",
+  beats:[
+   {i:[['c',"Ah, a tourist. You want coffee? First you sort my bean sacks."],['m',"Sorting things is my one skill."]],x:['c',"Hm. Not bad. Come back tomorrow."]},
+   {i:[['c',"The pour-over is a puzzle. Every grind finds its place."],['m',"So... no rushing."]],x:['c',"Never rushing. Rushing burns the bloom."]},
+   {i:[['c',"The rain made a mess of my drying racks."],['m',"One sack per rack. No neighbours."]],x:['c',"You think like a barista already."]},
+   {i:[['m',"Pablo, why do you only open three days a week?"],['c',"Because the other four are for living, my friend."]],x:['m',"Somebody put that on a mug."]},
+   {i:[['c',"Market day! The llamas carry the beans down. Load them up."],['m',"One llama per path. Got it."]],x:['c',"You've learned enough. Go find the sea."]},
+   {i:[['c',"Take my old grinder. It has ground beans for ten thousand slow cups."],['m',"I'll grind ten thousand more."]],x:['c',"Make them slower."]}
+  ]},
+ {at:16,title:'Hammock Coast',cust:'kai',tease:'Sand. Sun. One hammock. I could live here.',
+  text:"Warm sand, one hammock and a sunset that takes forever. Mocha sketches a menu on a coconut. Item one: coffee. Item two: more naps.",
+  beats:[
+   {i:[['c',"Duuude, you look like you need a hammock."],['m',"I've never needed anything more."]],x:['c',"I'm Kai. I rent hammocks. Badly."]},
+   {i:[['c',"Everyone wants a sunset hammock. There aren't enough palms!"],['m',"Leave the seating to me."]],x:['c',"Best sunset seating we've ever had."]},
+   {i:[['m',"Kai, how do you keep track of bookings?"],['c',"I write them in the sand. Then the tide comes in."]],x:['m',"Oh, Kai."]},
+   {i:[['c',"Surf contest today. Keep the surfers apart, they get competitive."],['m',"No boards touching. Understood."]],x:['c',"Totally chill. Thanks, barista."]},
+   {i:[['m',"I drew a menu on a coconut. Coffee and naps."],['c',"Bro. I would pay for that."]],x:['m',"Would you, though? Interesting."]},
+   {i:[['c',"Rainy season's coming. Where to next?"],['m',"Somewhere with lots of tiny shops. I want to see how they run."]],x:['c',"Night markets, dude. Go east."]},
+   {i:[['c',"Take a lei. For luck."],['m',"And for style."]],x:['c',"Hang loose. Slowly."]},
+   {i:[['c',"One last sunset?"],['m',"One last sunset."]],x:['m',"Okay. Time to go."]}
+  ]},
+ {at:24,title:'Night Market',cust:'mei',tease:'So many tiny shops. So many tired owners.',
+  text:"Lanterns, noodles and a hundred tiny stalls, each run by one tired owner doing every job alone. Mocha takes notes on a tiny laptop. There has to be a better way to run a small shop.",
+  beats:[
+   {i:[['c',"Order up! Table four! Wait, who's table four?!"],['m',"You run this whole stall alone?"]],x:['c',"Cooking, serving, money, all of it. Thanks for the help."]},
+   {i:[['c',"I lose half my orders. They're written on napkins."],['m',"There's a better way. Let me take some notes."]],x:['c',"Notes? I don't have time for notes."]},
+   {i:[['m',"What if your regulars could order before they arrive?"],['c',"Like magic? I might sleep for once."]],x:['m',"Not magic. Just a good system."]},
+   {i:[['c',"Lantern festival tonight. We'll be packed!"],['m',"Same rules. One per table, no squeezing."]],x:['c',"Smoothest night in years. How?!"]},
+   {i:[['m',"I set up a little order board on my laptop for you."],['c',"It remembers everyone's usual?"]],x:['c',"Mocha, this changes everything."]},
+   {i:[['c',"Every stall here needs one of you."],['m',"Maybe that's the café. A place where tired shop owners get sorted."]],x:['c',"Then go build it. I'll visit."]},
+   {i:[['c',"Take some chilli oil. For courage."],['m',"Courage tastes spicy."]],x:['c',"Go north. Cold cities need warm cafés."]},
+   {i:[['c',"One last bowl before you go?"],['m',"Make it a slow one."]],x:['m',"North, then."]},
+   {i:[['c',"Back for more noodles?"],['m',"Back for more notes."]],x:['c',"You'll be a great café owner."]}
+  ]},
+ {at:33,title:'Canal City',cust:'freja',tease:'Cold, wet and full of bikes. I love it.',
+  text:"A chilly city of bikes and canals. Mocha finds an empty corner shop with big windows and a draft. It needs paint, a sign and a very slow espresso machine.",
+  beats:[
+   {i:[['c',"You're dripping on my bike shop."],['m',"Sorry. It's very rainy here."]],x:['c',"It's always rainy here. I'm Freja. Tea?"]},
+   {i:[['c',"Everyone's bikes are parked on top of each other again."],['m',"One bike per rack. No bumping."]],x:['c',"Hygge restored."]},
+   {i:[['m',"Freja, the corner shop by the canal. Is it empty?"],['c',"Has been for years. Big windows. Terrible draft."]],x:['m',"It's perfect."]},
+   {i:[['c',"The landlord wants a real plan before you get the keys."],['m',"I've had a plan since the coconut."]],x:['c',"Show me the coconut."]},
+   {i:[['c',"Paint day! Keep the helpers off the wet bits."],['m',"One painter per wall."]],x:['c',"It's starting to look like a café."]},
+   {i:[['c',"The espresso machine arrived. It is VERY slow."],['m',"Then it's perfect."]],x:['m',"Sign goes up tomorrow."]},
+   {i:[['c',"Nervous?"],['m',"Six years of spreadsheets, two continents, one café. A little."]],x:['c',"You'll be great. Slowly."]}
+  ]},
+ {at:45,title:'Café Basecamp',cust:null,tease:'The doors are open. Welcome to Café Basecamp.',
+  text:"The doors open. Sloths arrive from every branch of the world, laptops out, nobody rushing. Mocha pours the first flat white and does not open a single spreadsheet. The end. The puzzles keep going, and so do the naps.",
+  beats:[
+   {all:true,i:[['m',"Grand opening. Everyone's here."],['m',"One sloth per seat. No touching. Let's go."]],x:['m',"No spreadsheets. Just regulars. That's the dream."]},
+   {c:'dale',i:[['c',"So this is where you ran off to."],['m',"Welcome to Café Basecamp, Dale. No meetings allowed."]],x:['c',"Can I stay? Forever?"]},
+   {c:'juniper',i:[['c',"One postcard, as promised. I'm here for my flat white."],['m',"The very first one. Slowly."]],x:['c',"Worth the wait."]},
+   {c:'pablo',i:[['c',"I came to check your bloom."],['m',"Thirty seconds. Slow circle. Never rushing."]],x:['c',"Good. Now I can retire."]},
+   {c:'kai',i:[['c',"Dude! You actually built the coconut menu!"],['m',"Coffee and naps. On the house for you."]],x:['c',"Hang loose, boss."]},
+   {c:'mei',i:[['c',"I brought every tired stall owner from the market."],['m',"Pull up a chair. Let's sort your systems."]],x:['c',"This is what you were building all along."]},
+   {c:'freja',i:[['c',"Full house. Every seat taken."],['m',"Best problem a café can have."]],x:['m',"Same time tomorrow, everyone."]}
+  ]}
+];
+/* Scene backdrops, one per chapter (viewBox 300×300). */
+const BG=[
+ `<rect width="300" height="300" fill="#dfe8d8"/><circle cx="40" cy="20" r="60" fill="#a9bfa4"/><circle cx="260" cy="10" r="70" fill="#a9cbb0"/><circle cx="150" cy="-10" r="60" fill="#c9dcc0"/><rect x="18" y="0" width="34" height="300" fill="#7a5a3e"/><rect x="248" y="0" width="34" height="300" fill="#6b4e36"/><rect x="52" y="92" width="196" height="10" fill="#7a5a3e"/><rect x="72" y="66" width="44" height="26" fill="#d2cab5"/><rect x="82" y="50" width="22" height="16" rx="2" fill="#5d6f61"/><rect x="180" y="66" width="44" height="26" fill="#d2cab5"/><rect x="190" y="50" width="22" height="16" rx="2" fill="#5d6f61"/><rect x="130" y="40" width="40" height="30" fill="#fbf8f0" stroke="#5d6f61"/><path d="M130 50h40M130 60h40M143 40v30M157 40v30" stroke="#a9bfa4"/><circle cx="150" cy="128" r="12" fill="#fbf8f0" stroke="#1f3a2c" stroke-width="2"/><path d="M150 128v-7M150 128h5" stroke="#1f3a2c" stroke-width="2"/>`,
+ `<rect width="300" height="300" fill="#efe3cd"/><circle cx="60" cy="60" r="26" fill="#f0d7a0"/><rect y="200" width="300" height="100" fill="#c8c2b0"/><rect y="236" width="300" height="10" fill="#a29a86"/><path d="M0 241h300" stroke="#fbf8f0" stroke-width="3" stroke-dasharray="18 14"/><rect x="150" y="120" width="140" height="80" rx="10" fill="#2f5d44"/><rect x="162" y="132" width="26" height="24" rx="3" fill="#bfd7df"/><rect x="196" y="132" width="26" height="24" rx="3" fill="#bfd7df"/><rect x="230" y="132" width="26" height="24" rx="3" fill="#bfd7df"/><rect x="150" y="170" width="140" height="6" fill="#a9bfa4"/><circle cx="180" cy="202" r="11" fill="#1f3a2c"/><circle cx="260" cy="202" r="11" fill="#1f3a2c"/><rect x="40" y="110" width="5" height="90" fill="#5d6f61"/><rect x="22" y="96" width="42" height="24" rx="4" fill="#c0563f"/><text x="43" y="113" font-family="Karla,sans-serif" font-weight="700" font-size="12" fill="#fbf8f0" text-anchor="middle">BUS</text>`,
+ `<rect width="300" height="300" fill="#e4ecef"/><circle cx="230" cy="70" r="28" fill="#f0d7a0"/><path d="M-20 220L80 70l100 150z" fill="#a9bfa4"/><path d="M90 230L200 60l120 170z" fill="#7a9f6a"/><path d="M-10 260L120 140l130 120z" fill="#5d7a58"/><path d="M60 92l20-22 20 22-10-4-10 6-10-6z" fill="#fbf8f0"/><path d="M180 88l20-28 22 30-12-5-10 7-9-6z" fill="#fbf8f0"/><ellipse cx="80" cy="170" rx="90" ry="14" fill="#fff" opacity=".6"/><ellipse cx="230" cy="190" rx="100" ry="16" fill="#fff" opacity=".55"/><rect y="250" width="300" height="50" fill="#6b8a5f"/>`,
+ `<rect width="300" height="300" fill="#f3d7b6"/><circle cx="210" cy="140" r="44" fill="#f0a868"/><rect y="160" width="300" height="60" fill="#8fb9c4"/><path d="M0 172q20-6 40 0t40 0 40 0 40 0 40 0 40 0 40 0" stroke="#fbf8f0" stroke-width="2" fill="none" opacity=".7"/><rect y="215" width="300" height="85" fill="#ead2a2"/><path d="M48 230q-6-80 14-150" stroke="#7a5a3e" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M62 82q-40-10-60 14M62 82q-30-30-58-24M62 82q40-14 64 8M62 82q34-30 62-20M62 82q4-30 -6-50" stroke="#2f5d44" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M60 150q60 40 128 4" stroke="#c0563f" stroke-width="5" fill="none"/><rect x="186" y="140" width="6" height="90" fill="#7a5a3e"/>`,
+ `<rect width="300" height="300" fill="#22384a"/><circle cx="40" cy="40" r="2" fill="#fbf8f0"/><circle cx="120" cy="25" r="1.5" fill="#fbf8f0"/><circle cx="250" cy="45" r="2" fill="#fbf8f0"/><path d="M0 70q75 30 150 0t150 0" stroke="#5d6f61" stroke-width="2" fill="none"/>${[[30,82,'#e9a24a'],[75,90,'#c0563f'],[120,84,'#e9a24a'],[180,84,'#c0563f'],[225,90,'#e9a24a'],[270,82,'#c0563f']].map(([x,y,c])=>`<ellipse cx="${x}" cy="${y}" rx="11" ry="14" fill="${c}"/><ellipse cx="${x}" cy="${y}" rx="18" ry="20" fill="${c}" opacity=".18"/>`).join('')}${[0,1,2,3,4,5,6,7,8,9].map(k=>`<rect x="${k*30}" y="150" width="30" height="26" fill="${k%2?'#fbf8f0':'#c0563f'}"/>`).join('')}<rect y="176" width="300" height="124" fill="#3b2a1d"/><rect x="20" y="200" width="110" height="60" fill="#6b4e36"/><rect x="170" y="200" width="110" height="60" fill="#6b4e36"/><ellipse cx="60" cy="198" rx="16" ry="6" fill="#fbf8f0"/><ellipse cx="220" cy="198" rx="16" ry="6" fill="#fbf8f0"/>`,
+ `<rect width="300" height="300" fill="#cfd8dc"/>${[['#e9d6a9',0,90],['#c0563f',50,70],['#a9bfa4',100,100],['#d9c3dd',150,80],['#e2c27a',200,95],['#bfd7df',250,75]].map(([c,x,y])=>`<rect x="${x}" y="${y}" width="50" height="${215-y}" fill="${c}"/><path d="M${x} ${y}l25-22 25 22z" fill="${c}" stroke="#1f3a2c" stroke-opacity=".25"/><rect x="${x+10}" y="${y+18}" width="10" height="14" fill="#fbf8f0"/><rect x="${x+30}" y="${y+18}" width="10" height="14" fill="#fbf8f0"/><rect x="${x+10}" y="${y+46}" width="10" height="14" fill="#fbf8f0"/><rect x="${x+30}" y="${y+46}" width="10" height="14" fill="#fbf8f0"/>`).join('')}<rect y="215" width="300" height="85" fill="#7f9fae"/><path d="M0 236h300M0 262h300" stroke="#fbf8f0" stroke-opacity=".35" stroke-width="2" stroke-dasharray="10 12"/><path d="M180 232h80l-10 14h-62z" fill="#2f5d44"/><path d="M20 0l-12 40M80 10l-12 40M150 0l-12 40M220 14l-12 40M280 4l-12 40" stroke="#fbf8f0" stroke-opacity=".5" stroke-width="1.5"/>`,
+ `<rect width="300" height="300" fill="#f3ead8"/><rect x="20" y="40" width="120" height="110" rx="6" fill="#bfd7df" stroke="#7a5a3e" stroke-width="6"/><path d="M80 40v110M20 95h120" stroke="#7a5a3e" stroke-width="4"/><rect x="168" y="30" width="114" height="30" rx="6" fill="#2f5d44"/><text x="225" y="51" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="15" fill="#fbf8f0" text-anchor="middle">BASECAMP</text><path d="M200 60v24M250 60v24" stroke="#5d6f61"/><circle cx="200" cy="92" r="10" fill="#7a9f6a"/><circle cx="250" cy="92" r="10" fill="#7a9f6a"/><rect x="160" y="130" width="130" height="80" fill="#7a5a3e"/><rect x="180" y="104" width="40" height="26" rx="4" fill="#5d6f61"/><circle cx="200" cy="117" r="5" fill="#c9962f"/><rect y="210" width="300" height="90" fill="#c8a77a"/><path d="M0 240h300M0 270h300" stroke="#a88a5f" stroke-width="2"/>`
+];
+
+/* ================= world tour: after the story, a new country every 5 levels ================= */
+const TOUR_AT=50,TOUR_LEN=5;
+Object.assign(CUST,{
+  ines:{name:'Inês',fur:'#9b6b43',eq:{face:'readers',hand:'cup'}},
+  haru:{name:'Haru',fur:'#8d8579',eq:{head:'headphones'}},
+  lupe:{name:'Lupe',fur:'#6b4a33',eq:{head:'flowers',neck:'lei'}},
+  youssef:{name:'Youssef',fur:'#a87b4f',eq:{face:'sunnies',neck:'bowtie'}},
+  sigga:{name:'Sigga',fur:'#b8ad9e',eq:{head:'beanie',neck:'scarf'}},
+  linh:{name:'Linh',fur:'#55392a',eq:{hand:'cup'}},
+  rosa:{name:'Nonna Rosa',fur:'#8a7f72',eq:{face:'readers',head:'flowers'}},
+  bev:{name:'Bev',fur:'#7a5a3e',eq:{head:'beanie',hand:'cup'}}
+});
+const COUNTRIES=[
+ {id:'portugal',name:'Portugal',cust:'ines',tease:'Hills, trams and custard tarts. Hello, Lisbon.',
+  stamp:{ring:'#2f5f9e',motif:`<rect x="10" y="30" width="80" height="50" rx="8" fill="#e9b949"/><rect x="18" y="40" width="18" height="16" fill="#bfd7df"/><rect x="41" y="40" width="18" height="16" fill="#bfd7df"/><rect x="64" y="40" width="18" height="16" fill="#bfd7df"/><path d="M50 30V10M35 10h30" stroke="#1f3a2c" stroke-width="4"/><circle cx="28" cy="84" r="7" fill="#1f3a2c"/><circle cx="72" cy="84" r="7" fill="#1f3a2c"/>`},
+  bg:`<rect width="300" height="300" fill="#f3e6cf"/><path d="M0 150Q150 70 300 130V300H0z" fill="#e2c9a0"/>${[['#f0cfd8',10,110],['#fbf8f0',70,95],['#e9d6a9',130,88],['#bfd7df',190,96],['#fbf8f0',250,108]].map(([c,x,y])=>`<rect x="${x}" y="${y}" width="56" height="${200-y}" fill="${c}"/><path d="M${x} ${y}h56l-6-12h-44z" fill="#c0563f"/>${[0,1,2].map(r=>[0,1].map(q=>`<rect x="${x+8+q*24}" y="${y+12+r*26}" width="16" height="16" fill="#2f5f9e" opacity=".75"/>`).join('')).join('')}`).join('')}<rect y="200" width="300" height="100" fill="#d2cab5"/><path d="M0 262h300M0 270h300" stroke="#5d6f61" stroke-width="3"/><path d="M0 172h300" stroke="#1f3a2c" stroke-width="1.5"/><rect x="40" y="186" width="170" height="70" rx="12" fill="#e9b949"/><rect x="40" y="226" width="170" height="8" fill="#c0563f"/>${[0,1,2,3].map(k=>`<rect x="${52+k*38}" y="196" width="28" height="24" rx="3" fill="#bfd7df"/>`).join('')}<path d="M125 186v-14" stroke="#1f3a2c" stroke-width="3"/>`,
+  beats:[
+   {i:[['c',"Bem-vindo! You're the sloth with the pop-up café?"],['m',"Just a tiny one. Coffee, naps, no rushing."]],x:['c',"In Lisbon we call that a good day."]},
+   {i:[['c',"The tram is packed. Find everyone a seat before the big hill!"],['m',"One per bench. No elbows."]],x:['c',"Smoothest ride up the hill all year."]},
+   {i:[['m',"Your tiles are beautiful. How long does one take?"],['c',"A week. You can't rush blue."]],x:['m',"Somebody put that on a mug, too."]},
+   {i:[['c',"Custard tarts are out of the oven. The queue is wild."],['m',"Leave the line to me."]],x:['c',"Warm tarts, happy people. Obrigada!"]},
+   {i:[['c',"Take a tile for your café wall."],['m',"It'll go right above the espresso machine."]],x:['c',"Japan next? Bring an umbrella for the blossoms."]}
+  ]},
+ {id:'japan',name:'Japan',cust:'haru',tease:'Blossoms and very slow coffee. Hello, Japan.',
+  stamp:{ring:'#c0563f',motif:`<circle cx="72" cy="28" r="16" fill="#c0563f"/><path d="M4 92L50 20l46 72z" fill="#7d93a8"/><path d="M36 42l14-22 14 22-7-3-7 5-7-5z" fill="#fff"/>`},
+  bg:`<rect width="300" height="300" fill="#f6e6e3"/><circle cx="215" cy="85" r="34" fill="#e07a5f"/><path d="M40 220L150 60l110 160z" fill="#7d93a8"/><path d="M118 106l32-46 32 46-14-6-18 10-16-10z" fill="#fbf8f0"/><rect y="215" width="300" height="85" fill="#a9bfa4"/><path d="M228 140v120M268 140v120" stroke="#c0563f" stroke-width="9"/><path d="M212 140h72M218 156h60" stroke="#c0563f" stroke-width="8"/><path d="M30 300V170" stroke="#6b4e36" stroke-width="10"/><path d="M30 190l-28-30M30 210l34-28" stroke="#6b4e36" stroke-width="6"/>${[[8,150],[30,135],[55,150],[-5,175],[66,170],[40,160],[18,165]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="20" fill="#f0cfd8"/>`).join('')}${[[120,240],[160,262],[90,270],[200,250]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="4" ry="2.5" fill="#f0cfd8"/>`).join('')}`,
+  beats:[
+   {i:[['c',"Welcome to my kissaten. We play jazz and speak softly."],['m',"My kind of place."]],x:['c',"You sit very quietly. Rare for a tourist."]},
+   {i:[['c',"Cherry blossom season. Every picnic spot is taken."],['m',"One blanket per tree. No overlapping."]],x:['c',"A perfect hanami."]},
+   {i:[['m',"How do you brew so slowly?"],['c',"Siphon coffee. Eight minutes. Worth every one."]],x:['m',"Eight minutes. I feel seen."]},
+   {i:[['c',"Rush hour on the train. Help everyone find a spot."],['m',"This is the opposite of my brand."]],x:['c',"You survived. Impressive."]},
+   {i:[['c',"Take this record for your café."],['m',"Slow jazz for slow coffee."]],x:['c',"Mexico next. Ask Lupe about café de olla."]}
+  ]},
+ {id:'mexico',name:'Mexico',cust:'lupe',tease:'Cinnamon in the air. Hola, México.',
+  stamp:{ring:'#2f8a6a',motif:`<rect x="40" y="18" width="20" height="78" rx="10" fill="#5d8a4e"/><rect x="18" y="36" width="12" height="32" rx="6" fill="#5d8a4e"/><rect x="18" y="58" width="26" height="10" rx="5" fill="#5d8a4e"/><rect x="70" y="26" width="12" height="32" rx="6" fill="#5d8a4e"/><rect x="56" y="48" width="26" height="10" rx="5" fill="#5d8a4e"/><circle cx="50" cy="16" r="6" fill="#e07a9f"/>`},
+  bg:`<rect width="300" height="300" fill="#f6d7a7"/><path d="M0 40q75 22 150 0t150 0" stroke="#5d6f61" stroke-width="2" fill="none"/>${[0,1,2,3,4,5,6,7,8,9].map(k=>`<path d="M${k*30} ${40+Math.round(8*Math.sin(k))}h28l-14 22z" fill="${['#e07a9f','#e9b949','#4f9fbf','#5d8a4e','#c0563f'][k%5]}"/>`).join('')}<rect x="0" y="110" width="300" height="130" fill="#e8a27a"/><rect x="40" y="140" width="50" height="70" rx="25" fill="#7a5a3e"/><rect x="200" y="135" width="44" height="40" fill="#bfd7df" stroke="#fbf8f0" stroke-width="4"/><rect y="230" width="300" height="70" fill="#e9c48d"/><rect x="130" y="150" width="22" height="90" rx="11" fill="#5d8a4e"/><rect x="112" y="170" width="12" height="32" rx="6" fill="#5d8a4e"/><rect x="112" y="192" width="26" height="10" rx="5" fill="#5d8a4e"/><rect x="160" y="160" width="12" height="30" rx="6" fill="#5d8a4e"/><rect x="146" y="180" width="26" height="10" rx="5" fill="#5d8a4e"/>`,
+  beats:[
+   {i:[['c',"¡Hola! Café de olla? Cinnamon, piloncillo, clay pot."],['m',"Yes. Twice. Slowly."]],x:['c',"I like you already."]},
+   {i:[['c',"Market day in the plaza. Every stall wants the shady spot."],['m',"One stall per patch of shade. Fair and square."]],x:['c',"No fights this year. A miracle."]},
+   {i:[['m',"Your café has no menu?"],['c',"Everyone already knows their usual."]],x:['m',"That's the dream. Regulars."]},
+   {i:[['c',"Fiesta tonight! Seat the band before the piñata."],['m',"No trumpets touching."]],x:['c',"Best fiesta ever!"]},
+   {i:[['c',"Take some cinnamon for the road."],['m',"Café de olla goes on the menu."]],x:['c',"Morocco next. Youssef pours tea from very high up."]}
+  ]},
+ {id:'morocco',name:'Morocco',cust:'youssef',tease:'Mint tea and a thousand lamps. Marhaba, Morocco.',
+  stamp:{ring:'#b5532f',motif:`<path d="M20 95V50q0-38 30-42 30 4 30 42v45z" fill="#c0563f"/><path d="M34 95V55q0-22 16-26 16 4 16 26v40z" fill="#3b2a1d"/><circle cx="50" cy="62" r="8" fill="#e9a24a"/>`},
+  bg:`<rect width="300" height="300" fill="#f0c58f"/><circle cx="70" cy="70" r="26" fill="#f6e3b0"/><path d="M0 200q80-60 160-10t140-20V300H0z" fill="#e2a65e"/><path d="M0 240q90-40 180 0t120-10V300H0z" fill="#d08c45"/><path d="M170 300V140q0-70 60-80 60 10 60 80v160z" fill="#c0563f"/><path d="M196 300V150q0-44 34-52 34 8 34 52v150z" fill="#3b2a1d"/>${[[40,30],[110,22],[150,40]].map(([x,y])=>`<path d="M${x} 0v${y}" stroke="#5d6f61"/><path d="M${x-9} ${y}h18l-4 18h-10z" fill="#e9a24a"/><ellipse cx="${x}" cy="${y+9}" rx="16" ry="14" fill="#e9a24a" opacity=".2"/>`).join('')}`,
+  beats:[
+   {i:[['c',"Marhaba! First, mint tea. Then we talk."],['m',"I've never agreed with anything more."]],x:['c',"In the medina, nobody rushes tea."]},
+   {i:[['c',"The souk is crowded. Every rug seller wants the corner."],['m',"One corner per seller."]],x:['c',"Peace in the souk. You have a gift."]},
+   {i:[['m',"How do you pour from so high without spilling?"],['c',"Practice. And never rushing the last drop."]],x:['m',"Never rushing. It keeps coming up."]},
+   {i:[['c',"We cross the dunes tonight. Pair each traveller with a camel."],['m',"One camel each. No sharing humps."]],x:['c',"The stars out here are worth the sand."]},
+   {i:[['c',"Take this lamp for your café window."],['m',"It'll glow every evening."]],x:['c',"Iceland next. Pack a sweater. Two."]}
+  ]},
+ {id:'iceland',name:'Iceland',cust:'sigga',tease:'Cold air, hot springs. Hæ, Iceland.',
+  stamp:{ring:'#2b4f6e',motif:`<circle cx="50" cy="50" r="48" fill="#1f3346"/><path d="M5 50q20-25 45-10t45-15" stroke="#7fe0a8" stroke-width="8" fill="none" opacity=".9"/><path d="M5 66q25-20 45-8t45-12" stroke="#6ac0d0" stroke-width="6" fill="none" opacity=".8"/><path d="M8 82l26-22 18 13 18-18 22 27q-20 18-42 18T8 82z" fill="#e8eef0"/>`},
+  bg:`<rect width="300" height="300" fill="#1f3346"/>${[[30,30],[90,60],[160,20],[240,50],[280,15],[120,15]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#fbf8f0"/>`).join('')}<path d="M-10 110q80-70 160-30t170-40" stroke="#7fe0a8" stroke-width="22" fill="none" opacity=".55"/><path d="M-10 140q90-50 170-20t150-30" stroke="#6ac0d0" stroke-width="14" fill="none" opacity=".45"/><path d="M0 230l70-80 50 40 60-70 70 60 50-30V300H0z" fill="#3b4a57"/><path d="M60 162l10-12 12 10zM172 128l8-8 10 9z" fill="#e8eef0"/><rect y="235" width="300" height="65" fill="#e8eef0"/><rect x="200" y="206" width="40" height="30" fill="#c0563f"/><path d="M196 208l24-18 24 18z" fill="#3b2a1d"/><rect x="214" y="214" width="10" height="10" fill="#e9b949"/><ellipse cx="80" cy="262" rx="50" ry="12" fill="#8fc3cf"/><path d="M60 250q4-10 0-18M80 248q4-10 0-18M100 250q4-10 0-18" stroke="#fbf8f0" stroke-width="2" fill="none" opacity=".7"/>`,
+  beats:[
+   {i:[['c',"Hæ! Coffee is serious business here. We drink it all day."],['m',"Finally. My people."]],x:['c',"You'll fit right in."]},
+   {i:[['c',"Everyone wants a spot in the hot spring."],['m',"One sloth per steamy corner."]],x:['c',"So relaxing even the puffins are jealous."]},
+   {i:[['m',"Is it always this dark?"],['c',"In winter, yes. That's why we make everything cozy."]],x:['m',"Coziness as a business plan. I like it."]},
+   {i:[['c',"Aurora tonight! Find everyone a viewing rock."],['m',"No blocking each other's sky."]],x:['c',"The whole sky danced for us."]},
+   {i:[['c',"Take a wool sweater for the café."],['m',"Sloths love wool."]],x:['c',"Vietnam next. Try Linh's egg coffee."]}
+  ]},
+ {id:'vietnam',name:'Vietnam',cust:'linh',tease:'Scooters, lanterns and egg coffee. Xin chào, Vietnam.',
+  stamp:{ring:'#8e3b2b',motif:`<path d="M50 4v12" stroke="#1f3a2c" stroke-width="3"/><ellipse cx="50" cy="52" rx="32" ry="36" fill="#e9a24a"/><path d="M32 22q18 30 0 60M68 22q-18 30 0 60M50 16v72" stroke="#c0563f" stroke-width="3" fill="none"/><rect x="38" y="86" width="24" height="8" fill="#c0563f"/>`},
+  bg:`<rect width="300" height="300" fill="#e8dcc8"/><path d="M20 200q0-120 30-120t30 120zM90 200q0-150 35-150t35 150zM180 200q0-100 28-100t28 100zM240 200q0-130 30-130t30 130z" fill="#7a9f6a" opacity=".85"/><ellipse cx="150" cy="170" rx="180" ry="18" fill="#fbf8f0" opacity=".55"/><rect y="200" width="300" height="100" fill="#8fb9c4"/><path d="M100 236h90l-14 16h-62z" fill="#7a5a3e"/><path d="M140 236v-34l26 26z" fill="#e9d6a9"/><path d="M0 26q150 30 300 0" stroke="#5d6f61" stroke-width="2" fill="none"/>${[[30,34,'#c0563f'],[80,42,'#e9a24a'],[130,46,'#c0563f'],[180,46,'#e9a24a'],[230,42,'#c0563f'],[275,34,'#e9a24a']].map(([x,y,c])=>`<ellipse cx="${x}" cy="${y+12}" rx="11" ry="13" fill="${c}"/>`).join('')}`,
+  beats:[
+   {i:[['c',"Egg coffee? It's like tiramisu you can drink."],['m',"Say no more."]],x:['c',"Most people say wow. You said nothing. You were drinking."]},
+   {i:[['c',"Tiny stools everywhere, and everyone wants one by the street."],['m',"One stool per sloth. Mind the scooters."]],x:['c',"Best people-watching in Hanoi."]},
+   {i:[['m',"How do you run this with no staff?"],['c',"My grandmother's system: a notebook and good regulars."]],x:['m',"Systems and regulars. Always the answer."]},
+   {i:[['c',"Lantern night in the old town. Hang them evenly."],['m',"No two lanterns touching."]],x:['c',"Glowing. Perfect."]},
+   {i:[['c',"Take some of my beans for Café Basecamp."],['m',"Egg coffee goes on the specials board."]],x:['c',"Italy next. Nonna Rosa will judge your espresso."]}
+  ]},
+ {id:'italy',name:'Italy',cust:'rosa',tease:'Espresso at the bar, standing up. Ciao, Italia.',
+  stamp:{ring:'#3f6b3a',motif:`<path d="M4 96q46-42 92 0z" fill="#a9bfa4"/><ellipse cx="38" cy="50" rx="10" ry="38" fill="#2f5d44"/><ellipse cx="62" cy="58" rx="9" ry="30" fill="#2f5d44"/><circle cx="80" cy="20" r="10" fill="#e9b949"/>`},
+  bg:`<rect width="300" height="300" fill="#f5e1bd"/><circle cx="240" cy="60" r="26" fill="#f0c56a"/><path d="M0 170q80-50 160-10t140-20V300H0z" fill="#a9bfa4"/><path d="M0 200q100-40 200 0t100-10V300H0z" fill="#7a9f6a"/>${[[40,150,46],[60,160,36],[230,150,40],[250,165,30]].map(([x,y,h])=>`<ellipse cx="${x}" cy="${y}" rx="8" ry="${h}" fill="#2f5d44"/>`).join('')}${[[100,190,'#e8a27a'],[150,180,'#e9d6a9'],[190,195,'#e8a27a']].map(([x,y,c])=>`<rect x="${x}" y="${y}" width="44" height="${260-y}" fill="${c}"/><path d="M${x-4} ${y}l26-16 26 16z" fill="#b5532f"/><rect x="${x+16}" y="${y+16}" width="12" height="16" fill="#3b2a1d" opacity=".7"/>`).join('')}<rect y="250" width="300" height="50" fill="#d2cab5"/>`,
+  beats:[
+   {i:[['c',"You want a cappuccino after 11am? Tsk."],['m',"An espresso, please."]],x:['c',"Good. You learn fast."]},
+   {i:[['c',"The piazza is full. Everyone wants a table in the sun."],['m',"One table per sunbeam."]],x:['c',"Bellissimo."]},
+   {i:[['m',"Nonna, how long have you run this bar?"],['c',"Fifty-two years. Same cups. Same regulars."]],x:['m',"That's the goal."]},
+   {i:[['c',"Vespas everywhere. Park them before the market opens."],['m',"One Vespa per space. No scratches."]],x:['c',"You'd make a good Italian."]},
+   {i:[['c',"Take my moka pot. Treat it kindly."],['m',"Like family."]],x:['c',"Where next? Somewhere cold with lakes, I hear."]}
+  ]},
+ {id:'canada',name:'Canada',cust:'bev',tease:'Lakes, pines and a toque. Hello, Canada.',
+  stamp:{ring:'#c0563f',motif:`<path d="M50 4l8 18 12-6-4 22 16-10 2 12 12 2-14 14 4 8-26-4 2 28h-8l2-28-26 4 4-8-14-14 12-2 2-12 16 10-4-22 12 6z" fill="#c0563f"/>`},
+  bg:`<rect width="300" height="300" fill="#cfe3ea"/><path d="M0 150l40-50 30 30 40-60 40 50 40-40 50 50 60-30V200H0z" fill="#8fa3ad"/>${[10,40,70,230,260,290].map((x,k)=>`<path d="M${x} ${200-30-(k%2)*14}l18 40h-36z" fill="#2f5d44"/><path d="M${x} ${200-50-(k%2)*14}l14 32h-28z" fill="#3f6b3a"/>`).join('')}<rect y="200" width="300" height="100" fill="#7fa9bb"/><path d="M90 236q40 14 90 0l-8 8q-36 8-74 0z" fill="#c0563f"/><circle cx="120" cy="150" r="22" fill="#c0563f"/><circle cx="140" cy="140" r="18" fill="#e07a5f"/><rect x="124" y="160" width="6" height="40" fill="#6b4e36"/><rect x="190" y="166" width="46" height="34" fill="#7a5a3e"/><path d="M186 168l27-20 27 20z" fill="#3b2a1d"/><rect x="206" y="178" width="12" height="12" fill="#e9b949"/>`,
+  beats:[
+   {i:[['c',"Hey there! You must be freezing. Want a coffee?"],['m',"Black, please. And a blanket."]],x:['c',"Welcome to the lake, bud."]},
+   {i:[['c',"Canoe day. Pair everyone up before the wind picks up."],['m',"One canoe per pair. No bumping paddles."]],x:['c',"Smooth paddling. The loons approve."]},
+   {i:[['m',"Do you get busy up here?"],['c',"Summers, eh. Winters it's just me and the regulars."]],x:['m',"Regulars again. It's always the regulars."]},
+   {i:[['c',"Hockey on the frozen lake tonight. Spread out the players!"],['m',"One sloth per patch of ice."]],x:['c',"Nobody fell in. Huge win."]},
+   {i:[['c',"So where's home for you now?"],['m',"Wherever there's a slow café and good regulars."]],x:['c',"Then you're home everywhere. Safe travels, Mocha."]}
+  ]}
+];
+COUNTRIES.forEach(c=>BG.push(c.bg));
+function stampSVG(c,got=true){
+  const s=c.stamp,col=got?s.ring:'#a9bfa4';
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(${got?-8:0} 50 50)"><circle cx="50" cy="50" r="46" fill="${got?'#fbf8f0':'none'}" stroke="${col}" stroke-width="3" ${got?'':'stroke-dasharray="6 5"'}/><circle cx="50" cy="50" r="39" fill="none" stroke="${col}" stroke-width="1.5"/>${got?`<g transform="translate(30 20) scale(.4)">${s.motif}</g><text x="50" y="79" text-anchor="middle" font-family="Karla,sans-serif" font-weight="800" font-size="9" letter-spacing="1" fill="${s.ring}">${c.name.toUpperCase()}</text>`:`<text x="50" y="58" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="22" fill="#a9bfa4">?</text>`}</g></svg>`;
+}
+
+/* ================= journey gear: two themed rewards per stop (halfway + finish) ================= */
+const flower=(x,y,c,r=2.6)=>[0,72,144,216,288].map(a=>`<circle cx="${(x+Math.cos(a*Math.PI/180)*r*.9).toFixed(1)}" cy="${(y+Math.sin(a*Math.PI/180)*r*.9).toFixed(1)}" r="${r*.62}" fill="${c}"/>`).join('')+`<circle cx="${x}" cy="${y}" r="${r*.42}" fill="#e9b949"/>`;
+ITEMS.push(
+ /* shop additions */
+ {id:'redtoque',slot:'head',name:'Maple toque',price:50,svg:`<path d="M9 22Q32-6 55 22Z" fill="#c0563f"/><path d="M17 16q15-7 30 0" stroke="#a8443a" stroke-width="1.4" fill="none"/><rect x="8" y="18" width="48" height="8" rx="4" fill="#fbf8f0"/><g transform="translate(25.3 15.6) scale(.135)"><path d="M50 4l8 18 12-6-4 22 16-10 2 12 12 2-14 14 4 8-26-4 2 28h-8l2-28-26 4 4-8-14-14 12-2 2-12 16 10-4-22 12 6z" fill="#c0563f"/></g><circle cx="32" cy="5" r="6.6" fill="#fbf8f0" stroke="#d2cab5" stroke-width="2.2" stroke-dasharray="1.6 1.4"/><circle cx="32" cy="5" r="5" fill="#fbf8f0"/><path d="M29.5 3.5q2.5-2 5 0M30 6.5q2-1.4 4 0" stroke="#e2dccd" stroke-width="1" fill="none"/>`},
+ {id:'visor',slot:'head',name:'Sun visor',price:35,svg:`<path d="M7 21q25-8 50 0l-1 5q-24-7-48 0z" fill="#2f8a6a"/><path d="M13 24q19-6 38 0q4 4 2 7q-21-7-42 0q-2-3 2-7z" fill="#1f6e54"/><path d="M16 27q16-4 32 0" stroke="#fbf8f0" stroke-width="1" opacity=".4" fill="none"/>`},
+ {id:'studenterhue',slot:'head',name:'Danish student cap',svg:`<g transform="translate(0 -2.5)"><path d="M10 17q-2-11 22-14t22 14z" fill="#fbf8f0" stroke="#d2cab5"/><rect x="10" y="15" width="44" height="7" rx="2" fill="#c8102e"/><path d="M14 22h36q-4 8-18 8t-18-8z" fill="#1b1b1b"/><path d="M19 24q13 3.5 26 0" stroke="#fff" stroke-width="1" opacity=".35" fill="none"/><circle cx="32" cy="18.5" r="3.6" fill="#c8102e" stroke="#c9962f" stroke-width=".9"/><path d="M28.4 18.5h7.2M31 14.9v7.2" stroke="#fff" stroke-width="1.4"/></g>`},
+ {id:'redsunnies',slot:'face',name:'Red sunglasses',price:45,svg:`<rect x="11.5" y="27" width="18" height="12" rx="5" fill="#e5483c" fill-opacity=".82" stroke="#9e2a22" stroke-width="2.2"/><rect x="34.5" y="27" width="18" height="12" rx="5" fill="#e5483c" fill-opacity=".82" stroke="#9e2a22" stroke-width="2.2"/><path d="M29.5 31h5" stroke="#9e2a22" stroke-width="2.2"/><path d="M14 30.5l6-1M37 30.5l6-1" stroke="#fff" stroke-width="1.5" opacity=".5" stroke-linecap="round"/>`},
+ /* story stops */
+ {id:'lanyard',slot:'neck',name:'Office lanyard',svg:`<path d="M14 52l18 11 18-11" stroke="#2f5f9e" stroke-width="2.5" fill="none"/><rect x="25" y="62" width="14" height="10" rx="1.5" fill="#fbf8f0" stroke="#1f3a2c"/><rect x="27" y="64" width="5" height="5" fill="#a9bfa4"/><path d="M33.5 65h4M33.5 67.5h3" stroke="#5d6f61"/>`},
+ {id:'busticket',slot:'hand',name:'Bus ticket',svg:`<g transform="rotate(-12 54 58)"><rect x="44" y="52" width="21" height="12" rx="1.5" fill="#e9b949" stroke="#8a6416"/><path d="M50 52v12" stroke="#8a6416" stroke-dasharray="1.5 1.5"/><path d="M53 56h9M53 59.5h6" stroke="#8a6416" stroke-width="1.2"/></g>`},
+ {id:'poncho',slot:'neck',name:'Mountain poncho',svg:`<path d="M8 52q24 14 48 0l3 10q-27 14-54 0z" fill="#c0563f"/><path d="M7 56q25 13 50 0" stroke="#e9b949" stroke-width="2.2" fill="none"/><path d="M6 60q26 13 52 0" stroke="#2f5f9e" stroke-width="2" fill="none"/>`},
+ {id:'grinder',slot:'hand',name:"Pablo's grinder",svg:`<rect x="48" y="54" width="13" height="13" rx="2" fill="#b5703d"/><path d="M48 59.5h13" stroke="#8a5a2e" stroke-width="1.2"/><rect x="51.5" y="62" width="6" height="3" rx="1" fill="#8a5a2e"/><path d="M47 54h15l-2-4h-11z" fill="#5d6f61"/><path d="M54.5 50v-3h8" stroke="#3b4a57" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="63" cy="47" r="2.4" fill="#3b2a1d"/>`},
+ {id:'lantern',slot:'hand',name:'Paper lantern',svg:`<path d="M56 43v4" stroke="#5d6f61"/><ellipse cx="56" cy="57" rx="7" ry="9" fill="#e9a24a"/><path d="M50 57h12M51 52h10M51 62h10" stroke="#c0563f"/><rect x="52" y="47" width="8" height="2.5" fill="#c0563f"/><rect x="52" y="65" width="8" height="2.5" fill="#c0563f"/><path d="M56 67.5v3" stroke="#c0563f" stroke-width="1.5"/>`},
+ {id:'apron',slot:'neck',name:'Barista apron',svg:`<path d="M24 57q-4-3-7-7M40 57q4-3 7-7" stroke="#2f5d44" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M23 57h18l3 14H20z" fill="#2f5d44"/><rect x="27" y="62" width="10" height="5" rx="1" fill="#244a37"/><circle cx="32" cy="59.5" r="1.4" fill="#e9b949"/>`},
+ {id:'goldcup',slot:'hand',name:'Opening-day mug',svg:`<path d="M47 52h16l-2 14H49z" fill="#e0b54a" stroke="#8a6416" stroke-width="1.3"/><path d="M63 55q6 0 5 5t-6 3" fill="none" stroke="#8a6416" stroke-width="1.6"/><path d="M50 56h10" stroke="#fbf8f0" stroke-width="1.2" opacity=".7"/><path d="M51 48l1-3M55 47v-4M59 48l-1-3" stroke="#e0b54a" stroke-width="1.4" stroke-linecap="round"/>`},
+ /* countries */
+ {id:'nata',slot:'hand',name:'Pastel de nata',svg:`<path d="M45 61q10 6 20 0l-2-6H47z" fill="#c98b3d"/><ellipse cx="55" cy="55.5" rx="9" ry="3.2" fill="#f2cd5c"/><circle cx="52" cy="55" r="1.4" fill="#7a3f1a"/><circle cx="57" cy="56" r="1.1" fill="#7a3f1a"/>`},
+ {id:'tramcap',slot:'head',name:'Tram conductor cap',svg:`<path d="M12 20q20-14 40 0v4H12z" fill="#2f5f9e"/><path d="M12 24h40l4 3H8z" fill="#1f3a5e"/><rect x="12" y="19" width="40" height="3" fill="#e9b949"/><circle cx="32" cy="14" r="2.6" fill="#e9b949"/>`},
+ {id:'matcha',slot:'hand',name:'Matcha bowl',svg:`<path d="M45 56h20q-2 10-10 10t-10-10z" fill="#3b4a57"/><ellipse cx="55" cy="56" rx="10" ry="2.6" fill="#7aa35a"/><path d="M44 47l7 9M49 46l4 10" stroke="#c9a46a" stroke-width="1.8" stroke-linecap="round"/>`},
+ {id:'sakura',slot:'head',name:'Sakura hairpin',svg:`${flower(46,15,'#f0b8c8',3.4)}${flower(53,20,'#f6d0dc',2.8)}${flower(43,22,'#f0b8c8',2.4)}`},
+ {id:'marigold',slot:'head',name:'Marigold crown',svg:`${[[12,19],[19,13],[27,10],[37,10],[45,13],[52,19]].map(([x,y],i)=>flower(x,y,i%2?'#e9862f':'#f2a53a',3.6)).join('')}`},
+ {id:'olla',slot:'hand',name:'Café de olla mug',svg:`<path d="M46 52h16l-1 12q-7 4-14 0z" fill="#b5603a"/><ellipse cx="54" cy="52" rx="8" ry="2" fill="#5a3f2c"/><path d="M48 57h12" stroke="#e9b949" stroke-width="1.5" stroke-dasharray="2 1.5"/><path d="M62 54q5 1 3 6" stroke="#b5603a" stroke-width="2" fill="none"/><path d="M51 47l2-3M56 46v-3" stroke="#c98b3d" stroke-width="1.6" stroke-linecap="round"/>`},
+ {id:'teaglass',slot:'hand',name:'Mint tea glass',svg:`<path d="M48 51h12l-2 15h-8z" fill="rgba(191,215,223,.6)" stroke="#5d6f61" stroke-width="1.2"/><path d="M48.6 56h10.8l-1.3 10h-8.2z" fill="#c98b3d" opacity=".8"/><path d="M48.2 53h11.6" stroke="#e9b949" stroke-width="1.5"/><ellipse cx="57" cy="49" rx="3" ry="1.8" fill="#5d8a4e"/><ellipse cx="53" cy="48.5" rx="2.5" ry="1.6" fill="#7a9f6a"/>`},
+ {id:'fez',slot:'head',name:'Fez',svg:`<path d="M20 20l3-14h18l3 14z" fill="#b5332b"/><ellipse cx="32" cy="6" rx="9" ry="2" fill="#8e2a22"/><path d="M32 6q6 4 7 13" stroke="#1b1b1b" stroke-width="1.5" fill="none"/><circle cx="39" cy="19.5" r="1.6" fill="#1b1b1b"/>`},
+ {id:'lopapeysa',slot:'neck',name:'Wool sweater',svg:`<path d="M8 52q24 16 48 0l2 12q-26 14-52 0z" fill="#e8e2d6"/><path d="M8 55q24 15 48 0" stroke="#3b4a57" stroke-width="2.5" fill="none"/>${[[12,59],[18,62],[25,64],[32,65],[39,64],[46,62],[52,59]].map(([x,y])=>`<path d="M${x} ${y-2.5}l2.5 2.5-2.5 2.5-2.5-2.5z" fill="#7a5a3e"/>`).join('')}`},
+ {id:'puffin',slot:'hand',name:'Puffin plush',svg:`<ellipse cx="55" cy="58" rx="7" ry="8" fill="#1f2a30"/><ellipse cx="55" cy="60" rx="4.5" ry="5.5" fill="#fbf8f0"/><circle cx="55" cy="51" r="5" fill="#1f2a30"/><ellipse cx="54" cy="51.5" rx="3" ry="2.6" fill="#fbf8f0"/><circle cx="54" cy="51" r=".9" fill="#1b1b1b"/><path d="M58 50l6 2-6 3z" fill="#e8742f"/><path d="M58 52h6" stroke="#e9b949" stroke-width=".8"/><path d="M51 66h3M56 66h3" stroke="#e8742f" stroke-width="2"/>`},
+ {id:'eggcoffee',slot:'hand',name:'Egg coffee',svg:`<ellipse cx="55" cy="64" rx="10" ry="3" fill="#bfd7df" stroke="#5d6f61"/><path d="M48 52h14l-2 12h-10z" fill="#fbf8f0" stroke="#5d6f61" stroke-width="1.2"/><path d="M48.5 55h13" stroke="#f2d27a" stroke-width="5"/><path d="M49 57.5h12l-1.5 6h-9z" fill="#5a3f2c"/>`},
+ {id:'nonla',slot:'head',name:'Nón lá hat',svg:`<path d="M2 20L32-4l30 24q-30 6-60 0z" fill="#e9cf8d" stroke="#b39a5a"/><path d="M12 15L32-1M22 18L32 0M42 18L32 0M52 15L32-1" stroke="#c9b06e" stroke-width=".8"/>`},
+ {id:'moka',slot:'hand',name:'Moka pot',svg:`<path d="M48 66h14l-2-9h-10z" fill="#9aa3a8" stroke="#5d6f61"/><path d="M50 57h10l2-8h-14z" fill="#b8c0c4" stroke="#5d6f61"/><path d="M48 49h14" stroke="#5d6f61" stroke-width="2"/><path d="M62 51q5 2 3 9" stroke="#1b1b1b" stroke-width="2.4" fill="none"/><path d="M48 50l-3-2" stroke="#9aa3a8" stroke-width="2"/><circle cx="55" cy="46.5" r="1.5" fill="#1b1b1b"/>`},
+ {id:'goggles',slot:'face',name:'Vespa goggles',svg:`<rect x="9" y="26" width="20" height="14" rx="6" fill="rgba(191,215,223,.55)" stroke="#7a5a3e" stroke-width="2.8"/><rect x="35" y="26" width="20" height="14" rx="6" fill="rgba(191,215,223,.55)" stroke="#7a5a3e" stroke-width="2.8"/><path d="M29 32h6M3 30l6 1M55 31l6-1" stroke="#7a5a3e" stroke-width="2.4"/>`},
+ {id:'beaver',slot:'hand',name:'Buddy the beaver',svg:`<ellipse cx="62" cy="62" rx="3.4" ry="6" fill="#5a3b26" transform="rotate(25 62 62)"/><path d="M60 58l4 2M59.5 61l4.5 2M59 64l4.5 2" stroke="#3e2818" stroke-width=".7"/><ellipse cx="54" cy="60" rx="6.5" ry="7" fill="#9a6a44"/><path d="M48.3 56.2A6.5 7 0 0 1 59.7 56.2A6.5 7 0 0 1 60 62.5Q54 63.7 48 62.5A6.5 7 0 0 1 48.3 56.2z" fill="#c0392b"/><path d="M48.5 58h11M48.2 60.6h11.6M51.3 55.5v7.6M54 55.5v7.4M56.7 55.5v7.6" stroke="#2f6b3a" stroke-width=".55" opacity=".85"/><circle cx="49.5" cy="47.8" r="1.8" fill="#9a6a44"/><circle cx="58.5" cy="47.8" r="1.8" fill="#9a6a44"/><circle cx="49.5" cy="47.8" r=".8" fill="#6e4a30"/><circle cx="58.5" cy="47.8" r=".8" fill="#6e4a30"/><circle cx="54" cy="51.5" r="5" fill="#9a6a44"/><ellipse cx="54" cy="53.6" rx="2.6" ry="2" fill="#c99a6e"/><circle cx="52" cy="50.4" r=".9" fill="#1b1b1b"/><circle cx="56" cy="50.4" r=".9" fill="#1b1b1b"/><ellipse cx="54" cy="52.6" rx="1.1" ry=".8" fill="#2a1a10"/><rect x="53" y="54.2" width="2" height="2" rx=".3" fill="#fbf8f0" stroke="#d9cfc0" stroke-width=".3"/><path d="M54 54.2v2" stroke="#d9cfc0" stroke-width=".3"/><path d="M50.4 48q0-3.8 3.6-3.8t3.6 3.8z" fill="#c0392b"/><rect x="50" y="47.2" width="8" height="1.5" rx=".7" fill="#2f6b3a"/><circle cx="54" cy="43.9" r="1.2" fill="#fbf8f0" stroke="#d9cfc0" stroke-width=".3"/><ellipse cx="50" cy="66.6" rx="2" ry="1.2" fill="#6e4a30"/><ellipse cx="58" cy="66.6" rx="2" ry="1.2" fill="#6e4a30"/><path d="M48.6 59.6l1.6.8M59.4 59.6l-1.6.8" stroke="#6e4a30" stroke-width="1.2" stroke-linecap="round"/>`},
+ {id:'plaid',slot:'neck',name:'Plaid scarf',svg:`<path d="M10 51q22 13 44 0v8q-22 13-44 0z" fill="#c0563f"/><path d="M10 54q22 13 44 0M10 57q22 13 44 0" stroke="#3b2a1d" stroke-width="1.3" fill="none"/>${[16,24,32,40,48].map(x=>`<path d="M${x} ${51+Math.round(((x-32)/22)**2*-6+7)}v8" stroke="#3b2a1d" stroke-width="1.3"/>`).join('')}<path d="M42 58l4 12h-7l-2-11z" fill="#c0563f"/><path d="M40 62h6M41 66h6" stroke="#3b2a1d" stroke-width="1.2"/>`}
+);
+/* remove the croissant; owners get refunded */
+{const k=ITEMS.findIndex(i=>i.id==='croissant');if(k>=0)ITEMS.splice(k,1)}
+/* the existing items that now come from the trip, not the shop */
+['necktie','bandana','strawhat','lei','laptop','scarf'].forEach(id=>{const it=ITEMS.find(i=>i.id===id);if(it)delete it.price});
+Object.keys(ITEM).forEach(k=>delete ITEM[k]);ITEMS.forEach(i=>ITEM[i.id]=i);
+const GEAR={
+ s0:['necktie','lanyard'], s1:['busticket','bandana'], s2:['poncho','grinder'], s3:['strawhat','lei'],
+ s4:['laptop','lantern'], s5:['scarf','studenterhue'], s6:['apron','goldcup'],
+ portugal:['nata','tramcap'], japan:['matcha','sakura'], mexico:['marigold','olla'], morocco:['teaglass','fez'],
+ iceland:['lopapeysa','puffin'], vietnam:['eggcoffee','nonla'], italy:['moka','goggles'], canada:['beaver','plaid']
+};
+/* level thresholds: halfway reward after ceil(len/2) levels at a stop, finish reward on its last level */
+function gearStops(){
+  const out=[];
+  CHAPTERS.forEach((ch,i)=>{const a=ch.at,b=i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT;out.push({key:'s'+i,name:ch.title,label:`Chapter ${i+1}`,start:a,len:b-a})});
+  COUNTRIES.forEach((c,i)=>out.push({key:c.id,name:c.name,label:'World Tour',start:TOUR_AT+i*TOUR_LEN,len:TOUR_LEN}));
+  return out.map(g=>Object.assign(g,{items:GEAR[g.key],at:[g.start+Math.ceil(g.len/2),g.start+g.len]}));
+}
+const GEAR_AT={};gearStops().forEach(g=>g.items.forEach((id,k)=>GEAR_AT[id]={at:g.at[k],stop:g,half:k===0}));
+
+/* ================= chapter lessons + country travel notes ================= */
+/* end-of-chapter celebration: who cheers, what Mocha learned */
+const LESSONS=[
+ {cheer:['dale',"You actually did it. The canopy won't be the same without you."],lesson:"A crowded tree is no place to grow. Give everyone room, including yourself."},
+ {cheer:['juniper',"Look at you. Three bus rides and not one panic."],lesson:"You'll never feel ready. Leave anyway."},
+ {cheer:['pablo',"Your bloom is perfect. I have nothing left to teach you."],lesson:"Good things take time. Don't rush the bloom."},
+ {cheer:['kai',"Dude, you've basically got a business plan on a coconut."],lesson:"If someone says they'd pay for it, the idea is worth testing."},
+ {cheer:['mei',"I slept eight hours last night. Eight! Because of you."],lesson:"Small shops don't need more hustle. They need simple systems."},
+ {cheer:['freja',"Paint's dry, sign's up, machine's slow. You're ready."],lesson:"A good plan you start beats a perfect plan you don't."},
+ {cheer:['freja',"Full house again tomorrow. And the day after."],lesson:"Regulars are everything. Look after the people who keep coming back."}
+];
+/* per country: 3 local words, a great coffee spot, a co-working space (checked October 2026), and 5 fun facts for the tip jar */
+const NOTES={
+ portugal:{lang:'Portuguese',words:[['Olá','hello'],['Obrigado / Obrigada','thank you'],['Saudade','a deep, bittersweet longing']],
+  coffee:['Fábrica Coffee Roasters','Lisbon · one of the first third-wave roasters in the city'],cowork:['Second Home Lisboa','Lisbon · inside the Mercado da Ribeira market hall'],
+  facts:[["Lisbon's famous custard tart is called…",["Pastel de nata","Churro","Bolo rei","Pão de queijo"],"Crispy pastry, creamy custard, a dusting of cinnamon. Best eaten warm."],
+   ["Portugal produces about half of the world's…",["Cork","Olive oil","Saffron","Vanilla"],"Cork comes from the bark of cork oak trees, which grows back after harvesting."],
+   ["The painted blue-and-white tiles on Portuguese buildings are called…",["Azulejos","Mosaicos","Terracotas","Cerámicas"],"Azulejos cover churches, train stations and whole house fronts."],
+   ["Which Lisbon tram line is famous for rattling up the old hills?",["Tram 28","Tram 1","Tram 99","Tram 7"],"The yellow Tram 28 winds through Alfama, Graça and Baixa."],
+   ["Portugal's soulful, melancholic music style is called…",["Fado","Flamenco","Tango","Samba"],"Fado is often sung in small taverns, about longing and the sea."]]},
+ japan:{lang:'Japanese',words:[['Konnichiwa','hello'],['Arigatō','thank you'],['Kōhī','coffee']],
+  coffee:['Koffee Mameya Kakeru','Tokyo · Kiyosumi-Shirakawa, coffee served like a tasting menu'],cowork:['Impact Hub Tokyo','Tokyo · Meguro'],
+  facts:[["Japan's traditional old-school coffee houses are called…",["Kissaten","Izakaya","Ryokan","Onsen"],"Kissaten are known for slow hand-brewed coffee, jazz and quiet."],
+   ["Picnicking under cherry blossoms is called…",["Hanami","Origami","Ikebana","Karaoke"],"Hanami literally means flower viewing. Spots fill up fast in spring."],
+   ["What is Japan's tallest mountain?",["Mount Fuji","Mount Aso","Mount Takao","Mount Yari"],"Fuji rises about 3,776 m and is an active volcano."],
+   ["Japan's high-speed bullet train is called the…",["Shinkansen","Maglev Express","Tokaido Rapid","Hikari Line"],"The first Shinkansen opened in 1964, linking Tokyo and Osaka."],
+   ["Matcha is a powdered form of…",["Green tea","Roasted barley","Black coffee","Seaweed"],"The whole leaf is stone-ground and whisked into water."]]},
+ mexico:{lang:'Spanish',words:[['Hola','hello'],['Gracias','thank you'],['Sobremesa','lingering at the table to chat after a meal']],
+  coffee:['Blend Station','Mexico City · Condesa and Roma Norte'],cowork:['Público','Mexico City · several spaces, including Roma and Condesa'],
+  facts:[["Which crop was first domesticated in what is now southern Mexico?",["Corn (maize)","Rice","Wheat","Potatoes"],"Maize was bred from a wild grass called teosinte thousands of years ago."],
+   ["Mexico City was built on top of an old…",["Lake","Desert","Glacier","Forest"],"The Aztec capital sat on an island in Lake Texcoco."],
+   ["The orange marigolds used for Día de Muertos are called…",["Cempasúchil","Bougainvillea","Jacaranda","Nopal"],"Their bright colour and scent are said to guide spirits home."],
+   ["Café de olla is traditionally brewed in a clay pot with…",["Cinnamon and piloncillo","Mint and lime","Chili and salt","Coconut milk"],"Piloncillo is unrefined cane sugar. The clay pot adds an earthy taste."],
+   ["What was the name of the Aztec capital city?",["Tenochtitlan","Teotihuacan","Chichén Itzá","Monte Albán"],"Modern Mexico City grew right on top of it."]]},
+ morocco:{lang:'Moroccan Arabic (Darija)',words:[['Salam','hello'],['Shukran','thank you'],['Atay','tea']],
+  coffee:['Bacha Coffee','Marrakech · inside the Dar el Bacha palace museum'],cowork:['Spaces Marrakech','Marrakech'],
+  facts:[["Moroccan mint tea is made with fresh mint and…",["Green tea","Black coffee","Hibiscus","Rooibos"],"It's poured from high up to make a little foam on top."],
+   ["Which Moroccan city is home to a university founded in 859, often called the world's oldest still running?",["Fez","Rabat","Agadir","Tangier"],"The University of al-Qarawiyyin was founded by Fatima al-Fihri."],
+   ["A tagine is both a slow-cooked dish and…",["The clay pot it's cooked in","A spice blend","A type of bread","A tea glass"],"The cone-shaped lid traps steam and keeps everything tender."],
+   ["What is the highest peak in the Atlas Mountains?",["Toubkal","Kilimanjaro","Mont Blanc","Olympus"],"Toubkal is about 4,167 m, the highest in North Africa."],
+   ["The town of Chefchaouen is famous for its…",["Blue-painted streets","Floating markets","Ice caves","Pink sand"],"Almost every wall in the old town is painted shades of blue."]]},
+ iceland:{lang:'Icelandic',words:[['Hæ','hi'],['Takk','thanks'],['Gluggaveður','weather that only looks nice through a window']],
+  coffee:['Reykjavík Roasters','Reykjavík'],cowork:['Hafnar.Haus','Reykjavík · by the old harbour'],
+  facts:[["Iceland's parliament, founded in 930, is called the…",["Althing","Folketing","Riksdag","Storting"],"It's one of the oldest parliaments in the world."],
+   ["Most homes in Iceland are heated with…",["Geothermal energy","Coal","Nuclear power","Wood stoves"],"Hot water piped up from the ground warms around 9 in 10 homes."],
+   ["Icelandic last names are usually based on…",["A parent's first name","The family farm","A profession","The town you're born in"],"Jón's son Ari would be Ari Jónsson. His daughter Sigga would be Sigga Jónsdóttir."],
+   ["The English word geyser comes from…",["A hot spring in Iceland","A Norwegian god","A Danish king","A type of kettle"],"Geysir, in southwest Iceland, gave its name to all the others."],
+   ["Which seabird with a colourful beak nests in Iceland by the million?",["The puffin","The penguin","The pelican","The flamingo"],"Atlantic puffins arrive each spring to nest on the cliffs."]]},
+ vietnam:{lang:'Vietnamese',words:[['Xin chào','hello'],['Cảm ơn','thank you'],['Cà phê','coffee']],
+  coffee:['Café Giảng','Hanoi · the family café that has served egg coffee since 1946'],cowork:['Toong','Hanoi'],
+  facts:[["Egg coffee was invented in which city?",["Hanoi","Ho Chi Minh City","Bangkok","Phnom Penh"],"Milk was scarce in 1946, so a bartender whisked egg yolk and sugar instead."],
+   ["Vietnam is the world's second-biggest coffee producer, after…",["Brazil","Colombia","Ethiopia","Indonesia"],"Coffee arrived with the French in the 1800s and took off from there."],
+   ["Most of Vietnam's coffee is which bean?",["Robusta","Arabica","Liberica","Excelsa"],"Robusta is strong and bold, perfect with sweet condensed milk."],
+   ["Ha Long Bay is famous for…",["Thousands of limestone islands","Pink sand beaches","Hot springs","Glaciers"],"The towering limestone karsts rise straight out of emerald water."],
+   ["Vietnam's traditional long silk tunic worn over trousers is the…",["Áo dài","Kimono","Sari","Hanbok"],"It's worn for weddings, Tết and as some school uniforms."]]},
+ italy:{lang:'Italian',words:[['Ciao','hi and bye'],['Grazie','thank you'],['Dolce far niente','the sweetness of doing nothing']],
+  coffee:["Sant'Eustachio Il Caffè",'Rome · near the Pantheon, roasting since 1938'],cowork:['Talent Garden Roma Ostiense','Rome · Ostiense'],
+  facts:[["The classic stovetop moka pot was invented by…",["Alfonso Bialetti","Enzo Ferrari","Guccio Gucci","Achille Gaggia"],"Bialetti's octagonal pot launched in 1933 and is still made today."],
+   ["The coins people throw into Rome's Trevi Fountain go to…",["Charity","The mayor","The Vatican museums","Nobody, they stay there"],"They're collected and given to a Catholic charity that helps people in need."],
+   ["In Italy, a cappuccino is traditionally a drink for…",["The morning","After dinner","Midnight","Only on Sundays"],"Ordering one after lunch can get you a raised eyebrow."],
+   ["Vatican City, inside Rome, is the world's smallest…",["Country","Island","Mountain range","Lake"],"It covers less than half a square kilometre."],
+   ["Pizza Margherita is said to be named after a…",["Queen","Volcano","Saint","Painter"],"Legend says a Naples pizzaiolo made it for Queen Margherita in 1889."]]},
+ canada:{lang:'Canadian',words:[['Toque','a knitted winter hat'],['Double-double','coffee with two creams, two sugars'],['Loonie','the one-dollar coin']],
+  coffee:['Pilot Coffee Roasters','Toronto'],cowork:['Centre for Social Innovation','Toronto'],
+  facts:[["Canada has more ___ than any other country.",["Lakes","Volcanoes","Deserts","Islands in the tropics"],"Estimates suggest more than half of the world's lakes are in Canada."],
+   ["Canada's $1 coin is nicknamed the…",["Loonie","Moosie","Beaver","Maple"],"It has a loon on it. The $2 coin is, naturally, the toonie."],
+   ["Canada makes most of the world's…",["Maple syrup","Cocoa","Coffee","Olive oil"],"Most of it comes from Quebec, from sap boiled down in spring."],
+   ["Poutine (fries, cheese curds and gravy) comes from…",["Quebec","British Columbia","Nunavut","Alberta"],"The squeakier the cheese curds, the better."],
+   ["Canada has the world's longest…",["Coastline","River","Highway tunnel","Mountain range"],"Counting all its islands, it's over 200,000 km of coast."]]}
+};
+function lessonCard(i){return `<div class="lesson"><div class="tag">Lesson learned · Chapter ${i+1}</div><p>${LESSONS[i].lesson}</p></div>`}
+function notesCard(c,full=true){
+  const n=NOTES[c.id];
+  return `<div class="lesson notes-card"><div class="tag">Travel notes · ${c.name}</div>
+    <p><b>3 words in ${n.lang}</b></p><ul>${n.words.map(([w,m])=>`<li><b>${w}</b> — ${m}</li>`).join('')}</ul>
+    ${full?`<p><b>Best coffee:</b> ${n.coffee[0]} <span class="where">(${n.coffee[1]})</span></p><p><b>Co-working:</b> ${n.cowork[0]} <span class="where">(${n.cowork[1]})</span></p>`:''}</div>`;
+}
+
+/* ================= difficulty ramp: one journey, rules tighten gradually ================= */
+const STAGES=[
+ {from:0, n:5, autox:true, hints:3,check:true, minTier:1,maxTier:2,mult:1},
+ {from:3, n:6, autox:true, hints:3,check:true, minTier:1,maxTier:2,mult:1},
+ {from:10,n:6, autox:false,hints:3,check:true, minTier:1,maxTier:2,mult:1},
+ {from:16,n:7, autox:false,hints:2,check:true, minTier:1,maxTier:2,mult:1},
+ {from:24,n:7, autox:false,hints:2,check:true, minTier:3,maxTier:9,mult:1.5},
+ {from:33,n:8, autox:false,hints:1,check:true, minTier:3,maxTier:9,mult:1.5},
+ {from:50,n:9, autox:false,hints:1,check:true, minTier:3,maxTier:9,mult:1.5},
+ {from:70,n:9, autox:false,hints:0,check:false,minTier:3,maxTier:9,mult:2},
+ {from:85,n:10,autox:false,hints:0,check:false,minTier:3,maxTier:9,mult:2}
+];
+const DAILY_STAGE=Object.assign({},STAGES[3],{n:7});
+function stageAt(c){let st=STAGES[0];STAGES.forEach(x=>{if(c>=x.from)st=x});return st}
+function stageName(st){return !st.check?'Wild':st.minTier>2?'Tricky':!st.autox?'No Auto-X':'Chill'}
+/* plain-English list of what changes between two stages */
+function stageChanges(a,b){
+  const out=[];
+  if(a.autox&&!b.autox)out.push("<b>Auto-X retires.</b> From here on you mark your own X's.");
+  if(b.n>a.n)out.push(`<b>Bigger boards:</b> ${b.n}×${b.n} from now on.`);
+  if(b.hints<a.hints&&b.check)out.push(`<b>Fewer hints:</b> ${b.hints} per board.`);
+  if(b.minTier>a.minTier)out.push('<b>Sharper logic:</b> puzzles now need real deduction, not just elimination. Tips ×1.5.');
+  if(a.check&&!b.check)out.push('<b>The Wild stretch:</b> no checking, no leaves, no hints. The board only confirms when every sloth is right. Tips ×2.');
+  return out;
+}
+const SAY={
+  idle:["Slow down. Think. Place a sloth.","I could nap here all day.","Take your time. I am.","No rush. Ever."],
+  good:["Nice branch.","Cozy spot.","That one fits.","Ooh, comfy.","Yes. Perfect nap tree."],
+  bad:["Ouch. Someone sleeps there.","Nope. Too crowded.","That one's taken, friend.","Hmm. Not there."],
+  combo:["On fire. Slowly.","Look at you go.","Combo! I'm wide awake now."],
+  poke:["Hey. I was sleeping.","Five more minutes.","Boop received.","Please don't poke the barista.","I'm awake. Mostly."],
+  win:["All sloths are home!","Nap time for everyone.","Beautiful. Truly restful."],
+  lose:["Out of leaves. Let's try that again.","Too many crowded branches."],
+  hint:["Psst. Try there.","One little nudge."],
+  wild:["Wild mode. No safety net.","You're on your own now. Good luck."]
+};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ================= puzzle generator: seeded, single solution, graded by a logic solver ================= */
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr,r){for(let i=arr.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+const DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
+function placeSloths(n,r){
+  const sol=[],used=new Set();
+  (function go(row){
+    if(row===n)return true;
+    for(const c of shuffle([...Array(n).keys()],r)){
+      if(used.has(c)||(row>0&&Math.abs(sol[row-1]-c)<2))continue;
+      sol[row]=c;used.add(c);if(go(row+1))return true;used.delete(c);
+    }return false;
+  })(0);
+  return sol;
+}
+function growRegions(n,sol,r){
+  const g=Array.from({length:n},()=>Array(n).fill(-1));
+  sol.forEach((c,row)=>g[row][c]=row);
+  let left=n*n-n;
+  while(left>0){
+    const reg=Math.floor(r()*n),cells=[];
+    for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(g[y][x]===reg)
+      for(const[dy,dx]of DIRS){const yy=y+dy,xx=x+dx;if(yy>=0&&yy<n&&xx>=0&&xx<n&&g[yy][xx]===-1)cells.push([yy,xx])}
+    if(!cells.length)continue;
+    const[yy,xx]=cells[Math.floor(r()*cells.length)];g[yy][xx]=reg;left--;
+  }
+  return g;
+}
+function solve(n,g,onFound){
+  const cols=new Set(),regs=new Set(),pos=[];let stop=false;
+  (function go(row){
+    if(stop)return;
+    if(row===n){if(onFound(pos.slice())===false)stop=true;return}
+    for(let c=0;c<n;c++){
+      if(cols.has(c)||regs.has(g[row][c])||(row>0&&Math.abs(pos[row-1]-c)<2))continue;
+      cols.add(c);regs.add(g[row][c]);pos[row]=c;go(row+1);cols.delete(c);regs.delete(g[row][c]);
+      if(stop)return;
+    }
+  })(0);
+}
+function countSolutions(n,g,cap=2){let k=0;solve(n,g,()=>{k++;return k<cap});return k}
+function findOther(n,g,sol){let f=null;solve(n,g,p=>{if(p.some((c,i)=>c!==sol[i])){f=p;return false}});return f}
+function connected(n,g,reg){
+  let start=null,total=0;
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(g[y][x]===reg){total++;if(!start)start=[y,x]}
+  if(!start)return false;
+  const seen=new Set([start+'']),q=[start];
+  while(q.length){const[y,x]=q.pop();for(const[dy,dx]of DIRS){const yy=y+dy,xx=x+dx,k=yy+','+xx;if(yy>=0&&yy<n&&xx>=0&&xx<n&&g[yy][xx]===reg&&!seen.has(k)){seen.add(k);q.push([yy,xx])}}}
+  return seen.size===total;
+}
+function repair(n,g,sol,r){
+  for(let step=0;step<400;step++){
+    const alt=findOther(n,g,sol);if(!alt)return true;
+    const rows=shuffle([...Array(n).keys()].filter(i=>alt[i]!==sol[i]),r);
+    let moved=false;
+    for(const y of rows){
+      const x=alt[y],old=g[y][x],opts=[];
+      for(const[dy,dx]of DIRS){const yy=y+dy,xx=x+dx;if(yy>=0&&yy<n&&xx>=0&&xx<n&&g[yy][xx]!==old)opts.push(g[yy][xx])}
+      for(const nr of shuffle(opts,r)){g[y][x]=nr;if(connected(n,g,old)){moved=true;break}g[y][x]=old}
+      if(moved)break;
+    }
+    if(!moved)return false;
+  }
+  return false;
+}
+/* Grade like a human solver. Tier 1: last spot left. Tier 2: "this square would block a whole unit" + single-unit confinement. Tier 3: k colours squeezed into k rows (k≥2). Tier 4: needs trial and error. */
+function rate(n,g){
+  const N=n*n,cand=Array(N).fill(true),placed=Array(N).fill(false),done=Array(3*n).fill(false);
+  const units=Array.from({length:3*n},()=>[]);
+  const uOf=i=>{const y=(i/n)|0,x=i%n;return[y,n+x,2*n+g[y][x]]};
+  for(let i=0;i<N;i++)uOf(i).forEach(u=>units[u].push(i));
+  const live=u=>units[u].filter(i=>cand[i]&&!placed[i]);
+  const kills=i=>{const y=(i/n)|0,x=i%n,s=new Set();uOf(i).forEach(u=>units[u].forEach(j=>s.add(j)));
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const yy=y+dy,xx=x+dx;if(yy>=0&&yy<n&&xx>=0&&xx<n)s.add(yy*n+xx)}s.delete(i);return s};
+  const place=i=>{placed[i]=true;uOf(i).forEach(u=>done[u]=true);kills(i).forEach(j=>cand[j]=false)};
+  let tier=1,count=0;
+  const combos=(arr,k,f)=>{const pk=[];(function go(s){if(pk.length===k){f(pk);return}for(let i=s;i<arr.length;i++){pk.push(arr[i]);go(i+1);pk.pop()}})(0)};
+  outer: while(count<n){
+    for(let u=0;u<3*n;u++){if(done[u])continue;const l=live(u);if(l.length===0)return 9;if(l.length===1){place(l[0]);count++;continue outer}}
+    for(let i=0;i<N;i++){if(!cand[i]||placed[i])continue;const ks=kills(i),mine=new Set(uOf(i));
+      for(let u=0;u<3*n;u++){if(done[u]||mine.has(u))continue;if(live(u).every(j=>ks.has(j))){cand[i]=false;tier=Math.max(tier,2);continue outer}}}
+    for(let k=1;k<=3;k++){
+      for(const[A,B]of[[2,0],[2,1],[0,2],[1,2],[0,1],[1,0]]){
+        const As=[];for(let t=0;t<n;t++){const u=A*n+t;if(!done[u])As.push(u)}
+        let hit=false;
+        combos(As,k,S=>{if(hit)return;const inS=new Set(),Bs=new Set();
+          S.forEach(u=>live(u).forEach(i=>{inS.add(i);Bs.add(uOf(i)[B])}));
+          if(Bs.size!==k)return;
+          Bs.forEach(b=>live(b).forEach(i=>{if(!inS.has(i)){cand[i]=false;hit=true}}));
+        });
+        if(hit){tier=Math.max(tier,k===1?2:3);continue outer}
+      }
+    }
+    return 4;
+  }
+  return tier;
+}
+function makePuzzle(seed,n,dz){
+  let best=null,bestScore=-1;const t0=Date.now();
+  for(let attempt=0;attempt<400;attempt++){
+    const r=mulberry(seed*7919+attempt*104729+13);
+    const sol=placeSloths(n,r),g=growRegions(n,sol,r);
+    if(!(repair(n,g,sol,r)&&countSolutions(n,g)===1))continue;
+    const t=rate(n,g),p={n,sol,g,tier:t};
+    if(t>=dz.minTier&&t<=dz.maxTier)return p;
+    const score=dz.minTier>2?t:-t;
+    if(score>bestScore){best=p;bestScore=score}
+    if(Date.now()-t0>1500&&best)return best;
+  }
+  return best||(()=>{const r=mulberry(seed),sol=placeSloths(n,r);return{n,sol,g:growRegions(n,sol,r),tier:0}})();
+}
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function hashStr(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+
+/* ================= saved progress (this browser only) ================= */
+const KEY='slothdoku-v3';
+function load(){
+  const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,chapter:0,newItems:false,
+    coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:6};
+  const sumL=o=>(o.levels.chill-1)+(o.levels.tricky-1)+(o.levels.wild-1);
+  const backPay=o=>10+5*sumL(o);
+  let v=null;
+  try{v=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  if(v){
+    const o=Object.assign(b,v);
+    if(!v.v){o.coins=backPay(o);o.v=5}
+    if(o.v<5){o.coins=Math.min(o.coins,backPay(o));o.v=5}
+    if(o.v<6){o.level=1+sumL(o);o.v=6} /* three difficulty tracks merge into one journey */
+    return o;
+  }
+  try{const old=JSON.parse(localStorage.getItem('slothdoku-v2')||'null');if(old){b.levels.chill=old.level||1;b.level=b.levels.chill;b.sound=old.sound!==false;b.autox=old.autox!==false;b.coins=backPay(b)}}catch(e){}
+  return b;
+}
+const SAVE=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(SAVE))}catch(e){}}
+function furColor(){const f=FURS.find(f=>f.id===SAVE.fur);return f?f.color:FUR_DEFAULT}
+function addCoins(k){SAVE.coins=Math.max(0,SAVE.coins+k);save();const c=document.getElementById('coins');document.getElementById('coinN').textContent=SAVE.coins;if(!reduced){c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump')}}
+
+/* ================= unlocks + chapters ================= */
+function stats(){
+  return{cleared:SAVE.level-1,stars:Object.values(SAVE.stars).reduce((a,b)=>a+b,0),dailies:Object.keys(SAVE.daily).length,combo:SAVE.maxCombo,pokes:SAVE.pokes};
+}
+/* trophies only: shop items are bought with coins */
+function checkUnlocks(){
+  const s=stats(),fresh=[];
+  ITEMS.forEach(it=>{if(SAVE.unlocked.includes(it.id))return;
+    if(it.need){const[v,g]=it.need(s);if(v>=g){SAVE.unlocked.push(it.id);fresh.push(it)}}
+    else if(GEAR_AT[it.id]&&s.cleared>=GEAR_AT[it.id].at){SAVE.unlocked.push(it.id);fresh.push(it)}});
+  if(fresh.length){SAVE.newItems=true;fresh.forEach(it=>{if(!SAVE.equip[it.slot])SAVE.equip[it.slot]=it.id});save();refreshSloths()}
+  return fresh;
+}
+/* where the trip is after c cleared levels: a story chapter, or a World Tour country */
+function legAt(c){
+  if(c<TOUR_AT){
+    let i=0;CHAPTERS.forEach((ch,k)=>{if(c>=ch.at)i=k});
+    const ch=CHAPTERS[i],end=i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT;
+    return{kind:'story',i,leg:ch,k:c-ch.at,len:end-ch.at,bg:i,key:'s'+i};
+  }
+  const t=c-TOUR_AT,i=Math.floor(t/TOUR_LEN)%COUNTRIES.length,round=Math.floor(t/(TOUR_LEN*COUNTRIES.length));
+  return{kind:'tour',i,leg:COUNTRIES[i],k:t%TOUR_LEN,len:TOUR_LEN,round,bg:CHAPTERS.length+i,key:'t'+i+'r'+round};
+}
+const curLeg=()=>legAt(stats().cleared);
+function legTitle(L){return L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[`World Tour · stop ${L.i+1} of ${COUNTRIES.length}${L.round?' · encore':''}`,L.leg.name]}
+function chapterIndex(){return legAt(Math.min(stats().cleared,TOUR_AT-1)).i}
+const dailyDone=()=>!!SAVE.daily['d:'+todayKey()];
+function chapterHTML(ch,i){return `<div class="chapter"><div class="eyebrow">Chapter ${i+1} of ${CHAPTERS.length}</div><h3>${ch.title}</h3><p>${ch.text}</p></div>`}
+function unlockHTML(list){return list.length?`<p><b>${list.some(i=>GEAR_AT[i.id])?'New gear for your Napsack':'New trophy'}</b></p><div class="unlocks">${list.map(it=>`<span class="unlock">${slothSVG(null,it.id)}${it.name}</span>`).join('')}</div>`:''}
+function refreshSloths(){
+  document.getElementById('mascot').innerHTML=slothSVG(SAVE.equip);
+  [...document.getElementById('board').children].forEach(b=>b.dataset.v='');
+  document.getElementById('newdot').hidden=!SAVE.newItems;
+  document.getElementById('coinN').textContent=SAVE.coins;
+}
+
+/* ================= sound ================= */
+let AC=null;
+function tone(freq,dur=.12,type='triangle',vol=.12,delay=0){
+  if(!SAVE.sound)return;
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    const t=AC.currentTime+delay,o=AC.createOscillator(),g=AC.createGain();
+    o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+    o.connect(g).connect(AC.destination);o.start(t);o.stop(t+dur+.02)}catch(e){}
+}
+const sfx={x:()=>tone(520,.05,'sine',.05),sloth:(c=0)=>{const f=660*Math.pow(1.06,Math.min(c,10));tone(f,.1);tone(f*1.5,.14,'triangle',.1,.07)},bad:()=>tone(140,.25,'sawtooth',.08),
+  win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.25,'triangle',.11,i*.11)),lose:()=>[392,330,262].forEach((f,i)=>tone(f,.3,'sine',.1,i*.15)),
+  poke:()=>{tone(300,.08,'sine',.1);tone(240,.12,'sine',.08,.08)},coin:k=>tone(1050+k*40,.07,'square',.04),blip:()=>tone(700,.04,'sine',.04),
+  snap:k=>{tone(392*Math.pow(1.1,k),.09,'square',.05);tone(588*Math.pow(1.1,k),.14,'triangle',.1,.06)},nope:()=>tone(160,.18,'sine',.1),lift:()=>tone(300,.05,'sine',.05),
+  buy:()=>[880,1175,1568].forEach((f,i)=>tone(f,.12,'triangle',.08,i*.07))};
+
+/* ================= leaf confetti ================= */
+const fx=document.getElementById('fx'),ctx=fx.getContext('2d');let leaves=[],raf=0;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function burst(count=110){
+  if(reduced)return;
+  fx.width=innerWidth*devicePixelRatio;fx.height=innerHeight*devicePixelRatio;
+  const cols=['#2f5d44','#a9bfa4','#7a9f6a','#c9962f','#7a5a3e'];
+  for(let i=0;i<count;i++)leaves.push({x:innerWidth*(.2+Math.random()*.6),y:innerHeight*.45,vx:(Math.random()-.5)*9,vy:-Math.random()*11-4,r:Math.random()*6.28,vr:(Math.random()-.5)*.3,s:6+Math.random()*7,c:cols[i%cols.length],life:0});
+  if(!raf)raf=requestAnimationFrame(step);
+}
+function step(){
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);ctx.clearRect(0,0,innerWidth,innerHeight);
+  leaves.forEach(l=>{l.vy+=.28;l.vx*=.99;l.x+=l.vx+Math.sin(l.life/9);l.y+=l.vy*.6;l.r+=l.vr;l.life++;
+    ctx.save();ctx.translate(l.x,l.y);ctx.rotate(l.r);ctx.fillStyle=l.c;ctx.beginPath();ctx.ellipse(0,0,l.s,l.s/2.3,0,0,6.28);ctx.fill();ctx.restore()});
+  leaves=leaves.filter(l=>l.y<innerHeight+30&&l.life<260);
+  raf=leaves.length?requestAnimationFrame(step):(ctx.clearRect(0,0,innerWidth,innerHeight),0);
+}
+
+/* ================= mascot ================= */
+const mascot=document.getElementById('mascot'),bubble=document.getElementById('bubble');
+function say(kind,text){
+  bubble.textContent=text||pick(SAY[kind]);
+  const cls={good:'happy',combo:'party',win:'party',bad:'sad',lose:'sad',poke:'happy'}[kind];
+  if(cls&&!reduced){mascot.className='mascot';void mascot.offsetWidth;mascot.className='mascot '+cls}
+}
+let pokes=0;
+mascot.onclick=()=>{
+  pokes++;SAVE.pokes++;save();sfx.poke();
+  const got=checkUnlocks();
+  if(got.length){say('poke','Fine. Take my nap mask and let me sleep.');burst(40);toast('Trophy: '+got.map(i=>i.name).join(', '))}
+  else if(pokes===10){say('poke','Ten pokes. Fine. Have some leaves.');burst(40)}else say('poke');
+};
+
+/* ================= travel scenes between stops ================= */
+/* each vehicle draws Mocha's head into its window: {M} is replaced with a nested sloth */
+const VEHICLES={
+ foot:{land:'road',svg:`<g class="leg l1"><rect x="51" y="28" width="8" height="24" rx="4" fill="#5c4330"/><ellipse cx="55" cy="52" rx="6.5" ry="3.2" fill="#3b2a1d"/></g><g class="leg l2"><rect x="63" y="28" width="8" height="24" rx="4" fill="#5c4330"/><ellipse cx="67" cy="52" rx="6.5" ry="3.2" fill="#3b2a1d"/></g><rect x="26" y="2" width="22" height="34" rx="6" fill="#c0563f"/><rect x="29" y="20" width="16" height="10" rx="3" fill="#8e3b2b"/><path d="M30 2q7-8 14 0" stroke="#8e3b2b" stroke-width="3" fill="none"/><path d="M90 -6l-12 64" stroke="#7a5a3e" stroke-width="3" stroke-linecap="round"/>{M:34,-10,50}`},
+ bus:{land:'road',svg:`<rect x="4" y="10" width="112" height="44" rx="10" fill="#2f5d44"/><rect x="4" y="40" width="112" height="6" fill="#a9bfa4"/>${[14,36,58].map(x=>`<rect x="${x}" y="17" width="18" height="16" rx="3" fill="#bfd7df"/>`).join('')}<rect x="80" y="15" width="30" height="20" rx="4" fill="#bfd7df"/>{M:83,10,24}<rect x="112" y="44" width="6" height="5" rx="2" fill="#e9b949"/><g class="spin"><circle cx="28" cy="56" r="9" fill="#1f3a2c"/><path d="M28 49v14M21 56h14" stroke="#5d6f61" stroke-width="2"/></g><g class="spin"><circle cx="94" cy="56" r="9" fill="#1f3a2c"/><path d="M94 49v14M87 56h14" stroke="#5d6f61" stroke-width="2"/></g>`},
+ train:{land:'rails',svg:`<rect x="0" y="12" width="78" height="40" rx="6" fill="#c0563f"/><path d="M78 12h22q18 0 18 22v18H78z" fill="#c0563f"/><rect x="0" y="40" width="118" height="5" fill="#fbf8f0"/>${[6,30,54].map(x=>`<rect x="${x}" y="18" width="18" height="15" rx="2" fill="#bfd7df"/>`).join('')}<rect x="84" y="17" width="24" height="17" rx="3" fill="#bfd7df"/>{M:84,12,23}${[16,42,68,100].map(x=>`<g class="spin"><circle cx="${x}" cy="55" r="6" fill="#1f3a2c"/><path d="M${x} 50v10" stroke="#5d6f61" stroke-width="2"/></g>`).join('')}`},
+ boat:{land:'sea',svg:`<path d="M58 4v40" stroke="#6b4e36" stroke-width="3"/><path d="M60 6q30 16 0 34z" fill="#fbf8f0" stroke="#d2cab5"/><path d="M56 8q-26 16 0 32z" fill="#e9d6a9"/><rect x="24" y="30" width="30" height="16" rx="3" fill="#fbf8f0"/>{M:26,22,24}<path d="M4 44h112l-14 18H18z" fill="#2f5f9e"/><path d="M8 50h104" stroke="#fbf8f0" stroke-width="2.5"/>`},
+ plane:{air:true,svg:`<path d="M48 34L28 6h12l26 26z" fill="#a9bfa4"/><path d="M50 36L30 62h12l26-24z" fill="#8fa98a"/><path d="M8 36q0-12 16-12h70q22 0 22 12t-22 12H24Q8 48 8 36z" fill="#fbf8f0" stroke="#5d6f61" stroke-width="1.5"/><path d="M12 26L4 8h10l14 18z" fill="#2f5d44"/>${[30,42,54,66].map(x=>`<circle cx="${x}" cy="34" r="3.4" fill="#bfd7df"/>`).join('')}<path d="M90 26h10q12 2 14 10H90z" fill="#bfd7df"/>{M:88,16,22}<path d="M8 40h108" stroke="#c0563f" stroke-width="2.5"/>`},
+ bike:{land:'road',svg:`<g class="spin"><circle cx="24" cy="50" r="13" fill="none" stroke="#1f3a2c" stroke-width="3"/><path d="M24 37v26M11 50h26" stroke="#5d6f61"/></g><g class="spin"><circle cx="92" cy="50" r="13" fill="none" stroke="#1f3a2c" stroke-width="3"/><path d="M92 37v26M79 50h26" stroke="#5d6f61"/></g><path d="M24 50l22-22h34l12 22M46 28l14 22h20M80 28l-4-10h-8" stroke="#2f5d44" stroke-width="4" fill="none" stroke-linejoin="round"/><rect x="40" y="22" width="14" height="5" rx="2" fill="#3b2a1d"/><path d="M84 18h16l-3 12h-10z" fill="#c9962f"/><circle cx="88" cy="16" r="3" fill="#e07a9f"/><circle cx="94" cy="15" r="3" fill="#e9b949"/>{M:30,-18,36}`}
+};
+const SKIES=[['#cfe6ee','#f6e3b0','#e8d0a0'],['#f3cfa8','#f0a868','#d9a07a'],['#bcd3e4','#fbf8f0','#a9bfa4'],['#23384d','#e8eef0','#4b5f73']]; /* sky, sun/moon, far hills */
+const TRAVEL_LINES={
+ foot:["One step at a time. Slow ones.","Walking is just napping with legs.","Backpack's heavy. Worth it."],
+ bus:["Window seat. Perfect nap angle.","The bus is slow. I approve.","Twelve stops. Twelve naps."],
+ train:["Clickety-clack. Best nap soundtrack there is.","Trains are just moving hammocks.","Dining car has decent coffee. Decent."],
+ boat:["Slow boat. My favourite kind.","The sea doesn't rush either.","Gentle waves. Heavy eyelids."],
+ plane:["Fourteen hours in a window seat. Bliss.","Clouds look like big naps.","Tray table up. Eyes closed."],
+ bike:["Pedalling. Slowly. Very slowly.","Bells on a bike. Very civilised.","Downhill is my favourite direction."]
+};
+function travelFor(L0,L1){
+  let v;
+  if(L1.kind==='story')v=['foot','bus','bus','train','train','foot'][L0.i]||'bus'; /* the trip grows up: on foot, bus, train, then flights */
+  else v='plane';
+  return{from:legTitle(L0)[1],to:legTitle(L1)[1],v,sky:SKIES[(L1.bg+(v==='plane'?1:0))%SKIES.length]};
+}
+function travelHTML(t){
+  const V=VEHICLES[t.v],[sky,sun,hill]=t.sky;
+  const head=V.svg.replace(/\{M:(-?\d+),(-?\d+),(\d+)\}/,(_,x,y,w)=>slothSVG(SAVE.equip).replace('<svg ',`<svg x="${x}" y="${y}" width="${w}" height="${w}" `));
+  const hills=`<svg viewBox="0 0 300 100" preserveAspectRatio="none"><path d="M0 100V60q40-50 80-20t70-10 80 30 70-30V100z" fill="${hill}"/></svg>`;
+  const trees=`<svg viewBox="0 0 300 60" preserveAspectRatio="none">${[10,60,95,150,205,240,280].map((x,k)=>`<path d="M${x} 60l${10+k%3*3}-${40+k%2*14}l${10+k%3*3} ${40+k%2*14}z" fill="${k%2?'#3f6b3a':'#2f5d44'}"/>`).join('')}</svg>`;
+  const clouds=`<svg viewBox="0 0 300 80" preserveAspectRatio="none">${[[40,30],[150,50],[240,22]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="34" ry="11" fill="#fbf8f0" opacity=".85"/><ellipse cx="${x+16}" cy="${y-7}" rx="18" ry="10" fill="#fbf8f0" opacity=".85"/>`).join('')}</svg>`;
+  const low=`<svg viewBox="0 0 300 100" preserveAspectRatio="none">${[[30,60],[120,40],[210,70],[280,30]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="44" ry="14" fill="#fbf8f0" opacity=".9"/><ellipse cx="${x+20}" cy="${y-9}" rx="24" ry="12" fill="#fbf8f0" opacity=".9"/>`).join('')}</svg>`;
+  const ground=V.land==='sea'?'#4f86a3':'#a9bfa4';
+  return `<div class="travel"><div class="sky" style="background:linear-gradient(${sky},${t.sky===SKIES[3]?'#3b4a57':'#fbf8f0'})"></div><div class="sun" style="background:${sun}"></div>
+    <div class="layer clouds">${clouds}${clouds}</div>
+    ${V.air?`<div class="layer low">${low}${low}</div>`:`<div class="layer far">${hills}${hills}</div>${V.land!=='sea'?`<div class="layer near">${trees}${trees}</div>`:''}<div class="ground ${V.land}" style="background:${ground}"></div>`}
+    <div class="ride${V.air?' air':V.land==='sea'?' sail':''}"><svg viewBox="-6 -22 132 92" aria-hidden="true">${head}</svg></div></div>
+    <div class="route"><span>${t.from}</span><div class="track"><i></i></div><span>${t.to}</span></div>`;
+}
+
+/* ================= passport stamp pop-up ================= */
+/* little scenic vignettes for the coffee and co-working tiles, tinted with the country's colour */
+function coffeeVig(c){return `<svg viewBox="0 0 160 62" preserveAspectRatio="xMidYMid slice"><rect width="160" height="62" fill="${c}" opacity=".16"/><rect x="0" y="44" width="160" height="18" fill="#c8a77a"/><rect x="0" y="44" width="160" height="3" fill="#a88a5f"/>
+  <path d="M10 44V18q0-8 8-8h20q8 0 8 8v26" fill="${c}" opacity=".35"/><rect x="14" y="16" width="28" height="12" rx="2" fill="#bfd7df"/>
+  <ellipse cx="96" cy="45" rx="26" ry="4" fill="#fbf8f0" stroke="#d2cab5"/><path d="M78 24h36l-4 20H82z" fill="#fbf8f0" stroke="#1f3a2c" stroke-width="1.6"/><path d="M114 28q10 0 8 8t-10 5" fill="none" stroke="#1f3a2c" stroke-width="1.6"/><ellipse cx="96" cy="25" rx="17" ry="3" fill="#7a5a3e"/><path d="M91 25q5-3 10 0q-5 2.5-10 0z" fill="#ead8b6"/>
+  <path d="M88 18q-3-5 1-9M96 17q-3-6 1-11M104 18q-3-5 1-9" stroke="#5d6f61" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".7"/>
+  <circle cx="140" cy="38" r="5" fill="#d9a35b"/><path d="M132 42h16" stroke="#a88a5f" stroke-width="2"/></svg>`}
+function coworkVig(c){return `<svg viewBox="0 0 160 62" preserveAspectRatio="xMidYMid slice"><rect width="160" height="62" fill="${c}" opacity=".16"/><rect x="104" y="6" width="44" height="30" rx="3" fill="#bfd7df" stroke="${c}" stroke-width="2" opacity=".9"/><path d="M126 6v30M104 21h44" stroke="${c}" stroke-width="1.5" opacity=".6"/>
+  <rect x="0" y="44" width="160" height="18" fill="#c8a77a"/><rect x="0" y="44" width="160" height="3" fill="#a88a5f"/>
+  <rect x="44" y="20" width="44" height="24" rx="3" fill="#3b4a57"/><rect x="47" y="23" width="38" height="18" rx="1.5" fill="#bfd7df"/><path d="M52 29h22M52 34h16" stroke="#5d6f61" stroke-width="2" stroke-linecap="round"/><path d="M38 44h56l-4 4H42z" fill="#1f3a2c"/>
+  <path d="M14 44h14l-2-12H16z" fill="#c0563f"/><path d="M21 32q-6-7-2-14M21 32q5-8 3-15" stroke="#2f5d44" stroke-width="2" fill="none"/><ellipse cx="17" cy="20" rx="3.5" ry="6" fill="#5d8a4e" transform="rotate(-25 17 20)"/><ellipse cx="25" cy="19" rx="3.5" ry="6" fill="#7a9f6a" transform="rotate(22 25 19)"/>
+  <path d="M100 44h12l-2-10h-8z" fill="#fbf8f0" stroke="#1f3a2c" stroke-width="1.2"/><path d="M103 30q-2-3 1-6M108 30q-2-3 1-6" stroke="#5d6f61" stroke-width="1.2" fill="none" opacity=".7"/></svg>`}
+
+function passportPop(country,stampNo,viewOnly){
+  return new Promise(res=>{
+  const n=NOTES[country.id],acc=country.stamp.ring;
+  let host=document.getElementById('pphost');if(!host){host=document.createElement('div');host.id='pphost';document.body.appendChild(host)}
+  host.innerHTML=`<div class="ppov" role="dialog" aria-modal="true" aria-labelledby="ppTitle"><div class="pp" style="--accent:${acc}">
+    <div class="scene"><div class="bgart"><svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${country.bg}</svg></div>
+      <div class="who m">${slothSVG(SAVE.equip)}</div><div class="who c">${custSVG(country.cust)}</div></div>
+    <div class="stamp">${stampSVG(country,true)}</div>
+    <div class="body">
+      <div><div class="eyebrow">${viewOnly?"Travel notes":"Passport stamped"} · ${stampNo} of ${COUNTRIES.length}</div><h2 id="ppTitle">${country.name}</h2></div>
+      <div class="grid">
+        <div class="tile wide" style="animation-delay:.75s"><div class="lab"><i></i>3 words in ${n.lang}</div>
+          <div class="words">${n.words.map(([w,m])=>`<div class="word"><b>${w}</b><span>${m}</span></div>`).join('')}</div></div>
+        <div class="tile" style="animation-delay:.9s"><div class="vig">${coffeeVig(acc)}</div><div class="lab"><i></i>Best coffee</div><div class="nm">${n.coffee[0]}</div><div class="wh">${n.coffee[1]}</div></div>
+        <div class="tile" style="animation-delay:1.05s"><div class="vig">${coworkVig(acc)}</div><div class="lab"><i></i>Co-working</div><div class="nm">${n.cowork[0]}</div><div class="wh">${n.cowork[1]}</div></div>
+      </div>
+      <div class="foot"><button class="go" type="button" id="ppGo">${viewOnly?"Close":"Continue the trip"}</button>${viewOnly?"":`<div class="small">Saved to your passport in your Napsack</div>`}</div>
+    </div></div></div>`;
+  const go=document.getElementById('ppGo');setTimeout(()=>go.focus(),60);
+  if(!viewOnly){sfx.buy();setTimeout(()=>burst(70),450)}
+  go.onclick=()=>{host.innerHTML='';res()};
+  host.querySelector('.ppov').onclick=e=>{if(e.target.classList.contains('ppov')&&viewOnly){host.innerHTML='';res()}};
+  });
+}
+
+/* ================= cutscenes ================= */
+const stage=document.getElementById('stage');
+let sceneOn=false,sceneEnd=null;
+function playScene(sc){
+  return new Promise(res=>{
+    sceneOn=true;if(sc.party)setTimeout(()=>burst(90),250);
+    const crowd=sc.crowd||[];
+    stage.innerHTML=sc.travel?`${travelHTML(sc.travel)}<div class="dlg" hidden><b></b><span class="txt"></span><span class="more">tap ▸</span></div><button type="button" class="skip">Skip</button>`:`<div class="bg"><svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${BG[sc.bg]}</svg></div>
+      ${crowd.map((id,k)=>`<div class="actor crowd" style="left:${4+k*15.5}%;bottom:${k%2?36:29}%;animation-delay:${k*90}ms" data-who="${id}">${custSVG(id)}</div>`).join('')}
+      ${sc.mocha!==false&&!crowd.length?`<div class="actor l" data-who="m">${slothSVG(SAVE.equip)}<span class="nm">Mocha</span></div>`:''}
+      ${crowd.length?`<div class="actor l" data-who="m" style="left:38%;width:26%;bottom:22%">${slothSVG(SAVE.equip)}</div>`:''}
+      ${sc.cust?`<div class="actor r" data-who="c">${custSVG(sc.cust)}<span class="nm">${CUST[sc.cust].name}</span></div>`:''}
+      ${sc.title?`<div class="title-card"><div><div class="eyebrow">${sc.title[0]}</div><h2>${sc.title[1]}</h2><div class="eyebrow tapon">tap to continue ▸</div></div></div>`:''}
+      <div class="dlg" hidden><b></b><span class="txt"></span><span class="more">tap ▸</span></div>
+      <button type="button" class="skip">Skip</button>`;
+    stage.hidden=false;stage.classList.remove('out');
+    const dlg=stage.querySelector('.dlg'),who=dlg.querySelector('b'),txt=dlg.querySelector('.txt'),more=dlg.querySelector('.more');
+    let i=-1,typing=null,auto=null,full='',finished=false;
+    const lines=sc.lines||[];
+    function end(){
+      if(finished)return;finished=true;clearInterval(typing);clearTimeout(auto);
+      stage.classList.add('out');setTimeout(()=>{stage.hidden=true;stage.innerHTML='';sceneOn=false;res()},reduced?0:300);
+    }
+    function next(){
+      clearTimeout(auto);
+      if(typing){clearInterval(typing);typing=null;txt.textContent=full;more.hidden=false;return}
+      const tc=stage.querySelector('.title-card');if(tc){tc.remove();if(lines.length){i++;show();return}}
+      i++;if(i>=lines.length){end();return}
+      show();
+    }
+    function show(){
+      if(i>=lines.length){end();return}
+      const[w,t]=lines[i];full=t;dlg.hidden=false;more.hidden=true;
+      who.textContent=w==='m'?'Mocha':CUST[w==='c'?sc.cust:w].name;
+      stage.querySelectorAll('.actor').forEach(a=>a.classList.toggle('talk',a.dataset.who===(w==='c'?'c':w)||(w!=='m'&&w!=='c'&&a.dataset.who===w)));
+      sfx.blip();
+      if(reduced){txt.textContent=t;more.hidden=false;return}
+      let k=0;txt.textContent='';
+      typing=setInterval(()=>{k+=2;txt.textContent=t.slice(0,k);if(k>=t.length){clearInterval(typing);typing=null;more.hidden=false}},28);
+    }
+    stage.onclick=e=>{if(e.target.closest('.skip')){end();return}next()};
+    sceneEnd=end;
+    if(!sc.title){i=0;show()}
+  });
+}
+function beatFor(L){const b=L.leg.beats;return b[L.k%b.length]}
+function sceneFor(L,part){
+  const b=beatFor(L);
+  return{bg:L.bg,cust:b.all?null:(b.c||L.leg.cust),crowd:b.all?STORY_CAST:null,lines:part==='in'?b.i:[b.x]};
+}
+function introScene(){const L=curLeg(),sc=sceneFor(L,'in');if(L.k===0||!SAVE.seenIntro)sc.title=legTitle(L);return sc}
+
+/* ================= game state ================= */
+const boardEl=document.getElementById('board'),slip=document.getElementById('slip'),brew=document.getElementById('brew'),piecesEl=document.getElementById('pieces');
+let mode='journey',P,cells,hearts,history,done,t0,elapsed,timer,hintsLeft,usedHints,combo,mistakes,warmHints;
+let rush=null;
+let phase='sloths'; /* 'build' | 'sloths' */
+let revealed=new Set(),wrongs=new Set(),guessLock=0,lastTouch=0;
+const dz=()=>{const st=mode==='daily'?DAILY_STAGE:stageAt(stats().cleared);return Object.assign({name:stageName(st)},st)};
+const autoxOn=()=>dz().autox&&SAVE.autox;
+const isRev=reg=>phase==='sloths'||revealed.has(reg);
+
+/* ================= warm-up: jigsaw ================= */
+let regionCells=[],pdrag=null;
+const trayScale=()=>P.n<=6?.62:P.n<=7?.58:P.n<=8?.52:P.n<=9?.48:.45;
+function cellPx(){return (boardEl.getBoundingClientRect().width-6)/P.n}
+function setupJigsaw(){
+  regionCells=[...Array(P.n).keys()].map(reg=>{const a=[];for(let y=0;y<P.n;y++)for(let x=0;x<P.n;x++)if(P.g[y][x]===reg)a.push([y,x]);return a});
+  phase='build';warmHints=2;
+}
+function buildPieces(){
+  piecesEl.innerHTML='';piecesEl.hidden=phase!=='build';
+  if(phase!=='build')return;
+  shuffle([...Array(P.n).keys()],mulberry(Date.now())).forEach(reg=>{
+    if(revealed.has(reg))return;
+    const cs=regionCells[reg],minY=Math.min(...cs.map(c=>c[0])),minX=Math.min(...cs.map(c=>c[1]));
+    const h=Math.max(...cs.map(c=>c[0]))-minY+1,w=Math.max(...cs.map(c=>c[1]))-minX+1,on=new Set(cs.map(([y,x])=>(y-minY)+','+(x-minX)));
+    const p=document.createElement('div');p.className='piece';Object.assign(p.dataset,{reg,h,w,oy:minY,ox:minX});
+    p.style.setProperty('--tilt',(Math.random()*8-4).toFixed(1)+'deg');
+    p.setAttribute('aria-label',`Colour piece, ${cs.length} squares`);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=document.createElement('div');const k=on.has(y+','+x);c.className=k?'pc':'hole';if(k)c.style.background=`var(--r${reg%10})`;p.appendChild(c)}
+    sizePiece(p,trayScale());
+    p.addEventListener('pointerdown',e=>lift(e,p));
+    piecesEl.appendChild(p);
+  });
+}
+function sizePiece(p,scale){const s=cellPx()*scale;p.style.gridTemplateColumns=`repeat(${p.dataset.w},${s}px)`;p.style.gridTemplateRows=`repeat(${p.dataset.h},${s}px)`}
+addEventListener('resize',()=>{if(phase==='build')piecesEl.querySelectorAll('.piece:not(.lift)').forEach(p=>sizePiece(p,trayScale()))});
+function lift(e,p){
+  if(phase!=='build'||sceneOn||done)return;
+  if(!e.target.classList.contains('pc'))return; /* gaps inside a piece's box don't grab it */
+  e.preventDefault();startClock();p.setPointerCapture(e.pointerId);
+  const r=p.getBoundingClientRect(),ts=trayScale();
+  const offX=(e.clientX-r.left)/ts,offY=(e.clientY-r.top)/ts,up=e.pointerType==='touch'?cellPx()*.9:0;
+  const ph=document.createElement('div');ph.style.width=r.width+'px';ph.style.height=r.height+'px';p.before(ph);
+  sizePiece(p,1);p.classList.add('lift');sfx.lift();
+  pdrag={p,ph,offX,offY,up};pmove(e);
+  p.onpointermove=pmove;p.onpointerup=pdrop;p.onpointercancel=pdrop;
+}
+function pmove(e){
+  if(!pdrag)return;const{p,offX,offY,up}=pdrag;
+  if(e.clientY<70)scrollBy(0,-16);else if(e.clientY>innerHeight-70)scrollBy(0,16);
+  p.style.left=(e.clientX-offX)+'px';p.style.top=(e.clientY-offY-up)+'px';
+  const t=ptarget(),reg=+p.dataset.reg,ok=t.close&&t.gx===+p.dataset.ox&&t.gy===+p.dataset.oy;
+  [...boardEl.children].forEach(b=>b.classList.toggle('ghost',ok&&P.g[+b.dataset.y][+b.dataset.x]===reg));
+}
+function ptarget(){
+  const pr=pdrag.p.getBoundingClientRect(),br=boardEl.getBoundingClientRect(),c=cellPx();
+  const fx_=(pr.left-br.left-3)/c,fy=(pr.top-br.top-3)/c,gx=Math.round(fx_),gy=Math.round(fy);
+  return{gx,gy,close:Math.abs(fx_-gx)<.5&&Math.abs(fy-gy)<.5};
+}
+function pdrop(){
+  if(!pdrag)return;const{p,ph}=pdrag,t=ptarget(),reg=+p.dataset.reg;
+  p.onpointermove=p.onpointerup=p.onpointercancel=null;
+  [...boardEl.children].forEach(b=>b.classList.remove('ghost'));
+  const right=t.close&&t.gx===+p.dataset.ox&&t.gy===+p.dataset.oy;
+  const pr=p.getBoundingClientRect(),br=boardEl.getBoundingClientRect();
+  const onBoard=pr.right>br.left&&pr.left<br.right&&pr.bottom>br.top&&pr.top<br.bottom;
+  pdrag=null;
+  if(right){ph.remove();p.remove();snapPiece(reg);return}
+  if(onBoard){sfx.nope();say('bad',pick(['Not quite. Try another spot.','That piece belongs somewhere else.','Close! Look at the shape.']))}
+  const hr=ph.getBoundingClientRect();p.classList.add('back');sizePiece(p,trayScale());p.style.left=hr.left+'px';p.style.top=hr.top+'px';
+  setTimeout(()=>{p.classList.remove('lift','back');p.style.left=p.style.top='';ph.replaceWith(p)},reduced?0:260);
+}
+function snapPiece(reg){
+  revealed.add(reg);sfx.snap(revealed.size);paintRegions(reg);render();
+  if(revealed.size<P.n){say('good',pick(['Click. Perfect fit.','That one goes there.',`${P.n-revealed.size} to go.`,'Ooh, pretty.']));return}
+  piecesEl.hidden=true;say('good','Floor built!');toSloths();
+}
+
+/* ================= board ================= */
+function toSloths(){
+  phase='sloths';piecesEl.hidden=true;
+  [...boardEl.children].forEach(b=>b.dataset.v='');
+  paintRegions();render();syncControls();
+  toast('Board ready. Now place the sloths.');
+  say('idle',"Right. One sloth per colour. Go.");
+}
+let startToken=0;
+function start(){
+  slip.hidden=true;done=true;brew.hidden=false;piecesEl.hidden=true;
+  const token=++startToken;
+  setTimeout(async()=>{
+    if(token!==startToken)return;
+    const d=dz(),L=curLeg();
+    P=mode==='daily'?makePuzzle(hashStr(todayKey()),d.n,d):makePuzzle(SAVE.level+500000,d.n,d);
+    cells=Array.from({length:P.n},()=>Array(P.n).fill(0));
+    hearts=3;history=[];done=false;usedHints=0;hintsLeft=d.hints;combo=0;mistakes=0;revealed=new Set();phase='sloths';
+    elapsed=0;t0=null;
+    const solvedDaily=mode==='daily'&&dailyDone();
+    if(!solvedDaily)setupJigsaw(); /* every level: build the board, then seat the sloths */
+    brew.hidden=true;buildBoard();render();syncControls();renderTrip();
+    if(solvedDaily){showDailyDone();return}
+    if(mode==='journey'&&SAVE.scenes){done=true;await playScene(introScene());if(token!==startToken)return;done=false;SAVE.seenIntro=true;save()}
+    buildPieces();
+    if(phase==='build'){say('idle','Build the floor first. Drag each piece into place.');document.getElementById('trip').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'})}
+  },30);
+}
+/* swap the page backdrop when the trip moves somewhere new */
+let sceneryBg=-1;
+function setScenery(idx){
+  const el=document.getElementById('scenery');
+  if(SAVE.scenery===false){el.hidden=true;sceneryBg=-1;return}
+  el.hidden=false;
+  if(idx===sceneryBg)return;
+  const paint=()=>{el.innerHTML=`<svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice">${BG[idx]}</svg>`;el.classList.remove('swap')};
+  if(sceneryBg<0||reduced){sceneryBg=idx;paint();return}
+  sceneryBg=idx;el.classList.add('swap');setTimeout(paint,450);
+}
+function renderTrip(){
+  setScenery(mode==='daily'?CHAPTERS.length-1:curLeg().bg);
+  const w=document.getElementById('where'),btn=document.getElementById('dailyBtn');
+  if(mode==='daily'){w.innerHTML=`<b>Today's puzzle</b>Same board for everyone today.`;btn.textContent='Back to the trip';btn.classList.remove('done');return}
+  const L=curLeg(),[eb,t]=legTitle(L);
+  w.innerHTML=`<b>${t}</b>${eb}<span class="dots" aria-label="${L.k} of ${L.len} levels done here">${Array.from({length:L.len},(_,i)=>`<i class="${i<L.k?'on':''}"></i>`).join('')}</span>`;
+  const dd=dailyDone();btn.textContent=dd?"Today's puzzle ✓":"Today's puzzle";btn.classList.toggle('done',dd);
+}
+clearInterval(timer);timer=setInterval(tick,250);
+function tick(){
+  const tm=document.getElementById('time');
+  tm.classList.remove('urgent');
+  if(done||t0===null)return;elapsed=Date.now()-t0;tm.textContent=fmt(elapsed);
+}
+function fmt(ms){const s=Math.max(0,Math.ceil(ms/1000-.001));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}
+function buildBoard(){
+  const n=P.n;boardEl.innerHTML='';boardEl.classList.remove('won','fade');wrongs=new Set();
+  /* minmax(0,1fr) on both axes: every square is exactly equal, whatever is drawn inside it */
+  boardEl.style.gridTemplateColumns=`repeat(${n},minmax(0,1fr))`;boardEl.style.gridTemplateRows=`repeat(${n},minmax(0,1fr))`;
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+    const b=document.createElement('button');b.type='button';b.className='cell';b.dataset.y=y;b.dataset.x=x;b.tabIndex=-1;
+    b.addEventListener('click',e=>{if(e.detail===0)tap(y,x)});
+    b.addEventListener('focus',()=>highlight(y,x));
+    boardEl.appendChild(b);
+  }
+  boardEl.children[0].tabIndex=0;
+  paintRegions();
+}
+function paintRegions(fresh){
+  const n=P.n,g=P.g,w=o=>o?'3px':'0.5px';
+  [...boardEl.children].forEach(b=>{
+    const y=+b.dataset.y,x=+b.dataset.x,reg=g[y][x],rv=isRev(reg);
+    b.style.background=rv?`var(--r${reg%10})`:'var(--fog)';
+    const edge=(yy,xx)=>g[yy][xx]!==reg&&(rv||isRev(g[yy][xx]));
+    b.style.borderTopWidth=y>0?w(edge(y-1,x)):'0';
+    b.style.borderLeftWidth=x>0?w(edge(y,x-1)):'0';
+    b.style.borderBottomWidth=y<n-1?w(edge(y+1,x)):'0';
+    b.style.borderRightWidth=x<n-1?w(edge(y,x+1)):'0';
+    if(fresh!=null&&reg===fresh&&!reduced){b.classList.remove('reveal');void b.offsetWidth;b.classList.add('reveal')}
+  });
+}
+function clashes(){
+  const n=P.n,s=[];for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(cells[y][x]===2)s.push([y,x]);
+  const bad=new Set();
+  for(let i=0;i<s.length;i++)for(let j=i+1;j<s.length;j++){
+    const[a,b]=[s[i],s[j]];
+    if(a[0]===b[0]||a[1]===b[1]||P.g[a[0]][a[1]]===P.g[b[0]][b[1]]||(Math.abs(a[0]-b[0])<=1&&Math.abs(a[1]-b[1])<=1)){bad.add(a+'');bad.add(b+'')}
+  }
+  return{bad,count:s.length};
+}
+function render(pop){
+  const n=P.n,cl=dz().check?null:clashes(),S=SLOTH; /* board sloths stay plain; only Mocha dresses up */
+  [...boardEl.children].forEach(b=>{
+    const y=+b.dataset.y,x=+b.dataset.x,v=cells[y][x];
+    const want=v===2?'s':v===1?'x':'e';
+    if(b.dataset.v!==want){b.innerHTML=v===2?S:v===1?'<span class="x">×</span>':'';b.dataset.v=want}
+    b.setAttribute('aria-label',`Row ${y+1} column ${x+1}, ${v===2?'sloth':v===1?'marked':'empty'}`);
+    b.classList.toggle('pop',!!pop&&pop.some(p=>p[0]===y&&p[1]===x));
+    b.classList.toggle('clash',!!cl&&cl.bad.has(y+','+x));
+    b.classList.toggle('wx',v===1&&wrongs.has(y*n+x));
+  });
+  const d=dz(),lv=document.getElementById('lvl');
+  const step=phase==='build'?`Build · ${revealed.size}/${n} pieces`:`${n}×${n} · ${d.name}`;
+  lv.innerHTML=mode==='daily'?`Today<small>${step}</small>`:`Level ${SAVE.level}<small>${step}</small>`;
+  const h=document.getElementById('hearts');
+  if(phase!=='sloths')h.hidden=true;
+  else if(d.check&&mode!=='rush'){h.hidden=false;h.innerHTML=[0,1,2].map(i=>`<span class="${i<hearts?'':'gone'}">❦</span>`).join('');h.setAttribute('aria-label',`${hearts} leaves left`)}
+  else if(!d.check){h.hidden=false;h.innerHTML=`<span style="font-size:15px;color:var(--muted)">${cl.count}/${n} 🦥</span>`}
+  else h.hidden=true;
+  const c=document.getElementById('combo');c.hidden=combo<2||phase!=='sloths';c.textContent=`×${combo}`;
+  document.getElementById('coinN').textContent=SAVE.coins;
+  if(mode!=='rush')document.getElementById('time').textContent=fmt(elapsed);
+}
+function syncControls(){
+  const d=dz();
+  const hb=document.getElementById('hint');
+  if(phase==='build'){hb.disabled=warmHints<=0;hb.textContent=`Place one (${warmHints})`}
+  else{hb.disabled=hintsLeft<=0||mode==='rush';hb.textContent=d.hints?`Hint (${hintsLeft})`:'No hints'}
+  const ax=document.getElementById('autox');ax.disabled=!d.autox||phase!=='sloths';ax.textContent=d.autox?'Auto-X':'Auto-X retired';ax.setAttribute('aria-pressed',autoxOn());
+  document.getElementById('undo').disabled=phase!=='sloths';
+  document.querySelector('.tray').classList.toggle('building',phase==='build');
+  document.getElementById('sound').setAttribute('aria-pressed',SAVE.sound);
+  
+  document.getElementById('how').innerHTML=
+    phase==='build'?'<b>Build the floor:</b> drag each colour piece onto the board. A piece only fits in one spot; a wrong drop slides back. Then place the sloths.'
+    :'<b>Tap</b> to mark an X, tap again to clear it. <b>Hold</b> (or right-click) to place a sloth. <b>Swipe</b> to X a bunch of squares. One sloth per row, column and colour, and sloths never touch, not even corners.';
+}
+function highlight(y,x){
+  if(phase!=='sloths')y=null; /* no region hints while colours are hidden */
+  const reg=P&&y!=null?P.g[y][x]:null;
+  [...boardEl.children].forEach(b=>{const yy=+b.dataset.y,xx=+b.dataset.x;
+    b.classList.toggle('hl',y!=null&&(yy===y||xx===x));b.classList.toggle('hlreg',y!=null&&P.g[yy][xx]===reg&&yy!==y&&xx!==x)});
+}
+function startClock(){if(mode!=='rush'&&t0===null)t0=Date.now()-elapsed}
+function autoMark(y,x,group){
+  if(!autoxOn())return;
+  const n=P.n,reg=P.g[y][x];
+  for(let yy=0;yy<n;yy++)for(let xx=0;xx<n;xx++){
+    if(cells[yy][xx]!==0)continue;
+    if(yy===y||xx===x||P.g[yy][xx]===reg||(Math.abs(yy-y)<=1&&Math.abs(xx-x)<=1)){group.push([yy,xx,0]);cells[yy][xx]=1}
+  }
+}
+function tap(y,x){
+  if(done||phase!=='sloths'||sceneOn)return;startClock();
+  const v=cells[y][x];
+  if(v===0){history.push([[y,x,0]]);cells[y][x]=1;sfx.x();render();return}
+  if(v===1){if(wrongs.has(y*P.n+x))return;history.push([[y,x,1]]);cells[y][x]=0;sfx.x();render();return} /* tap again clears the X; sloths only go down with a hold */
+  if(v===2&&!dz().check){history.push([[y,x,2]]);cells[y][x]=0;render()}
+}
+function trySloth(y,x){
+  if(done||phase!=='sloths'||sceneOn||cells[y][x]===2)return;
+  if(wrongs.has(y*P.n+x)||Date.now()<guessLock)return; /* never charge twice for the same square or the same press */
+  startClock();
+  if(!dz().check){
+    history.push([[y,x,cells[y][x]]]);cells[y][x]=2;sfx.sloth();render([[y,x]]);
+    const cl=clashes();if(cl.bad.has(y+','+x))say('bad','That one has company.');checkWin();return;
+  }
+  if(P.sol[y]===x){
+    const group=[[y,x,cells[y][x]]];cells[y][x]=2;autoMark(y,x,group);history.push(group);
+    combo++;sfx.sloth(combo);render([[y,x]]);
+    const c=document.getElementById('combo');if(combo>=2&&!reduced){c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump')}
+    if(combo>SAVE.maxCombo){SAVE.maxCombo=combo;save();const got=checkUnlocks();if(got.length){toast('Trophy: '+got.map(i=>i.name).join(', '));say('combo','A stache! Very distinguished.')}}
+    if(combo>0&&combo%4===0)say('combo');else say('good');
+    checkWin();
+  }else{
+    guessLock=Date.now()+450; /* brief pause after a mistake so one press can't cost twice */
+    combo=0;mistakes++;sfx.bad();say('bad');if(navigator.vibrate)try{navigator.vibrate([80,40,80])}catch(e){}
+    if(mode==='rush')rush.end-=10000;else hearts--;
+    /* the square becomes a permanent red X so you can see where you went wrong */
+    if(cells[y][x]===0)history.push([[y,x,0]]);cells[y][x]=1;wrongs.add(y*P.n+x);render();
+    const b=boardEl.children[y*P.n+x];
+    b.classList.remove('bad');void b.offsetWidth;b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),500);
+    b.insertAdjacentHTML('beforeend',`<span class="nope">${SAD}</span>`);setTimeout(()=>b.querySelector('.nope')?.remove(),1150);
+    const tray=boardEl.parentElement,br=b.getBoundingClientRect(),tr=tray.getBoundingClientRect();
+    const f=document.createElement('span');f.className='float';f.textContent=mode==='rush'?'−10s':'−1 ❦';
+    f.style.left=(br.left-tr.left+br.width/2)+'px';f.style.top=(br.top-tr.top+br.height/2)+'px';tray.appendChild(f);setTimeout(()=>f.remove(),1150);
+    [boardEl,tray].forEach(el=>{el.classList.remove('hurt');void el.offsetWidth;el.classList.add('hurt')});
+    const h=document.getElementById('hearts');h.classList.remove('hit');void h.offsetWidth;h.classList.add('hit');
+    if(mode!=='rush'&&hearts<=0){done=true;setTimeout(lose,700)}
+  }
+}
+
+/* ---- pointer: tap, swipe-to-X, long-press for a sloth, hover highlight ---- */
+let drag=null;
+function cellAt(e){const el=document.elementFromPoint(e.clientX,e.clientY);const c=el&&el.closest&&el.closest('.cell');return c&&boardEl.contains(c)?[+c.dataset.y,+c.dataset.x]:null}
+boardEl.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='mouse')lastTouch=Date.now();
+  if(e.button===2||sceneOn)return;
+  const c=cellAt(e);if(!c||done)return;e.preventDefault();
+  if(phase!=='sloths')return;
+  const el=boardEl.children[c[0]*P.n+c[1]];el.classList.add('press');
+  drag={start:c,el,moved:false,group:[],paint:cells[c[0]][c[1]]===0,long:false};
+  drag.timer=setTimeout(()=>{if(drag&&!drag.moved){drag.long=true;el.classList.remove('press');trySloth(c[0],c[1])}},420);
+  highlight(c[0],c[1]);
+});
+boardEl.addEventListener('pointermove',e=>{
+  const c=cellAt(e);
+  if(!drag){if(c&&e.pointerType==='mouse')highlight(c[0],c[1]);return}
+  if(!c||(c[0]===drag.start[0]&&c[1]===drag.start[1]&&!drag.moved))return;
+  clearTimeout(drag.timer);drag.el.classList.remove('press');
+  if(!drag.paint||drag.long)return;
+  if(!drag.moved){drag.moved=true;startClock();const[sy,sx]=drag.start;if(cells[sy][sx]===0){cells[sy][sx]=1;drag.group.push([sy,sx,0])}}
+  const[y,x]=c;highlight(y,x);if(cells[y][x]===0){cells[y][x]=1;drag.group.push([y,x,0]);sfx.x();render()}
+});
+boardEl.addEventListener('pointerleave',e=>{if(!drag&&e.pointerType==='mouse')highlight(null)});
+function endDrag(){
+  if(!drag)return;const d=drag;drag=null;clearTimeout(d.timer);d.el.classList.remove('press');
+  if(d.long)return;
+  if(d.moved){if(d.group.length)history.push(d.group);render()}
+  else tap(d.start[0],d.start[1]);
+}
+addEventListener('pointerup',endDrag);
+addEventListener('pointercancel',()=>{if(drag){clearTimeout(drag.timer);drag.el.classList.remove('press');if(drag.moved)endDrag();else drag=null}});
+boardEl.addEventListener('contextmenu',e=>{e.preventDefault();if(phase!=='sloths'||Date.now()-lastTouch<1500)return; /* phones fire this on long-press too: the hold already handled it */const c=cellAt(e);if(c)trySloth(c[0],c[1])});
+boardEl.addEventListener('keydown',e=>{
+  const c=e.target.closest('.cell');if(!c)return;const n=P.n;let y=+c.dataset.y,x=+c.dataset.x;
+  if(phase==='sloths'&&(e.key==='s'||e.key==='S')){e.preventDefault();trySloth(y,x);return}
+  if(phase==='sloths'&&(e.key==='x'||e.key==='X')){e.preventDefault();if(cells[y][x]===0)tap(y,x);return}
+  const m={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];if(!m)return;
+  e.preventDefault();y=Math.max(0,Math.min(n-1,y+m[0]));x=Math.max(0,Math.min(n-1,x+m[1]));
+  c.tabIndex=-1;const t=boardEl.children[y*n+x];t.tabIndex=0;t.focus();
+});
+
+/* ================= winning, tip jar, catching tips ================= */
+function checkWin(){
+  if(!P.sol.every((c,row)=>cells[row][c]===2))return;
+  if(!dz().check&&clashes().count!==P.n)return;
+  done=true;elapsed=Date.now()-t0;win();
+}
+function starsFor(){
+  if(!dz().check)return 3-(elapsed>5*60000?1:0)-(elapsed>10*60000?1:0);
+  return Math.max(1,hearts-(usedHints>1?1:0));
+}
+function starHTML(k){return [0,1,2].map(i=>`<span class="${i<k?'':'off'}">★</span>`).join('')}
+function tipsFor(k){
+  const d=dz(),lines=[[mode==='daily'?"Today's puzzle":'Level cleared',mode==='daily'?8:3],['Stars',k]];
+  if(mistakes===0&&usedHints===0)lines.push(['No mistakes',2]);
+  if(elapsed<60000)lines.push(['Speedy (under 1:00)',2]);
+  const sub=lines.reduce((a,l)=>a+l[1],0);
+  if(d.mult>1)lines.push([`${d.name} bonus ×${d.mult}`,Math.round(sub*(d.mult-1))]);
+  return lines;
+}
+const JAR=`<svg class="jar" viewBox="0 0 80 96" aria-hidden="true"><rect x="18" y="4" width="44" height="10" rx="3" fill="#7a5a3e"/><path d="M14 18h52v62q0 12-12 12H26q-12 0-12-12z" fill="#e8f0f2" stroke="#1f3a2c" stroke-width="2.5"/><g id="jarCoins"></g><rect x="22" y="40" width="36" height="16" rx="3" fill="#fbf8f0" stroke="#1f3a2c" stroke-width="1.5"/><text x="40" y="52" font-family="Karla,sans-serif" font-weight="700" font-size="10" fill="#1f3a2c" text-anchor="middle">TIPS</text></svg>`;
+function fillJar(frac){
+  const g=document.getElementById('jarCoins');if(!g)return;
+  const k=Math.round(Math.min(1,frac)*14);let s='';
+  for(let i=0;i<k;i++){const row=Math.floor(i/4),col=i%4;s+=`<ellipse cx="${24+col*11+(row%2)*5}" cy="${84-row*6}" rx="6" ry="3.5" fill="#c9962f" stroke="#8a6416"/>`}
+  g.innerHTML=s;
+}
+function win(){
+  render();boardEl.classList.add('won');
+  [...boardEl.querySelectorAll('.cell svg')].forEach((s,i)=>s.style.animationDelay=(i*70)+'ms');
+  sfx.win();say('win');burst();
+  const k=starsFor(),tips=tipsFor(k),total=tips.reduce((a,l)=>a+l[1],0);
+  addCoins(total);
+  if(mode==='daily'){SAVE.daily['d:'+todayKey()]={ms:elapsed,stars:k};save();setTimeout(()=>tipJar({k,tips,total,daily:true,got:checkUnlocks()}),900);return}
+  const c0=stats().cleared,L0=legAt(c0),st0=stageAt(c0),Lv=SAVE.level,key='j:'+Lv;
+  SAVE.stars[key]=Math.max(SAVE.stars[key]||0,k);if(!SAVE.best[key]||elapsed<SAVE.best[key])SAVE.best[key]=elapsed;
+  SAVE.level=Lv+1;
+  /* last level in a country: stamp the passport */
+  let stamp=null;
+  if(L0.kind==='tour'&&L0.k===L0.len-1&&!SAVE.stamps.includes(L0.leg.id)){SAVE.stamps.push(L0.leg.id);SAVE.stampLv=SAVE.stampLv||{};SAVE.stampLv[L0.leg.id]=Lv;stamp=L0.leg;SAVE.newItems=true}
+  SAVE.chapter=Math.max(SAVE.chapter,chapterIndex());save();
+  const got=checkUnlocks(),L1=legAt(c0+1),newLeg=L1.key!==L0.key?L1:null,notes=stageChanges(st0,stageAt(c0+1));
+  refreshSloths();
+  setTimeout(async()=>{
+    if(SAVE.scenes){
+      await playScene(sceneFor(L0,'out'));
+      if(newLeg&&L0.kind==='story'){
+        const ls=LESSONS[L0.i],who=ls.cheer[0];
+        await playScene({bg:L0.bg,party:true,title:['Chapter complete',L0.leg.title],cust:L0.i<6?L0.leg.cust:null,crowd:L0.i===6?STORY_CAST:null,lines:[[L0.i<6?'c':who,ls.cheer[1]],['m','Lesson learned: '+ls.lesson]]});
+      }
+      if(stamp)await passportPop(stamp,SAVE.stamps.length);
+      if(newLeg){const t=travelFor(L0,newLeg);await playScene({travel:t,lines:[['m',pick(TRAVEL_LINES[t.v])]]});await playScene({bg:newLeg.bg,title:legTitle(newLeg),lines:[['m',newLeg.leg.tease]]})}
+    }
+    tipJar({k,tips,total,Lv,got,newLeg,notes,stamp});
+  },1100);
+}
+function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily}){
+  const L0done=legAt(daily?0:Lv-1);
+  slip.innerHTML=`<div class="stars">${starHTML(k)}</div>
+    <h2>${daily?"Today's puzzle, solved":`Level ${Lv} cleared in ${fmt(elapsed)}`}</h2>
+    <div id="jarArea" class="tipjar">${JAR}<div class="tally">${tips.map(([l,v])=>`<div><span>${l}</span><span>+${v}</span></div>`).join('')}<div class="tot"><span>Tips</span><span class="coins"><span class="coin"></span><span id="totN">0</span></span></div></div></div>
+    ${stamp?`<div class="stampbig">${stampSVG(stamp,true)}<p><b>Passport stamped: ${stamp.name}.</b> ${SAVE.stamps.length} of ${COUNTRIES.length} countries collected. Your passport lives in your Napsack.</p></div>`:''}
+    ${newLeg&&L0done.kind==='story'?lessonCard(L0done.i):''}
+    ${stamp&&!SAVE.scenes?notesCard(stamp):''}
+    ${newLeg&&newLeg.kind==='story'&&!SAVE.scenes?chapterHTML(newLeg.leg,newLeg.i):''}
+    ${newLeg?`<p><b>Next stop:</b> ${legTitle(newLeg)[1]}.${newLeg.kind==='story'?' Read every chapter in your Napsack.':''}</p>`:''}
+    ${unlockHTML(got||[])}
+    ${triviaHTML(daily?null:L0done)}
+    ${notes.length?`<div class="notes"><p><b>What changes next level</b></p>${notes.map(n=>`<p>${n}</p>`).join('')}</div>`:''}
+    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':'<button class="btn go" type="button" id="next">Next level</button>'}<button class="btn" type="button" id="share">Copy result</button></div>
+    ${(daily||Lv%3===0)?ad():''}`;
+  slip.hidden=false;
+  const rows=[...slip.querySelectorAll('.tally div')],totN=document.getElementById('totN');
+  let shown=0,i=0;
+  const stepRow=()=>{
+    if(i>=rows.length)return;rows[i].classList.add('in');
+    if(i<tips.length){shown+=tips[i][1];totN.textContent=shown;fillJar(shown/Math.max(15,total));sfx.coin(i)}
+    i++;setTimeout(stepRow,reduced?0:260);
+  };
+  stepRow();wireTrivia();renderTrip();
+  if(daily)document.getElementById('back').onclick=()=>setMode('journey');else document.getElementById('next').onclick=()=>start();
+  const where=daily?'':` · ${legTitle(legAt(Lv-1))[1]}`;
+  document.getElementById('share').onclick=()=>copy(daily?`Slothdoku · today's puzzle 🦥\n${'⭐'.repeat(k)} in ${fmt(elapsed)}`:`Slothdoku level ${Lv}${where} 🦥 ${'⭐'.repeat(k)} in ${fmt(elapsed)}`);
+  setTimeout(()=>slip.scrollIntoView({behavior:reduced?'auto':'smooth',block:'nearest'}),200);
+}
+/* ================= tip-jar trivia: one marketing question per level ================= */
+/* [question, [correct, wrong, wrong, wrong], why] — options get shuffled when shown */
+const TRIVIA=[
+ ["What does CTA stand for?",["Call to action","Click to advance","Customer target audience","Cost to acquire"],"The CTA is the one thing you want someone to do next: book, buy, sign up."],
+ ["What is a lead magnet?",["A free resource offered in exchange for contact details","A paid ad that targets competitors","A loyalty card for regulars","A sales script for cold calls"],"A checklist or guide that's useful enough that people swap their email for it."],
+ ["What does SEO stand for?",["Search engine optimization","Social engagement output","Sales enablement operations","Site exit overview"],"Making your pages easier to find in unpaid search results."],
+ ["Pricing something at $19.99 instead of $20 is called…",["Charm pricing","Anchor pricing","Cost-plus pricing","Bundle pricing"],"Prices ending in 9 tend to feel noticeably cheaper than they are."],
+ ["What is social proof?",["Using other people's actions or reviews to build trust","Posting on every social platform","Proving you own your brand name","Fact-checking a social post"],"Testimonials, reviews and \"500 cafés use this\" all lean on it."],
+ ["What does CAC stand for?",["Customer acquisition cost","Content and copy","Campaign audience count","Client account credit"],"What it costs, on average, to win one new customer."],
+ ["Customer lifetime value (LTV) measures…",["The total revenue you expect from one customer over time","How long a customer has followed you","A customer's credit limit","The value of your best month"],"Compare it with CAC: if LTV is well above CAC, your marketing pays for itself."],
+ ["What is an A/B test?",["Comparing two versions to see which performs better","A test for accessibility","Checking a site on two browsers","Grading leads from A to B"],"Change one thing (headline, button, price) and let the numbers pick the winner."],
+ ["Retargeting means…",["Showing ads to people who already visited your site","Changing your target market","Re-sending the same email","Targeting a competitor's customers"],"People rarely buy on the first visit; retargeting brings them back."],
+ ["Bounce rate is the share of visitors who…",["Leave after viewing just one page","Click your ad twice","Unsubscribe from emails","Return within a week"],"A high bounce rate often means the page didn't match what the visitor expected."],
+ ["What does USP stand for?",["Unique selling proposition","Universal sales plan","User signup page","Upsell sequence path"],"The reason someone should pick you over every other option."],
+ ["Which of these is NOT one of the classic 4 Ps of marketing?",["People","Product","Price","Promotion"],"The original four are Product, Price, Place and Promotion. People was added later in the 7 Ps."],
+ ["What does ICP stand for?",["Ideal customer profile","Internal campaign plan","Instant conversion page","Inbound content pipeline"],"A clear picture of who you serve best, so your marketing speaks to them directly."],
+ ["Organic traffic is…",["Visitors from unpaid sources like search results","Traffic from health food sites","Visitors who arrive from paid ads","Traffic from your own team"],"It's slower to build than paid traffic, but it keeps coming without a daily ad budget."],
+ ["Churn rate measures…",["The share of customers who stop buying or cancel","How fast your site loads","How often you post content","Your number of new followers"],"For any subscription or retainer, keeping churn low is often cheaper than finding new customers."],
+ ["Showing a higher price first so the next one feels reasonable is called…",["Anchoring","Discounting","Bundling","Tiering down"],"The first number people see shapes how they judge every number after it."],
+ ["In marketing, a conversion is when someone…",["Takes the action you wanted, like buying or signing up","Switches to a competitor","Changes their email address","Converts your content to video"],"Conversion rate is just conversions divided by visitors."],
+ ["Adding a third option mainly to make another option look better is called…",["The decoy effect","The halo effect","The bandwagon effect","The scarcity effect"],"A pricey middle option can make the premium tier feel like the obvious deal."],
+ ["A landing page is best described as…",["A page built around one offer and one goal","Your website's home page","The last page of a checkout","A page listing all your services"],"Fewer choices on the page usually means more people take the one action you want."],
+ ["What does B2B mean?",["Business to business","Back to basics","Brand to buyer","Budget to break-even"],"Selling to companies rather than to individual consumers (B2C)."],
+ ["What does ROI stand for?",["Return on investment","Rate of interest","Reach of influence","Revenue over income"],"What you got back compared with what you put in."],
+ ["\"Above the fold\" refers to…",["The part of a page you see before scrolling","Content inside a printed brochure","Your most popular blog post","The top row of a pricing table"],"Your headline and main CTA usually belong here."],
+ ["A warm lead is someone who…",["Already knows you or has shown interest","Lives somewhere hot","Was found through cold calling","Just unsubscribed"],"Warm leads convert far more easily than cold ones, which is why referrals are gold."],
+ ["Offering a pricier, upgraded version of what someone is already buying is…",["An upsell","A cross-sell","A downsell","A loss leader"],"Cross-selling is adding a related extra, like fries with the burger."],
+ ["Evergreen content is content that…",["Stays useful long after it's published","Is about the environment","Only runs during holidays","Is always paid"],"How-to guides and FAQs keep pulling in visitors for years."],
+ ["In a short video, the hook is…",["The first few seconds that grab attention","The call to action at the end","The background music","The video's thumbnail text"],"If the opening doesn't stop the scroll, nothing after it gets seen."],
+ ["What does MRR stand for?",["Monthly recurring revenue","Marketing reach ratio","Minimum retail rate","Monthly referral report"],"Predictable revenue that renews every month, like subscriptions or retainers."],
+ ["A long-tail keyword is…",["A longer, more specific search phrase with less competition","A keyword about animals","A very popular one-word search","A keyword used only in ads"],"\"Coffee\" is crowded. \"Quiet café for remote work in Copenhagen\" is long-tail."],
+ ["A customer's pain point is…",["A specific problem they want solved","A bad review they left","A late payment","A complaint about price"],"Marketing that names the pain clearly makes people feel understood."],
+ ["Double opt-in means a new subscriber…",["Confirms their signup by clicking a link in an email","Signs up twice by accident","Joins two lists at once","Pays for two months upfront"],"It keeps your list cleaner and helps your emails land in inboxes."],
+ ["In AIDA, what does the D stand for?",["Desire","Discount","Data","Delivery"],"Attention, Interest, Desire, Action: a classic outline for persuasive copy."],
+ ["What does CRM stand for?",["Customer relationship management","Content review meeting","Conversion rate maximizer","Campaign reach metric"],"Software (or even a spreadsheet) that tracks your leads, clients and follow-ups."],
+ ["A value ladder is…",["A series of offers that rise in price and value","A ranking of your competitors","A list of company values","A pricing discount schedule"],"A small first purchase builds trust for the bigger offer later."],
+ ["Brand voice means…",["The consistent personality in how your brand writes and speaks","Your logo and colours","A jingle in your ads","The founder's podcast"],"Same voice everywhere makes you recognisable even without the logo."],
+ ["Email open rate is the share of recipients who…",["Opened the email","Clicked a link in it","Replied to it","Forwarded it"],"Clicks are measured separately, as click-through rate."],
+ ["Click-through rate (CTR) is…",["Clicks divided by the number of people who saw it","Total clicks in a month","The speed of your website","Clicks from mobile users only"],"Useful for comparing ads, emails or headlines against each other."],
+ ["A referral program…",["Rewards customers for bringing in new customers","Refers customers to a competitor","Tracks customer complaints","Lists your partner businesses"],"Happy customers are usually the cheapest marketing channel you have."],
+ ["Scarcity in marketing means…",["Limited availability makes something more desirable","Spending as little as possible on ads","Posting less often","Having few competitors"],"It works best when it's real: limited spots, a genuine deadline."],
+ ["A testimonial is…",["A customer's own words about their experience or results","A legal statement","A product spec sheet","A press release"],"Specific results (\"saved me 5 hours a week\") beat generic praise."],
+ ["What is a sales funnel?",["The path people take from first hearing of you to buying","A tool for pouring coffee","A list of sales targets","A team's org chart"],"Awareness at the top, purchase at the bottom, and every step can leak."]
+];
+/* marketing trivia during the story, fun facts about the country on the World Tour */
+function triviaHTML(L){
+  let bank,idx,tag;
+  if(L&&L.kind==='tour'){bank=L.leg.id;idx=L.k%NOTES[bank].facts.length;tag=`Bonus tip · ${L.leg.name} fact`}
+  else{
+    if(!SAVE.qOrder||SAVE.qOrder.length!==TRIVIA.length){SAVE.qOrder=shuffle([...TRIVIA.keys()],mulberry(Date.now()));SAVE.qi=0}
+    idx=SAVE.qOrder[(SAVE.qi||0)%TRIVIA.length];SAVE.qi=(SAVE.qi||0)+1;save();bank='m';tag='Bonus tip · marketing trivia';
+  }
+  const[q,opts]=quizItem(bank,idx),order=shuffle([0,1,2,3],Math.random);
+  return `<div class="quiz" data-bank="${bank}" data-q="${idx}"><div class="qhead"><span class="tag">${tag}</span><span class="coins">+2 <span class="coin"></span></span></div>
+    <p class="qq">${q}</p><div class="qopts">${order.map(o=>`<button type="button" class="qopt" data-o="${o}">${opts[o]}</button>`).join('')}</div><p class="qwhy" hidden></p></div>`;
+}
+const quizItem=(bank,idx)=>bank==='m'?TRIVIA[idx]:NOTES[bank].facts[idx];
+function wireTrivia(){
+  const box=slip.querySelector('.quiz');if(!box)return;
+  const item=quizItem(box.dataset.bank,+box.dataset.q),why=box.querySelector('.qwhy'),prize=box.querySelector('.qhead .coins');
+  let tries=0;
+  box.querySelectorAll('.qopt').forEach(b=>b.onclick=()=>{
+    const right=b.dataset.o==='0';tries++;
+    const finish=()=>box.querySelectorAll('.qopt').forEach(x=>{x.disabled=true;if(x.dataset.o==='0')x.classList.add('right')});
+    if(right){
+      const won=tries===1?2:1;finish();addCoins(won);sfx.buy();
+      say('combo',tries===1?pick(['Marketing genius.','Correct! Tip earned.','Look at you, CMO.']):'Got there. Tip earned.');
+      why.innerHTML=`<b>Correct${tries===1?'':' on the second try'}, +${won} coin${won>1?'s':''}.</b> ${item[2]}`;
+      SAVE.quizRight=(SAVE.quizRight||0)+1;save();
+    }else if(tries===1){
+      b.classList.add('wrong');b.disabled=true;sfx.nope();say('bad','Not quite. One more try.');
+      prize.innerHTML=`+1 <span class="coin"></span>`;
+      why.innerHTML='<b>Not quite.</b> One more try, for 1 coin.';
+    }else{
+      b.classList.add('wrong');finish();sfx.nope();say('bad','Not this time. Now you know.');
+      why.innerHTML=`<b>The answer is highlighted.</b> ${item[2]}`;
+    }
+    why.hidden=false;
+  });
+}
+function showDailyDone(){
+  const r=SAVE.daily['d:'+todayKey()];done=true;elapsed=r.ms;
+  cells=P.sol.map((c,row)=>Array.from({length:P.n},(_,x)=>x===c?2:1));render();
+  slip.innerHTML=`<div class="stars">${starHTML(r.stars)}</div><h2>Today's puzzle is done</h2><p class="quip">Solved in ${fmt(r.ms)}. A new one appears tomorrow.</p>
+  <div class="row"><button class="btn go" type="button" id="toj">Back to the trip</button><button class="btn" type="button" id="share">Copy result</button></div>${ad()}`;
+  slip.hidden=false;
+  document.getElementById('share').onclick=()=>copy(`Slothdoku · today's puzzle 🦥\n${'⭐'.repeat(r.stars)} in ${fmt(r.ms)}`);
+  document.getElementById('toj').onclick=()=>setMode('journey');
+}
+function ad(){return `<div class="ad">${SLOTH}<div><div class="tag">A word from the house</div><p>Running a solo business? Nomad Café builds you an AI marketing system in two weeks so you stop losing leads. You barely lift a claw.</p><p><a href="https://www.nomadcafe.co/?utm_source=slothdoku&utm_medium=game&utm_campaign=house_ad" target="_blank" rel="noopener">nomadcafe.co</a></p></div></div>`}
+const CHEER_UPS=[
+ "Even sloths fall out of trees sometimes. Then they climb back up. Slowly.",
+ "That's not failing. That's research. Now you know where they don't go.",
+ "Deep breath. You've already done the hard part: the board is built.",
+ "Every expert was once a sloth who ran out of leaves.",
+ "Mocha believes in you. Mocha would also like a hug.",
+ "Slow down, look again. The answer's been there the whole time.",
+ "Tough one. Tougher you. Let's go again."
+];
+/* Mocha with sad brows and one slow tear, wearing the current outfit */
+function sadMocha(){
+  const brows=`<path d="M13 23q7-5 13 1" stroke="#3b2a1d" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M51 23q-7-5-13 1" stroke="#3b2a1d" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  const frown=`<rect x="24" y="44" width="16" height="6" fill="#ead8b6"/><path d="M27 49q5-4 10 0" stroke="#3b2a1d" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  /* tear wells up at the bottom of the right eye (eye centre 42.5,33), then rolls straight down */
+  const tear=`<ellipse cx="42.5" cy="36.2" rx="3" ry="1.1" fill="#7fc3e0" opacity=".85"/><path class="tear" d="M42.5 35.2q-3.2 5 0 7.6q3.2-2.6 0-7.6z" fill="#7fc3e0" stroke="#4f9fbf" stroke-width=".8"/>`;
+  return slothSVG(SAVE.equip).replace(/<\/svg>$/,`${frown}${brows}${tear}</svg>`);
+}
+function lose(){
+  done=true;sfx.lose();say('lose');
+  const pop=document.getElementById('sadpop');
+  document.getElementById('sadface').innerHTML=sadMocha();
+  document.getElementById('sadMsg').textContent=pick(CHEER_UPS);
+  pop.hidden=false;
+  const btn=document.getElementById('sadRetry');setTimeout(()=>btn.focus(),50);
+  btn.onclick=()=>{ /* keep the built board, reset the sloths */
+    pop.hidden=true;
+    cells=Array.from({length:P.n},()=>Array(P.n).fill(0));hearts=3;history=[];combo=0;wrongs=new Set();done=false;slip.hidden=true;render();syncControls();
+    say('idle',pick(["Okay. Fresh start.","Here we go again. Slowly.","Round two. I've got a good feeling."]));
+  };
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(t._h);t._h=setTimeout(()=>t.hidden=true,1900)}
+function copy(text){try{navigator.clipboard.writeText(text).then(()=>toast('Copied. Go brag.'),()=>fallback(text))}catch(e){fallback(text)}}
+function fallback(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copied. Go brag.')}catch(e){toast('Select and copy: '+text)}ta.remove()}
+
+/* ================= controls ================= */
+document.getElementById('undo').onclick=()=>{if(done||phase!=='sloths'||!history.length)return;history.pop().forEach(([y,x,prev])=>cells[y][x]=prev);combo=0;render()};
+document.getElementById('restart').onclick=()=>{
+  if(sceneEnd&&sceneOn)sceneEnd();
+  if(mode==='daily'&&dailyDone())return;
+  start();
+};
+document.getElementById('hint').onclick=()=>{
+  if(sceneOn)return;
+  if(phase==='build'){
+    if(warmHints<=0)return;const reg=[...Array(P.n).keys()].find(r=>!revealed.has(r));if(reg==null)return;
+    warmHints--;startClock();const p=piecesEl.querySelector(`.piece[data-reg="${reg}"]`);if(p)p.remove();syncControls();snapPiece(reg);return;
+  }
+  if(done||hintsLeft<=0)return;startClock();
+  const row=P.sol.findIndex((c,r)=>cells[r][c]!==2);if(row<0)return;
+  hintsLeft--;usedHints++;combo=0;
+  const x=P.sol[row],group=[[row,x,cells[row][x]]];cells[row][x]=2;autoMark(row,x,group);history.push(group);
+  sfx.sloth();say('hint');render([[row,x]]);syncControls();checkWin();
+};
+document.getElementById('autox').onclick=()=>{SAVE.autox=!SAVE.autox;save();syncControls();toast(SAVE.autox?'Auto-X on':'Auto-X off')};
+document.getElementById('sound').onclick=()=>{SAVE.sound=!SAVE.sound;save();syncControls();if(SAVE.sound)sfx.sloth()};
+document.getElementById('dailyBtn').onclick=()=>setMode(mode==='daily'?'journey':'daily');
+
+/* ================= closet: shop, fur, story, settings ================= */
+/* the Napsack passport: an ID page for Mocha, then stamp pages */
+function passportBook(){
+  const st=stats(),L=curLeg(),n=SAVE.stamps.length;
+  const mrz=('P<VAN<DOZENHOFF<<MOCHA<<'+'<'.repeat(40)).slice(0,44);
+  const mrz2=(`${String(SAVE.level).padStart(4,'0')}<${n}OF${COUNTRIES.length}<SLOWLY<<NEVER<RUSH`+'<'.repeat(44)).slice(0,44);
+  const id=`<div class="ppage"><h4>Passport · Passeport · Pasaporte</h4><div class="idpage">
+    <div class="photo">${slothSVG(SAVE.equip)}</div>
+    <dl><div><dt>Surname</dt><dd>VAN DOZENHOFF</dd></div><div><dt>Given name</dt><dd>MOCHA</dd></div>
+      <div><dt>Profession</dt><dd>Barista</dd></div><div><dt>Place of birth</dt><dd>Corp. Canopy</dd></div>
+      <div><dt>Now in</dt><dd>${legTitle(L)[1]}</dd></div><div><dt>Stamps</dt><dd>${n} / ${COUNTRIES.length}</dd></div></dl>
+    <div class="mrz">${mrz.replace(/</g,"&lt;")}<br>${mrz2.replace(/</g,"&lt;")}</div></div><span class="pno">1</span></div>`;
+  const rot=i=>{const r=mulberry(i*97+5);return `rotate(${(r()*22-11).toFixed(1)}deg) translate(${(r()*8-4).toFixed(1)}px,${(r()*8-4).toFixed(1)}px)`};
+  const slot=(k,i)=>{
+    const got=SAVE.stamps.includes(k.id),lv=SAVE.stampLv&&SAVE.stampLv[k.id];
+    const from=TOUR_AT+i*TOUR_LEN+1,to=from+TOUR_LEN-1;
+    return got?`<button type="button" class="sslot" data-stamp="${k.id}" style="--rot:${rot(i)}" aria-label="${k.name} stamp, open travel notes">${stampSVG(k,true)}<b>${k.name}</b><small>${lv?'LV '+lv:'STAMPED'}</small></button>`
+      :`<div class="sslot empty" style="--rot:none">${stampSVG(k,false)}<b>Visa pending</b><small>LV ${from}–${to}</small></div>`;
+  };
+  const pages=[COUNTRIES.slice(0,4),COUNTRIES.slice(4)].map((grp,p)=>`<div class="ppage"><h4>Visas · Stamps</h4><div class="sgrid">${grp.map((k,i)=>slot(k,i+p*4)).join('')}</div><span class="pno">${p+2}</span></div>`).join('');
+  return `<div class="pbook"><div class="cover"><b>PASSPORT</b><span>Republic of Slow<br>Café Basecamp</span></div>${id}${pages}</div>`;
+}
+const closetEl=document.getElementById('closet'),gameEl=document.getElementById('game');
+function coinHTML(n){return `<span class="coins"><span class="coin"></span>${n}</span>`}
+function renderCloset(){
+  const s=stats(),L=curLeg(),[eb,lt]=legTitle(L),pct=Math.round(100*L.k/L.len);
+  const eqNames=SLOT_ORDER.map(sl=>SAVE.equip[sl]).filter(Boolean).map(id=>ITEM[id].name);
+  const fur=FURS.find(f=>f.id===SAVE.fur)||FURS[0];
+  let h=`<div class="preview"><div class="big">${slothSVG(SAVE.equip)}</div><div style="min-width:0">
+    <h2>Mocha ${coinHTML(SAVE.coins)}</h2><p>${fur.name} fur${eqNames.length?' · '+eqNames.join(', '):''}</p>
+    <p>${eb}: ${lt} · level ${SAVE.level}</p>
+    <div class="meter" aria-label="Progress through this stop"><span style="width:${pct}%"></span></div><p style="font-size:12.5px">${L.len-L.k} more level${L.len-L.k===1?'':'s'} until the next stop · ${SAVE.stamps.length}/${COUNTRIES.length} stamps</p>
+  </div></div>
+  <h3 class="sec">Shop & wardrobe</h3><p class="secnote">Earn coins from tips. Gold items are for sale; trip gear (below) unlocks as you travel; dashed ones are trophies you earn by doing something.</p>`;
+  ['head','face','neck','hand'].forEach(sl=>{
+    h+=`<h3 class="sec" style="font-size:15px">${SLOT_NAMES[sl]}</h3><div class="items">`;
+    ITEMS.filter(i=>i.slot===sl&&(!GEAR_AT[i.id]||SAVE.unlocked.includes(i.id))).forEach(it=>{
+      const owned=SAVE.unlocked.includes(it.id),on=SAVE.equip[sl]===it.id;
+      if(owned)h+=`<button type="button" class="item" data-id="${it.id}" aria-pressed="${on}">${slothSVG(null,it.id)}${it.name}<small>${on?'Wearing · tap to remove':'Tap to wear'}</small></button>`;
+      else if(it.price!=null){const poor=SAVE.coins<it.price;h+=`<button type="button" class="item shop${poor?' poor':''}" data-buy="${it.id}" ${poor?'aria-disabled="true"':''}>${slothSVG(null,it.id)}${it.name}<small><span class="coin"></span>${it.price}${poor?` · need ${it.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
+      else{const[v,g]=it.need(s);h+=`<div class="item locked">${slothSVG(null,it.id)}${it.secret?'???':it.name}<small>${it.how}${it.secret?'':` · ${Math.min(v,g)}/${g}`}</small></div>`}
+    });
+    h+='</div>';
+  });
+  h+=`<h3 class="sec" style="font-size:15px">Fur</h3><div class="items">`;
+  FURS.forEach(f=>{
+    const owned=SAVE.furs.includes(f.id),on=SAVE.fur===f.id,eq={...SAVE.equip};
+    const art=slothSVG(eq,null,f.color);
+    if(owned)h+=`<button type="button" class="item" data-fur="${f.id}" aria-pressed="${on}">${art}${f.name}<small>${on?'Wearing':(f.note||'Tap to wear')}</small></button>`;
+    else{const poor=SAVE.coins<f.price;h+=`<button type="button" class="item shop${poor?' poor':''}" data-buyfur="${f.id}">${art}${f.name}<small><span class="coin"></span>${f.price}${poor?` · need ${f.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
+  });
+  const ci=chapterIndex(),c=s.cleared;
+  h+=`</div><h3 class="sec">Trip gear</h3><p class="secnote">Every stop has two themed rewards: one halfway through, one when you finish it. Tap one you own to wear it.</p><div class="gearlist">${gearStops().map(g=>{
+    const reached=c>=g.start;
+    return `<div class="gearrow${reached?'':' far'}"><div class="gname"><small>${g.label}</small><b>${reached?g.name:'???'}</b></div>${g.items.map((id,k)=>{const it=ITEM[id],own=SAVE.unlocked.includes(id),on=SAVE.equip[it.slot]===id;
+      return own?`<button type="button" class="item" data-id="${id}" aria-pressed="${on}">${slothSVG(null,id)}${it.name}<small>${on?'Wearing':'Tap to wear'}</small></button>`
+        :`<div class="item locked">${slothSVG(null,id)}${reached?it.name:'???'}<small>${k?'Finish':'Halfway'} · Lv ${g.at[k]}</small></div>`}).join('')}</div>`}).join('')}`;
+  const met=id=>{const k=STORY_CAST.indexOf(id);if(k>=0)return k<=ci;const t=COUNTRIES.findIndex(x=>x.cust===id);return c>=TOUR_AT+t*TOUR_LEN};
+  h+=`</div><h3 class="sec">Passport</h3><p class="secnote">${SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish 5 levels in a country to earn its stamp.`}</p>`;
+  h+=passportBook();
+  h+=`<h3 class="sec">Regulars</h3><p class="secnote">Sloths Mocha has met along the way.</p><div class="regulars">${Object.entries(CUST).map(([id,cu])=>{const m=met(id);return `<div class="regular${m?'':' unmet'}">${custSVG(id)}<span>${m?cu.name:'???'}</span></div>`}).join('')}</div>`;
+  const doneCh=i=>c>=(i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT);
+  const stamped=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
+  h+=`<h3 class="sec">Mocha's story</h3><div class="story">${CHAPTERS.map((ch,i)=>i<=ci?chapterHTML(ch,i).replace(/<\/div>$/,doneCh(i)?`<p class="learned"><b>Lesson learned:</b> ${LESSONS[i].lesson}</p></div>`:'</div>'):`<div class="chapter locked"><div class="eyebrow">Chapter ${i+1}</div><h3>???</h3><p>Reach level ${ch.at+1} to unlock.</p></div>`).join('')}</div>`;
+  closetEl.innerHTML=h;
+  closetEl.querySelectorAll('[data-stamp]').forEach(b=>b.onclick=()=>{const k=COUNTRIES.find(c=>c.id===b.dataset.stamp);passportPop(k,SAVE.stamps.indexOf(k.id)+1,true)});
+  closetEl.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{
+    const it=ITEM[b.dataset.id];
+    if(SAVE.equip[it.slot]===it.id){delete SAVE.equip[it.slot];say('idle','Feeling a little exposed.')}
+    else{SAVE.equip[it.slot]=it.id;say('good',pick(['Looking sharp.','Ooh, fancy.','Very café chic.','I feel taller.']))}
+    save();refreshSloths();renderCloset();sfx.sloth();
+  });
+  closetEl.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{
+    const it=ITEM[b.dataset.buy];
+    if(SAVE.coins<it.price){sfx.nope();say('bad',`Need ${it.price-SAVE.coins} more coins. Tips first.`);return}
+    addCoins(-it.price);SAVE.unlocked.push(it.id);SAVE.equip[it.slot]=it.id;save();sfx.buy();burst(30);
+    say('combo',pick([`Bought: ${it.name}. Wearing it now.`,`${it.name}! Worth every coin.`]));refreshSloths();renderCloset();
+  });
+  closetEl.querySelectorAll('[data-fur]').forEach(b=>b.onclick=()=>{SAVE.fur=b.dataset.fur;save();refreshSloths();renderCloset();sfx.sloth();say('good','New look, same nap schedule.')});
+  closetEl.querySelectorAll('[data-buyfur]').forEach(b=>b.onclick=()=>{
+    const f=FURS.find(x=>x.id===b.dataset.buyfur);
+    if(SAVE.coins<f.price){sfx.nope();say('bad',`Need ${f.price-SAVE.coins} more coins.`);return}
+    addCoins(-f.price);SAVE.furs.push(f.id);SAVE.fur=f.id;save();sfx.buy();burst(30);say('combo',`${f.name} fur! Very distinguished.`);refreshSloths();renderCloset();
+  });
+}
+function setMode(m){
+  if(sceneOn&&sceneEnd)sceneEnd();
+  mode=m;
+  document.getElementById('tab-journey').setAttribute('aria-selected',m!=='closet');
+  document.getElementById('tab-closet').setAttribute('aria-selected',m==='closet');
+  closetEl.hidden=m!=='closet';gameEl.hidden=m==='closet';
+  if(m==='closet'){done=true;SAVE.newItems=false;save();refreshSloths();renderCloset();setScenery(curLeg().bg);return}
+  start();
+}
+document.getElementById('tab-journey').onclick=()=>{if(mode!=='journey')setMode('journey')};
+document.getElementById('tab-closet').onclick=()=>setMode('closet');
+
+/* ================= boot ================= */
+SAVE.scenes=true;SAVE.scenery=true; /* settings removed: scenes and scenery always on */
+if(SAVE.unlocked.includes('doubledouble')){SAVE.unlocked=SAVE.unlocked.map(i=>i==='doubledouble'?'beaver':i);if(SAVE.equip.hand==='doubledouble')SAVE.equip.hand='beaver';save()} /* double-double swapped for beaver plush */
+if(SAVE.unlocked.includes('kettle')){SAVE.unlocked=SAVE.unlocked.filter(i=>i!=='kettle');if(!SAVE.unlocked.includes('grinder'))SAVE.unlocked.push('grinder');if(SAVE.equip.hand==='kettle')SAVE.equip.hand='grinder';save()} /* kettle swapped for grinder */
+if(SAVE.unlocked.includes('toque')){SAVE.unlocked=SAVE.unlocked.filter(i=>i!=='toque');if(SAVE.unlocked.includes('redtoque'))SAVE.coins+=45;else SAVE.unlocked.push('redtoque');if(SAVE.equip.head==='toque')SAVE.equip.head='redtoque';save()} /* two toques merged */
+if(SAVE.unlocked.includes('croissant')){SAVE.unlocked=SAVE.unlocked.filter(i=>i!=='croissant');SAVE.coins+=20;if(SAVE.equip.hand==='croissant')delete SAVE.equip.hand;save()} /* croissant retired: refund */
+if(checkUnlocks().length)SAVE.newItems=true;
+SAVE.chapter=Math.max(SAVE.chapter,chapterIndex());save();
+refreshSloths();
+setMode('journey');
+</script>
+
+<!-- Install support: offline cache + "Add to Home Screen" hint for iPhone (Apple never prompts on its own) -->
+<style>
+#installHint{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9999;background:#1f3a2c;color:#fbf8f0;border-radius:14px;padding:12px 44px 12px 14px;font:600 14px/1.35 Karla,system-ui,sans-serif;box-shadow:0 10px 30px -10px rgba(0,0,0,.45);max-width:460px;margin:0 auto}
+#installHint b{color:#e9b949}#installHint button{position:absolute;right:6px;top:6px;background:none;border:0;color:#fbf8f0;font-size:22px;line-height:1;padding:6px 10px;cursor:pointer}
+</style>
+<script>
+(function(){
+  if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('/games/slothdoku/sw.js',{scope:'/games/slothdoku/'}).catch(function(){})})}
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var installed=window.navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  var seen=false;try{seen=localStorage.getItem('slothdoku-install-hint')==='1'}catch(e){}
+  if(!ios||installed||seen)return;
+  setTimeout(function(){
+    var d=document.createElement('div');d.id='installHint';
+    d.innerHTML='🦥 Play it like an app: tap <b>Share</b> then <b>Add to Home Screen</b>. Do it early, since the app keeps its own save.<button aria-label="Dismiss">×</button>';
+    d.querySelector('button').onclick=function(){d.remove();try{localStorage.setItem('slothdoku-install-hint','1')}catch(e){}};
+    document.body.appendChild(d);
+  },4000);
+})();
+</script>
+
+</body>
+</html>

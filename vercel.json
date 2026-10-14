@@ -1,3 +1,10 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/slothdoku", "destination": "/games/slothdoku/", "permanent": false }
+  ],
+  "headers": [
+    { "source": "/games/slothdoku/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }, { "key": "Service-Worker-Allowed", "value": "/games/slothdoku/" }] },
+    { "source": "/games/slothdoku/manifest.webmanifest", "headers": [{ "key": "Content-Type", "value": "application/manifest+json" }] }
+  ]
 }
