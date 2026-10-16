@@ -190,6 +190,23 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-s
 @keyframes fly{from{transform:translateX(-50%) translateY(0) rotate(-1deg)}to{transform:translateX(-50%) translateY(-9%) rotate(1.5deg)}}
 @keyframes sail{from{transform:translateX(-50%) rotate(-2.5deg)}to{transform:translateX(-50%) rotate(2.5deg)}}
 @keyframes trip{to{left:100%}}
+/* how-to-play explainer */
+.helpov{position:fixed;inset:0;z-index:80;display:grid;place-items:start center;padding:16px;background:rgba(31,58,44,.55);overflow-y:auto;animation:fadeIn .3s ease-out both}
+.helpcard{background:var(--tray);border-radius:20px;padding:20px 18px 18px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px -20px rgba(0,0,0,.5);margin:auto 0}
+.helpcard h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:24px}
+.helpcard .sub{margin:-8px 0 0;color:var(--muted);font-size:14px}
+.hstep{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start}
+.hstep .n{width:30px;height:30px;border-radius:50%;background:var(--forest);color:var(--tray);display:grid;place-items:center;font-weight:800;font-size:14px}
+.hstep h3{margin:2px 0 3px;font-size:15.5px}
+.hstep p{margin:0;font-size:14px;line-height:1.45}
+.modes{display:flex;flex-direction:column;gap:8px}
+.modes button{text-align:left;border:2px solid var(--ink);background:transparent;border-radius:12px;padding:10px 12px;font:inherit;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.modes button b{font-size:15px}
+.modes button span{font-size:13px;color:var(--muted);line-height:1.4}
+.modes button[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--tray)}
+.modes button[aria-pressed="true"] span{color:var(--tray);opacity:.85}
+.modes button:focus-visible,.helpcard .go:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.helpcard .fine{font-size:12.5px;color:var(--muted);margin:0}
 /* lesson + travel notes cards */
 .lesson{background:var(--tray);border:2px solid var(--gold);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
 .slip .lesson{background:#fff8e8}
@@ -198,6 +215,8 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-s
 .notes-card > p:first-of-type{font-family:var(--f-body);font-size:14px}
 .lesson ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:2px;font-size:14.5px}
 .lesson .where{color:var(--muted);font-size:13px}
+.lesson .orig,.pp .tile .orig{font-family:var(--f-display);font-style:italic;font-weight:600;color:var(--gold-dk);font-size:15px}
+.wisdom{border-color:var(--forest)}
 .chapter .learned{font-size:14px;color:var(--ink);background:#fff8e8;border-radius:8px;padding:6px 10px}
 .chapter .learned b{color:var(--gold-dk)}
 .notes-list{display:flex;flex-direction:column;gap:10px}
@@ -400,6 +419,7 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
   <header>
     <button class="mascot" id="mascot" type="button" aria-label="Poke the sloth"></button>
     <div class="who"><h1>Slothdoku</h1><div class="bubble" id="bubble" aria-live="polite">Slow down. Think. Place a sloth.</div></div>
+    <button class="icon" id="help" type="button" aria-label="How to play" title="How to play">?</button>
     <button class="icon" id="sound" type="button" aria-pressed="true" aria-label="Sound" title="Sound">♪</button>
   </header>
   <div class="tabs" role="tablist">
@@ -693,9 +713,33 @@ const COUNTRIES=[
   ]}
 ];
 COUNTRIES.forEach(c=>BG.push(c.bg));
-function stampSVG(c,got=true){
-  const s=c.stamp,col=got?s.ring:'#a9bfa4';
-  return `<svg viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(${got?-8:0} 50 50)"><circle cx="50" cy="50" r="46" fill="${got?'#fbf8f0':'none'}" stroke="${col}" stroke-width="3" ${got?'':'stroke-dasharray="6 5"'}/><circle cx="50" cy="50" r="39" fill="none" stroke="${col}" stroke-width="1.5"/>${got?`<g transform="translate(30 20) scale(.4)">${s.motif}</g><text x="50" y="79" text-anchor="middle" font-family="Karla,sans-serif" font-weight="800" font-size="9" letter-spacing="1" fill="${s.ring}">${c.name.toUpperCase()}</text>`:`<text x="50" y="58" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="22" fill="#a9bfa4">?</text>`}</g></svg>`;
+/* square postage stamps: perforated edge, framed picture, country band, and a postmark once collected */
+const STAMP_VAL={portugal:'€0,95',japan:'¥110',mexico:'$15',morocco:'7 DH',iceland:'250 KR',vietnam:'4000₫',italy:'€1,25',canada:'92¢'};
+let stampUid=0;
+function stampSVG(c,got=true,lv){
+  const s=c.stamp,col=got?s.ring:'#a9bfa4',u='st'+(++stampUid);
+  const holes=[];for(let k=0;k<12;k++){const p=6+k*8;holes.push([p,3],[p,97],[3,p],[97,p])}
+  const mask=`<mask id="${u}m"><rect x="3" y="3" width="94" height="94" fill="#fff"/>${holes.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.7" fill="#000"/>`).join('')}</mask>`;
+  if(!got)return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs>${mask}</defs><g mask="url(#${u}m)"><rect x="3" y="3" width="94" height="94" fill="#f4efe2"/></g>
+    <rect x="10" y="10" width="80" height="80" fill="none" stroke="${col}" stroke-width="1.6" stroke-dasharray="4 3"/>
+    <text x="50" y="57" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="24" fill="${col}">?</text></svg>`;
+  const val=STAMP_VAL[c.id]||'',name=c.name.toUpperCase(),fs=name.length>7?7:8;
+  const pm=`<g transform="rotate(-14 74 30)" opacity=".8" fill="none" stroke="#1f2a30" stroke-width="1.4">
+    <circle cx="74" cy="30" r="16"/><circle cx="74" cy="30" r="11.5" stroke-width=".8"/>
+    <path d="M30 22q4-3 8 0t8 0t8 0M28 28q4-3 8 0t8 0t8 0M30 34q4-3 8 0t8 0t8 0" stroke-width="1.6"/>
+    <text x="74" y="28" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.2" font-weight="700" fill="#1f2a30" stroke="none">SLOTH POST</text>
+    <text x="74" y="35" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.6" font-weight="700" fill="#1f2a30" stroke="none">${lv?'LV '+lv:'STAMPED'}</text></g>`;
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs>${mask}<clipPath id="${u}c"><rect x="13" y="13" width="74" height="57"/></clipPath>
+    <filter id="${u}r"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="${c.id.length}"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.3"/><feComposite in="SourceGraphic" operator="in"/></filter></defs>
+   <g transform="rotate(-3 50 50)"><g mask="url(#${u}m)" transform="translate(.8 1.2)"><rect x="3" y="3" width="94" height="94" fill="#cbbd9f"/></g><g mask="url(#${u}m)"><rect x="3" y="3" width="94" height="94" fill="#fffdf7"/></g>
+    <rect x="10" y="10" width="80" height="80" fill="${s.ring}" opacity=".14"/>
+    <g clip-path="url(#${u}c)"><rect x="13" y="13" width="74" height="57" fill="${s.ring}" opacity=".12"/><g transform="translate(23 14) scale(.54)">${s.motif}</g></g>
+    <rect x="13" y="13" width="74" height="57" fill="none" stroke="${s.ring}" stroke-width="1.2"/>
+    <rect x="10" y="10" width="80" height="80" fill="none" stroke="${s.ring}" stroke-width="1.8"/>
+    <rect x="13" y="72" width="74" height="15" fill="${s.ring}"/>
+    <text x="16" y="82.5" font-family="Karla,sans-serif" font-weight="800" font-size="${fs}" letter-spacing=".6" fill="#fbf8f0">${name}</text>
+    <text x="84" y="82.5" text-anchor="end" font-family="IBM Plex Mono,monospace" font-weight="700" font-size="6.5" fill="#fbf8f0">${val}</text>
+    <g filter="url(#${u}r)">${pm}</g></g></svg>`;
 }
 
 /* ================= journey gear: two themed rewards per stop (halfway + finish) ================= */
@@ -822,10 +866,23 @@ const NOTES={
    ["Poutine (fries, cheese curds and gravy) comes from…",["Quebec","British Columbia","Nunavut","Alberta"],"The squeakier the cheese curds, the better."],
    ["Canada has the world's longest…",["Coastline","River","Highway tunnel","Mountain range"],"Counting all its islands, it's over 200,000 km of coast."]]}
 };
+/* per country: one piece of old wisdom Mocha takes home (the country's lesson) */
+const WISDOM={
+ portugal:{say:'Devagar se vai ao longe.',en:'Slowly, you go far.',from:'Old Portuguese proverb',why:'Pick a pace you can keep for years, not weeks.'},
+ japan:{say:'Ichi-go ichi-e',en:'One time, one meeting.',from:'Saying from the Japanese tea ceremony',why:'Treat every guest like this visit will never happen again.'},
+ mexico:{say:'Dime con quién andas, y te diré quién eres.',en:"Tell me who you walk with, and I'll tell you who you are.",from:'Old Mexican dicho',why:'Your circle shapes your work. Choose it on purpose.'},
+ morocco:{say:'',en:'Ask the one who has lived it, not the one who has read about it.',from:'Old Arabic proverb, told across Morocco',why:'Advice from people who did the thing beats advice from people who studied it.'},
+ iceland:{say:'Maður er manns gaman.',en:'People are the joy of people.',from:'The Hávamál, a Viking-age poem',why:'Going it alone gets old fast. Find your people.'},
+ vietnam:{say:'Có công mài sắt, có ngày nên kim.',en:'Keep grinding the iron bar, and one day it becomes a needle.',from:'Old Vietnamese proverb',why:'Small, boring effort every day turns into something sharp.'},
+ italy:{say:'Festina lente.',en:'Make haste slowly.',from:"Latin. Emperor Augustus's favourite motto",why:'Move with purpose, but never rush the important stuff.'},
+ canada:{say:'',en:'Think about how today’s choices will land seven generations from now.',from:'The Seventh Generation principle of the Haudenosaunee Confederacy',why:'Build for the long game, not the next quarter.'}
+};
+function wisdomCard(c){const w=WISDOM[c.id];return `<div class="lesson wisdom"><div class="tag">Ancient wisdom · ${c.name}</div>${w.say?`<p class="orig">${w.say}</p>`:''}<p>“${w.en}”</p><p class="where">${w.from}. ${w.why}</p></div>`}
 function lessonCard(i){return `<div class="lesson"><div class="tag">Lesson learned · Chapter ${i+1}</div><p>${LESSONS[i].lesson}</p></div>`}
 function notesCard(c,full=true){
   const n=NOTES[c.id];
   return `<div class="lesson notes-card"><div class="tag">Travel notes · ${c.name}</div>
+    <p><b>Ancient wisdom:</b> “${WISDOM[c.id].en}” <span class="where">(${WISDOM[c.id].from})</span></p>
     <p><b>3 words in ${n.lang}</b></p><ul>${n.words.map(([w,m])=>`<li><b>${w}</b> — ${m}</li>`).join('')}</ul>
     ${full?`<p><b>Best coffee:</b> ${n.coffee[0]} <span class="where">(${n.coffee[1]})</span></p><p><b>Co-working:</b> ${n.cowork[0]} <span class="where">(${n.cowork[1]})</span></p>`:''}</div>`;
 }
@@ -843,7 +900,21 @@ const STAGES=[
  {from:85,n:10,autox:false,hints:0,check:false,minTier:3,maxTier:9,mult:2}
 ];
 const DAILY_STAGE=Object.assign({},STAGES[3],{n:7});
-function stageAt(c){let st=STAGES[0];STAGES.forEach(x=>{if(c>=x.from)st=x});return st}
+function baseStageAt(c){let st=STAGES[0];STAGES.forEach(x=>{if(c>=x.from)st=x});return st}
+/* Easy / Normal / Hard: same journey, different rules on top of the ramp */
+const DIFFS={
+ easy:{name:'Easy',blurb:'Auto-X always on, 3 hints and 3 leaves every board, gentle logic, boards top out at 8×8. Standard tips.'},
+ normal:{name:'Normal',blurb:'The classic ramp. Rules tighten slowly as you travel: Auto-X retires, hints shrink, the Wild stretch has no safety net.'},
+ hard:{name:'Hard',blurb:'No Auto-X, one less hint, bigger boards sooner, real-deduction puzzles from level 17, Wild from level 51. +0.5 tip bonus on every board.'}
+};
+function applyDiff(st,c){
+  const d=SAVE.diff||'normal';
+  if(d==='easy')return Object.assign({},st,{autox:true,hints:Math.max(st.hints,3),check:true,minTier:1,maxTier:2,n:Math.min(st.n,8),mult:1});
+  if(d==='hard')return Object.assign({},st,{autox:false,hints:Math.max(0,st.hints-1),n:c>=10?Math.min(st.n+1,10):st.n,
+    minTier:c>=16?3:st.minTier,maxTier:c>=16?9:st.maxTier,check:c>=50?false:st.check,mult:st.mult+.5});
+  return st;
+}
+function stageAt(c){return applyDiff(baseStageAt(c),c)}
 function stageName(st){return !st.check?'Wild':st.minTier>2?'Tricky':!st.autox?'No Auto-X':'Chill'}
 /* plain-English list of what changes between two stages */
 function stageChanges(a,b){
@@ -985,7 +1056,7 @@ function hashStr(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Ma
 /* ================= saved progress (this browser only) ================= */
 const KEY='slothdoku-v3';
 function load(){
-  const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,chapter:0,newItems:false,
+  const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,seenHelp:false,diff:'normal',chapter:0,newItems:false,
     coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:6};
   const sumL=o=>(o.levels.chill-1)+(o.levels.tricky-1)+(o.levels.wild-1);
   const backPay=o=>10+5*sumL(o);
@@ -1150,12 +1221,13 @@ function passportPop(country,stampNo,viewOnly){
   host.innerHTML=`<div class="ppov" role="dialog" aria-modal="true" aria-labelledby="ppTitle"><div class="pp" style="--accent:${acc}">
     <div class="scene"><div class="bgart"><svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${country.bg}</svg></div>
       <div class="who m">${slothSVG(SAVE.equip)}</div><div class="who c">${custSVG(country.cust)}</div></div>
-    <div class="stamp">${stampSVG(country,true)}</div>
+    <div class="stamp">${stampSVG(country,true,SAVE.stampLv&&SAVE.stampLv[country.id])}</div>
     <div class="body">
       <div><div class="eyebrow">${viewOnly?"Travel notes":"Passport stamped"} · ${stampNo} of ${COUNTRIES.length}</div><h2 id="ppTitle">${country.name}</h2></div>
       <div class="grid">
         <div class="tile wide" style="animation-delay:.75s"><div class="lab"><i></i>3 words in ${n.lang}</div>
           <div class="words">${n.words.map(([w,m])=>`<div class="word"><b>${w}</b><span>${m}</span></div>`).join('')}</div></div>
+        <div class="tile wide wis" style="animation-delay:.82s"><div class="lab"><i></i>Ancient wisdom</div>${WISDOM[country.id].say?`<div class="orig">${WISDOM[country.id].say}</div>`:''}<div class="nm">“${WISDOM[country.id].en}”</div><div class="wh">${WISDOM[country.id].from}. ${WISDOM[country.id].why}</div></div>
         <div class="tile" style="animation-delay:.9s"><div class="vig">${coffeeVig(acc)}</div><div class="lab"><i></i>Best coffee</div><div class="nm">${n.coffee[0]}</div><div class="wh">${n.coffee[1]}</div></div>
         <div class="tile" style="animation-delay:1.05s"><div class="vig">${coworkVig(acc)}</div><div class="lab"><i></i>Co-working</div><div class="nm">${n.cowork[0]}</div><div class="wh">${n.cowork[1]}</div></div>
       </div>
@@ -1399,7 +1471,8 @@ function render(pop){
     b.classList.toggle('wx',v===1&&wrongs.has(y*n+x));
   });
   const d=dz(),lv=document.getElementById('lvl');
-  const step=phase==='build'?`Build · ${revealed.size}/${n} pieces`:`${n}×${n} · ${d.name}`;
+  const dl=mode!=='daily'&&SAVE.diff&&SAVE.diff!=='normal'?' · '+DIFFS[SAVE.diff].name+' mode':'';
+  const step=phase==='build'?`Build · ${revealed.size}/${n} pieces`:`${n}×${n} · ${d.name}${dl}`;
   lv.innerHTML=mode==='daily'?`Today<small>${step}</small>`:`Level ${SAVE.level}<small>${step}</small>`;
   const h=document.getElementById('hearts');
   if(phase!=='sloths')h.hidden=true;
@@ -1569,6 +1642,7 @@ function win(){
         const ls=LESSONS[L0.i],who=ls.cheer[0];
         await playScene({bg:L0.bg,party:true,title:['Chapter complete',L0.leg.title],cust:L0.i<6?L0.leg.cust:null,crowd:L0.i===6?STORY_CAST:null,lines:[[L0.i<6?'c':who,ls.cheer[1]],['m','Lesson learned: '+ls.lesson]]});
       }
+      if(stamp){const w=WISDOM[stamp.id];await playScene({bg:L0.bg,party:true,title:['Country complete',stamp.name],cust:stamp.cust,lines:[['c',`Before you go, an old saying from here${w.say?': '+w.say:'.'}`],['c',`“${w.en}”`],['m','Lesson learned: '+w.why]]})}
       if(stamp)await passportPop(stamp,SAVE.stamps.length);
       if(newLeg){const t=travelFor(L0,newLeg);await playScene({travel:t,lines:[['m',pick(TRAVEL_LINES[t.v])]]});await playScene({bg:newLeg.bg,title:legTitle(newLeg),lines:[['m',newLeg.leg.tease]]})}
     }
@@ -1580,8 +1654,9 @@ function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily}){
   slip.innerHTML=`<div class="stars">${starHTML(k)}</div>
     <h2>${daily?"Today's puzzle, solved":`Level ${Lv} cleared in ${fmt(elapsed)}`}</h2>
     <div id="jarArea" class="tipjar">${JAR}<div class="tally">${tips.map(([l,v])=>`<div><span>${l}</span><span>+${v}</span></div>`).join('')}<div class="tot"><span>Tips</span><span class="coins"><span class="coin"></span><span id="totN">0</span></span></div></div></div>
-    ${stamp?`<div class="stampbig">${stampSVG(stamp,true)}<p><b>Passport stamped: ${stamp.name}.</b> ${SAVE.stamps.length} of ${COUNTRIES.length} countries collected. Your passport lives in your Napsack.</p></div>`:''}
+    ${stamp?`<div class="stampbig">${stampSVG(stamp,true,Lv)}<p><b>Passport stamped: ${stamp.name}.</b> ${SAVE.stamps.length} of ${COUNTRIES.length} countries collected. Your passport lives in your Napsack.</p></div>`:''}
     ${newLeg&&L0done.kind==='story'?lessonCard(L0done.i):''}
+    ${stamp?wisdomCard(stamp):''}
     ${stamp&&!SAVE.scenes?notesCard(stamp):''}
     ${newLeg&&newLeg.kind==='story'&&!SAVE.scenes?chapterHTML(newLeg.leg,newLeg.i):''}
     ${newLeg?`<p><b>Next stop:</b> ${legTitle(newLeg)[1]}.${newLeg.kind==='story'?' Read every chapter in your Napsack.':''}</p>`:''}
@@ -1767,7 +1842,7 @@ function passportBook(){
   const slot=(k,i)=>{
     const got=SAVE.stamps.includes(k.id),lv=SAVE.stampLv&&SAVE.stampLv[k.id];
     const from=TOUR_AT+i*TOUR_LEN+1,to=from+TOUR_LEN-1;
-    return got?`<button type="button" class="sslot" data-stamp="${k.id}" style="--rot:${rot(i)}" aria-label="${k.name} stamp, open travel notes">${stampSVG(k,true)}<b>${k.name}</b><small>${lv?'LV '+lv:'STAMPED'}</small></button>`
+    return got?`<button type="button" class="sslot" data-stamp="${k.id}" style="--rot:${rot(i)}" aria-label="${k.name} stamp, open travel notes">${stampSVG(k,true,lv)}<b>${k.name}</b><small>${lv?'LV '+lv:'STAMPED'}</small></button>`
       :`<div class="sslot empty" style="--rot:none">${stampSVG(k,false)}<b>Visa pending</b><small>LV ${from}–${to}</small></div>`;
   };
   const pages=[COUNTRIES.slice(0,4),COUNTRIES.slice(4)].map((grp,p)=>`<div class="ppage"><h4>Visas · Stamps</h4><div class="sgrid">${grp.map((k,i)=>slot(k,i+p*4)).join('')}</div><span class="pno">${p+2}</span></div>`).join('');
@@ -1811,6 +1886,8 @@ function renderCloset(){
   const met=id=>{const k=STORY_CAST.indexOf(id);if(k>=0)return k<=ci;const t=COUNTRIES.findIndex(x=>x.cust===id);return c>=TOUR_AT+t*TOUR_LEN};
   h+=`</div><h3 class="sec">Passport</h3><p class="secnote">${SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish 5 levels in a country to earn its stamp.`}</p>`;
   h+=passportBook();
+  {const got=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
+   h+=`<h3 class="sec">Ancient wisdom</h3><p class="secnote">${got.length?'One old saying from every country you finish.':'Finish a World Tour country to collect its wisdom.'}</p>${got.length?`<div class="story">${got.map(wisdomCard).join('')}</div>`:''}`;}
   h+=`<h3 class="sec">Regulars</h3><p class="secnote">Sloths Mocha has met along the way.</p><div class="regulars">${Object.entries(CUST).map(([id,cu])=>{const m=met(id);return `<div class="regular${m?'':' unmet'}">${custSVG(id)}<span>${m?cu.name:'???'}</span></div>`}).join('')}</div>`;
   const doneCh=i=>c>=(i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT);
   const stamped=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
@@ -1848,6 +1925,31 @@ function setMode(m){
 document.getElementById('tab-journey').onclick=()=>{if(mode!=='journey')setMode('journey')};
 document.getElementById('tab-closet').onclick=()=>setMode('closet');
 
+/* ================= how to play: explainer + difficulty picker ================= */
+function openHelp(first){
+  let host=document.getElementById('helphost');if(!host){host=document.createElement('div');host.id='helphost';document.body.appendChild(host)}
+  const step=(n,t,b)=>`<div class="hstep"><div class="n">${n}</div><div><h3>${t}</h3><p>${b}</p></div></div>`;
+  const draw=()=>{host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><div class="helpcard">
+    <h2 id="helpTitle">How to play Slothdoku</h2><p class="sub">Help Mocha the sloth quit corporate life and open a café. One puzzle at a time, no rushing.</p>
+    ${step(1,'Build the floor','Drag each colour piece onto the board. Each piece fits in exactly one spot.')}
+    ${step(2,'Place the sloths','Every row, every column and every colour gets exactly one sloth. Sloths never touch, not even corners.')}
+    ${step(3,'Controls','<b>Tap</b> a square to mark an X. <b>Hold</b> (or right-click) to place a sloth. <b>Swipe</b> to X lots of squares. Wrong sloths cost a leaf. Lose 3 leaves and you retry.')}
+    ${step(4,'Earn tips','Clear a level to fill the tip jar. Spend coins on outfits in your <b>Napsack</b>. Answer the trivia for bonus tips.')}
+    ${step(5,'Travel','The story takes Mocha to 7 stops. Then the World Tour: 8 countries, 5 levels each. Finish one to get a passport stamp, travel notes and a piece of ancient wisdom.')}
+    <div><h3 style="margin:0 0 8px;font-size:15.5px">Pick your mode</h3><div class="modes">${Object.entries(DIFFS).map(([k,d])=>`<button type="button" data-diff="${k}" aria-pressed="${(SAVE.diff||'normal')===k}"><b>${d.name}</b><span>${d.blurb}</span></button>`).join('')}</div></div>
+    <p class="fine">Switch anytime from the ? button. Your level, coins and stamps stay the same.</p>
+    <button class="btn go" type="button" id="helpGo">${first?"Let's go":'Back to the puzzle'}</button></div></div>`;
+    host.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{const was=SAVE.diff||'normal';SAVE.diff=b.dataset.diff;save();sfx.sloth();draw();if(was!==SAVE.diff)host.dataset.changed='1';host.querySelector(`[data-diff="${SAVE.diff}"]`).focus()});
+    host.querySelector('#helpGo').onclick=close;
+  };
+  const close=()=>{const ch=host.dataset.changed;host.innerHTML='';delete host.dataset.changed;SAVE.seenHelp=true;save();
+    if(ch&&mode==='journey'){say('idle',`${DIFFS[SAVE.diff].name} mode. Fresh puzzle coming up.`);start()}};
+  draw();host.querySelector('#helpGo').focus();
+  host.querySelector('.helpov').onkeydown=e=>{if(e.key==='Escape')close()};
+  host.querySelector('.helpov').onclick=e=>{if(e.target.classList.contains('helpov'))close()};
+}
+document.getElementById('help').onclick=()=>openHelp(false);
+
 /* ================= boot ================= */
 SAVE.scenes=true;SAVE.scenery=true; /* settings removed: scenes and scenery always on */
 if(SAVE.unlocked.includes('doubledouble')){SAVE.unlocked=SAVE.unlocked.map(i=>i==='doubledouble'?'beaver':i);if(SAVE.equip.hand==='doubledouble')SAVE.equip.hand='beaver';save()} /* double-double swapped for beaver plush */
@@ -1858,6 +1960,7 @@ if(checkUnlocks().length)SAVE.newItems=true;
 SAVE.chapter=Math.max(SAVE.chapter,chapterIndex());save();
 refreshSloths();
 setMode('journey');
+if(!SAVE.seenHelp)openHelp(true);
 </script>
 
 <!-- Install support: offline cache + "Add to Home Screen" hint for iPhone (Apple never prompts on its own) -->
