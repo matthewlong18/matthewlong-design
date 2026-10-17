@@ -207,6 +207,16 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-s
 .modes button[aria-pressed="true"] span{color:var(--tray);opacity:.85}
 .modes button:focus-visible,.helpcard .go:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .helpcard .fine{font-size:12.5px;color:var(--muted);margin:0}
+.helpcard .sh{margin:0 0 8px;font-size:15.5px}
+.helpcard .sh small{font-weight:400;color:var(--muted);font-size:12.5px}
+.segs{display:flex;flex-wrap:wrap;gap:5px}
+.segs button{border:2px solid var(--ink);background:transparent;border-radius:999px;padding:5px 11px;font:700 13px var(--f-body);color:var(--ink);cursor:pointer}
+.segs button[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--tray)}
+.segs button:focus-visible,.linkbtn:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.rule{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px dashed #d2cab5}
+.rule b{font-size:14.5px;display:block}.rule small{font-size:12.5px;color:var(--muted);line-height:1.4;display:block}
+.custom.off .segs{opacity:.6}
+.linkbtn{border:0;background:none;padding:0;font:inherit;color:var(--forest);font-weight:800;text-decoration:underline;cursor:pointer}
 /* lesson + travel notes cards */
 .lesson{background:var(--tray);border:2px solid var(--gold);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
 .slip .lesson{background:#fff8e8}
@@ -424,6 +434,7 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
     <button class="mascot" id="mascot" type="button" aria-label="Poke the sloth"></button>
     <div class="who"><h1>Slothdoku</h1><div class="bubble" id="bubble" aria-live="polite">Slow down. Think. Place a sloth.</div></div>
     <button class="icon" id="help" type="button" aria-label="How to play" title="How to play">?</button>
+    <button class="icon" id="settings" type="button" aria-label="Settings" title="Settings">⚙</button>
     <button class="icon" id="sound" type="button" aria-pressed="true" aria-label="Sound" title="Sound">♪</button>
   </header>
   <div class="tabs" role="tablist">
@@ -909,10 +920,29 @@ function baseStageAt(c){let st=STAGES[0];STAGES.forEach(x=>{if(c>=x.from)st=x});
 const DIFFS={
  easy:{name:'Easy',blurb:'Auto-X always on, 3 hints and 3 leaves every board, gentle logic, boards top out at 8×8. Standard tips.'},
  normal:{name:'Normal',blurb:'The classic ramp. Rules tighten slowly as you travel: Auto-X retires, hints shrink, the Wild stretch has no safety net.'},
- hard:{name:'Hard',blurb:'No Auto-X, one less hint, bigger boards sooner, real-deduction puzzles from level 17, Wild from level 51. +0.5 tip bonus on every board.'}
+ hard:{name:'Hard',blurb:'No Auto-X, one less hint, bigger boards sooner, real-deduction puzzles from level 17, Wild from level 51. +0.5 tip bonus on every board.'},
+ custom:{name:'Custom',blurb:'Set each rule yourself.'},
 };
+/* Custom: each rule either follows the journey ramp or is fixed */
+const CUSTOM_OPTS=[
+ {k:'autox',lab:'Auto-X',note:'Marks X’s for you around each sloth.',opts:[['ramp','Journey'],['on','Always on'],['off','Off']]},
+ {k:'hints',lab:'Hints per board',opts:[['ramp','Journey'],['0','0'],['1','1'],['2','2'],['3','3']]},
+ {k:'check',lab:'Leaves & checking',note:'Off = Wild: wrong sloths aren’t flagged.',opts:[['ramp','Journey'],['on','Always on'],['off','Off']]},
+ {k:'logic',lab:'Puzzle logic',opts:[['ramp','Journey'],['gentle','Gentle'],['sharp','Sharp']]},
+ {k:'size',lab:'Biggest board',opts:[['ramp','Journey'],['6','6×6'],['7','7×7'],['8','8×8'],['9','9×9'],['10','10×10']]}
+];
+const CUSTOM_DEF={autox:'ramp',hints:'ramp',check:'ramp',logic:'ramp',size:'ramp'};
 function applyDiff(st,c){
   const d=SAVE.diff||'normal';
+  if(d==='custom'){const o=Object.assign({},CUSTOM_DEF,SAVE.custom),r=Object.assign({},st);
+    if(o.autox!=='ramp')r.autox=o.autox==='on';
+    if(o.hints!=='ramp')r.hints=+o.hints;
+    if(o.check!=='ramp')r.check=o.check==='on';
+    if(o.logic==='gentle'){r.minTier=1;r.maxTier=2}else if(o.logic==='sharp'){r.minTier=3;r.maxTier=9}
+    if(o.size!=='ramp')r.n=Math.min(r.n,+o.size);
+    r.mult=(r.minTier>2?1.5:1)+(r.check?0:.5);
+    if(!r.check)r.hints=0;
+    return r}
   if(d==='easy')return Object.assign({},st,{autox:true,hints:Math.max(st.hints,3),check:true,minTier:1,maxTier:2,n:Math.min(st.n,8),mult:1});
   if(d==='hard')return Object.assign({},st,{autox:false,hints:Math.max(0,st.hints-1),n:c>=10?Math.min(st.n+1,10):st.n,
     minTier:c>=16?3:st.minTier,maxTier:c>=16?9:st.maxTier,check:c>=50?false:st.check,mult:st.mult+.5});
@@ -1060,7 +1090,7 @@ function hashStr(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Ma
 /* ================= saved progress (this browser only) ================= */
 const KEY='slothdoku-v3';
 function load(){
-  const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,seenHelp:false,diff:'normal',chapter:0,newItems:false,
+  const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,seenHelp:false,diff:'normal',custom:{},shadow:true,chapter:0,newItems:false,
     coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:6};
   const sumL=o=>(o.levels.chill-1)+(o.levels.tricky-1)+(o.levels.wild-1);
   const backPay=o=>10+5*sumL(o);
@@ -1294,7 +1324,8 @@ function sceneFor(L,part){
   const b=beatFor(L);
   return{bg:L.bg,cust:b.all?null:(b.c||L.leg.cust),crowd:b.all?STORY_CAST:null,lines:part==='in'?b.i:[b.x]};
 }
-function introScene(){const L=curLeg(),sc=sceneFor(L,'in');if(L.k===0||!SAVE.seenIntro)sc.title=legTitle(L);return sc}
+let arriving=false;
+function introScene(){const L=curLeg(),sc=sceneFor(L,'in');if(L.k===0||!SAVE.seenIntro)sc.title=legTitle(L);if(arriving&&L.k===0)sc.lines=[['m',L.leg.tease],...sc.lines];arriving=false;return sc}
 
 /* ================= game state ================= */
 const boardEl=document.getElementById('board'),slip=document.getElementById('slip'),brew=document.getElementById('brew'),piecesEl=document.getElementById('pieces');
@@ -1348,7 +1379,7 @@ function pmove(e){
   if(e.clientY<70)scrollBy(0,-16);else if(e.clientY>innerHeight-70)scrollBy(0,16);
   p.style.left=(e.clientX-offX)+'px';p.style.top=(e.clientY-offY-up)+'px';
   const t=ptarget(),reg=+p.dataset.reg,ok=t.close&&t.gx===+p.dataset.ox&&t.gy===+p.dataset.oy;
-  [...boardEl.children].forEach(b=>b.classList.toggle('ghost',ok&&P.g[+b.dataset.y][+b.dataset.x]===reg));
+  [...boardEl.children].forEach(b=>b.classList.toggle('ghost',ok&&SAVE.shadow!==false&&P.g[+b.dataset.y][+b.dataset.x]===reg));
 }
 function ptarget(){
   const pr=pdrag.p.getBoundingClientRect(),br=boardEl.getBoundingClientRect(),c=cellPx();
@@ -1639,35 +1670,37 @@ function win(){
   SAVE.chapter=Math.max(SAVE.chapter,chapterIndex());save();
   const got=checkUnlocks(),L1=legAt(c0+1),newLeg=L1.key!==L0.key?L1:null,notes=stageChanges(st0,stageAt(c0+1));
   refreshSloths();
-  setTimeout(async()=>{
-    if(SAVE.scenes){
-      await playScene(sceneFor(L0,'out'));
-      if(newLeg&&L0.kind==='story'){
-        const ls=LESSONS[L0.i],who=ls.cheer[0];
-        await playScene({bg:L0.bg,party:true,title:['Chapter complete',L0.leg.title],cust:L0.i<6?L0.leg.cust:null,crowd:L0.i===6?STORY_CAST:null,lines:[[L0.i<6?'c':who,ls.cheer[1]],['m','Lesson learned: '+ls.lesson]]});
-      }
-      if(stamp){const w=WISDOM[stamp.id];await playScene({bg:L0.bg,party:true,title:['Country complete',stamp.name],cust:stamp.cust,lines:[['c',`Before you go, an old saying from here${w.say?': '+w.say:'.'}`],['c',`“${w.en}”`],['m','Lesson learned: '+w.why]]})}
+  /* order: level thank-you → tip jar → (tap Continue) victory + wisdom → stamp → flight → new spot intro */
+  const after=newLeg?async()=>{
+    slip.hidden=true;done=true;document.getElementById('trip').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'});
+    if(L0.kind==='story'){
+      const ls=LESSONS[L0.i],who=ls.cheer[0];
+      await playScene({bg:L0.bg,party:true,title:['Chapter complete',L0.leg.title],cust:L0.i<6?L0.leg.cust:null,crowd:L0.i===6?STORY_CAST:null,lines:[[L0.i<6?'c':who,ls.cheer[1]],['m','Lesson learned: '+ls.lesson]]});
+    }else{
+      const w=WISDOM[L0.leg.id];
+      await playScene({bg:L0.bg,party:true,title:['Country complete',L0.leg.name],cust:L0.leg.cust,lines:[['c',`You did it! Before you go, an old saying from here${w.say?': '+w.say:'.'}`],['c',`“${w.en}”`],['m','Lesson learned: '+w.why]]});
       if(stamp)await passportPop(stamp,SAVE.stamps.length);
-      if(newLeg){const t=travelFor(L0,newLeg);await playScene({travel:t,lines:[['m',pick(TRAVEL_LINES[t.v])]]});await playScene({bg:newLeg.bg,title:legTitle(newLeg),lines:[['m',newLeg.leg.tease]]})}
     }
-    tipJar({k,tips,total,Lv,got,newLeg,notes,stamp});
+    const t=travelFor(L0,newLeg);await playScene({travel:t,lines:[['m',pick(TRAVEL_LINES[t.v])]]});
+    arriving=true;start();
+  }:null;
+  setTimeout(async()=>{
+    if(SAVE.scenes)await playScene(sceneFor(L0,'out'));
+    tipJar({k,tips,total,Lv,got,newLeg,notes,stamp,after});
   },1100);
 }
-function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily}){
+function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after}){
   const L0done=legAt(daily?0:Lv-1);
   slip.innerHTML=`<div class="stars">${starHTML(k)}</div>
     <h2>${daily?"Today's puzzle, solved":`Level ${Lv} cleared in ${fmt(elapsed)}`}</h2>
     <div id="jarArea" class="tipjar">${JAR}<div class="tally">${tips.map(([l,v])=>`<div><span>${l}</span><span>+${v}</span></div>`).join('')}<div class="tot"><span>Tips</span><span class="coins"><span class="coin"></span><span id="totN">0</span></span></div></div></div>
-    ${stamp?`<div class="stampbig">${stampSVG(stamp,true,Lv)}<p><b>Passport stamped: ${stamp.name}.</b> ${SAVE.stamps.length} of ${COUNTRIES.length} countries collected. Your passport lives in your Napsack.</p></div>`:''}
-    ${newLeg&&L0done.kind==='story'?lessonCard(L0done.i):''}
-    ${stamp?wisdomCard(stamp):''}
     ${stamp&&!SAVE.scenes?notesCard(stamp):''}
     ${newLeg&&newLeg.kind==='story'&&!SAVE.scenes?chapterHTML(newLeg.leg,newLeg.i):''}
     ${newLeg?`<p><b>Next stop:</b> ${legTitle(newLeg)[1]}.${newLeg.kind==='story'?' Read every chapter in your Napsack.':''}</p>`:''}
     ${unlockHTML(got||[])}
     ${triviaHTML(daily?null:L0done)}
     ${notes.length?`<div class="notes"><p><b>What changes next level</b></p>${notes.map(n=>`<p>${n}</p>`).join('')}</div>`:''}
-    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':'<button class="btn go" type="button" id="next">Next level</button>'}<button class="btn" type="button" id="share">Copy result</button></div>
+    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':`<button class="btn go" type="button" id="next">${after?(newLeg.kind==='tour'?'Continue the trip ✈':'Continue the story ▸'):'Next level'}</button>`}<button class="btn" type="button" id="share">Copy result</button></div>
     ${(daily||Lv%3===0)?ad():''}`;
   slip.hidden=false;
   const rows=[...slip.querySelectorAll('.tally div')],totN=document.getElementById('totN');
@@ -1678,7 +1711,7 @@ function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily}){
     i++;setTimeout(stepRow,reduced?0:260);
   };
   stepRow();wireTrivia();renderTrip();
-  if(daily)document.getElementById('back').onclick=()=>setMode('journey');else document.getElementById('next').onclick=()=>start();
+  if(daily)document.getElementById('back').onclick=()=>setMode('journey');else document.getElementById('next').onclick=()=>after?after():start();
   const where=daily?'':` · ${legTitle(legAt(Lv-1))[1]}`;
   document.getElementById('share').onclick=()=>copy(daily?`Slothdoku · today's puzzle 🦥\n${'⭐'.repeat(k)} in ${fmt(elapsed)}`:`Slothdoku level ${Lv}${where} 🦥 ${'⭐'.repeat(k)} in ${fmt(elapsed)}`);
   setTimeout(()=>slip.scrollIntoView({behavior:reduced?'auto':'smooth',block:'nearest'}),200);
@@ -1942,11 +1975,12 @@ function openHelp(first){
     ${step(3,'Controls','<b>Tap</b> a square to mark an X. <b>Hold</b> (or right-click) to place a sloth. <b>Swipe</b> to X lots of squares. Wrong sloths cost a leaf. Lose 3 leaves and you retry.')}
     ${step(4,'Earn tips','Clear a level to fill the tip jar. Spend coins on outfits in your <b>Napsack</b>. Answer the trivia for bonus tips.')}
     ${step(5,'Travel','The story takes Mocha to 7 stops. Then the World Tour: 8 countries, 5 levels each. Finish one to get a passport stamp, travel notes and a piece of ancient wisdom.')}
-    <div><h3 style="margin:0 0 8px;font-size:15.5px">Pick your mode</h3><div class="modes">${Object.entries(DIFFS).map(([k,d])=>`<button type="button" data-diff="${k}" aria-pressed="${(SAVE.diff||'normal')===k}"><b>${d.name}</b><span>${d.blurb}</span></button>`).join('')}</div></div>
-    <p class="fine">Switch anytime from the ? button. Your level, coins and stamps stay the same.</p>
+    <div><h3 style="margin:0 0 8px;font-size:15.5px">Pick your mode</h3><div class="modes">${Object.entries(DIFFS).filter(([k])=>k!=='custom').map(([k,d])=>`<button type="button" data-diff="${k}" aria-pressed="${(SAVE.diff||'normal')===k}"><b>${d.name}</b><span>${d.blurb}</span></button>`).join('')}</div></div>
+    <p class="fine">Want to fine-tune each rule, or turn off the piece shadow? Open <button type="button" class="linkbtn" id="helpSet">⚙ Settings</button>. Your level, coins and stamps never change.</p>
     <button class="btn go" type="button" id="helpGo">${first?"Let's go":'Back to the puzzle'}</button></div></div>`;
     host.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{const was=SAVE.diff||'normal';SAVE.diff=b.dataset.diff;save();sfx.sloth();draw();if(was!==SAVE.diff)host.dataset.changed='1';host.querySelector(`[data-diff="${SAVE.diff}"]`).focus()});
     host.querySelector('#helpGo').onclick=close;
+    host.querySelector('#helpSet').onclick=()=>{close();openSettings()};
   };
   const close=()=>{const ch=host.dataset.changed;host.innerHTML='';delete host.dataset.changed;SAVE.seenHelp=true;save();
     if(ch&&mode==='journey'){say('idle',`${DIFFS[SAVE.diff].name} mode. Fresh puzzle coming up.`);start()}};
@@ -1955,6 +1989,39 @@ function openHelp(first){
   host.querySelector('.helpov').onclick=e=>{if(e.target.classList.contains('helpov'))close()};
 }
 document.getElementById('help').onclick=()=>openHelp(false);
+
+/* ================= settings: difficulty presets, custom rules, piece shadow ================= */
+function openSettings(){
+  let host=document.getElementById('sethost');if(!host){host=document.createElement('div');host.id='sethost';document.body.appendChild(host)}
+  const startDiff=SAVE.diff||'normal',startSig=JSON.stringify(SAVE.custom||{});
+  SAVE.custom=Object.assign({},CUSTOM_DEF,SAVE.custom);
+  const seg=(k,opts,cur)=>`<div class="segs" role="group">${opts.map(([v,l])=>`<button type="button" data-k="${k}" data-v="${v}" aria-pressed="${String(cur)===v}">${l}</button>`).join('')}</div>`;
+  const draw=()=>{
+    const d=SAVE.diff||'normal',cust=d==='custom';
+    host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="setTitle"><div class="helpcard">
+      <h2 id="setTitle">Settings</h2><p class="sub">Changes apply from the next puzzle. Level, coins and stamps never change.</p>
+      <div><h3 class="sh">Difficulty</h3>${seg('diff',Object.entries(DIFFS).map(([k,v])=>[k,v.name]),d)}<p class="fine" style="margin-top:6px">${DIFFS[d].blurb}</p></div>
+      <div class="custom${cust?'':' off'}"><h3 class="sh">Rules ${cust?'':'<small>(tap any to switch to Custom)</small>'}</h3>
+        ${CUSTOM_OPTS.map(o=>`<div class="rule"><div><b>${o.lab}</b>${o.note?`<small>${o.note}</small>`:''}</div>${seg(o.k,o.opts,cust?SAVE.custom[o.k]:'')}</div>`).join('')}
+        <p class="fine">“Journey” means it tightens as you travel, like Normal. Tips: ×1.5 for sharp logic, +0.5 with checking off.</p></div>
+      <div><h3 class="sh">Build phase</h3><div class="rule"><div><b>Piece shadow</b><small>Shows where a piece will land when you drag it over the right spot.</small></div>${seg('shadow',[['on','On'],['off','Off']],SAVE.shadow===false?'off':'on')}</div></div>
+      <button class="btn go" type="button" id="setGo">Done</button></div></div>`;
+    host.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{
+      const k=b.dataset.k,v=b.dataset.v;
+      if(k==='diff')SAVE.diff=v;
+      else if(k==='shadow')SAVE.shadow=v==='on';
+      else{SAVE.diff='custom';SAVE.custom[k]=v}
+      save();sfx.sloth();draw();const f=host.querySelector(`[data-k="${k}"][data-v="${v}"]`);if(f)f.focus();
+    });
+    host.querySelector('#setGo').onclick=close;
+    host.querySelector('.helpov').onclick=e=>{if(e.target.classList.contains('helpov'))close()};
+    host.querySelector('.helpov').onkeydown=e=>{if(e.key==='Escape')close()};
+  };
+  const close=()=>{host.innerHTML='';const changed=(SAVE.diff||'normal')!==startDiff||(SAVE.diff==='custom'&&JSON.stringify(SAVE.custom)!==JSON.stringify(Object.assign({},CUSTOM_DEF,JSON.parse(startSig))));
+    if(changed&&mode==='journey'&&!done){say('idle',`${DIFFS[SAVE.diff].name} mode. Fresh puzzle coming up.`);start()}};
+  draw();host.querySelector('#setGo').focus();
+}
+document.getElementById('settings').onclick=openSettings;
 
 /* ================= boot ================= */
 SAVE.scenes=true;SAVE.scenery=true; /* settings removed: scenes and scenery always on */
