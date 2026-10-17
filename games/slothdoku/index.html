@@ -229,6 +229,30 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-s
 .epilogue .sig{font-style:italic;color:var(--muted)}
 .epilogue .eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--forest)}
 .epilogue .endbtn{text-align:center}
+/* hammock ending */
+.hmk{position:fixed;inset:0;z-index:90;background:#000;overflow:hidden}
+.hmk .cam{position:absolute;inset:0;transform-origin:53.5% 52%;animation:hpan 8s ease-in-out .3s both}
+.hmk .cam>svg{width:100%;height:100%;display:block;overflow:visible}
+@keyframes hpan{0%{transform:scale(3.1)}100%{transform:scale(1)}}
+.hmk .hsway{transform-origin:205px 168px;animation:hsway 3.2s ease-in-out infinite alternate}
+@keyframes hsway{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
+.hmk .hpalm{transform-origin:96px 300px;animation:hpalm 4s ease-in-out infinite alternate}.hmk .hpalm.b{transform-origin:312px 300px;animation-delay:-2s}
+@keyframes hpalm{from{transform:rotate(-1deg)}to{transform:rotate(1.2deg)}}
+.hmk .hzz{animation:hzz 2.6s ease-out infinite}
+@keyframes hzz{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(14px,-20px)}}
+.hmk .black{position:absolute;inset:0;background:#0d0f12;opacity:0;animation:hblack 2.4s ease-in 8.4s forwards;pointer-events:none}
+@keyframes hblack{to{opacity:1}}
+.hmk .txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;color:#f4efe6;opacity:0;pointer-events:none;transition:opacity 1.6s ease}
+.hmk.done .txt{opacity:1;pointer-events:auto}
+.hmk.skipped .black{animation:none;opacity:1}.hmk.skipped .txt{transition:opacity .4s}
+.hmk .q{font-family:var(--f-display);font-weight:600;font-style:italic;font-size:22px;line-height:1.35;max-width:24ch;margin:0;text-wrap:balance}
+.hmk .qby{margin:0;font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.hmk .more{margin:14px 0 4px;font-size:14.5px;line-height:1.55;opacity:.88;max-width:34ch}
+.hmk .btn{flex:none;padding:12px 18px;width:min(100%,300px);text-decoration:none;text-align:center;box-sizing:border-box}
+.hmk .btn:not(.go){background:transparent;color:#f4efe6;border-color:#f4efe6}
+.hmk .hskip{position:absolute;top:14px;right:14px;z-index:2}
+.hmk.done .hskip{display:none}
+@media (prefers-reduced-motion:reduce){.hmk .cam,.hmk .hsway,.hmk .hpalm,.hmk .hzz{animation:none}.hmk .black{animation:none;opacity:1}}
 /* lesson + travel notes cards */
 .lesson{background:var(--tray);border:2px solid var(--gold);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
 .slip .lesson{background:#fff8e8}
@@ -1152,7 +1176,7 @@ function legAt(c){
   return{kind:'tour',i,leg:COUNTRIES[i],k:t%TOUR_LEN,len:TOUR_LEN,round,bg:CHAPTERS.length+i,key:'t'+i+'r'+round};
 }
 const curLeg=()=>legAt(stats().cleared);
-function legTitle(L){return L.kind==='free'?['Free play · the journey is complete','Café Basecamp']:L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[`World Tour · stop ${L.i+1} of ${COUNTRIES.length}${L.round?' · encore':''}`,L.leg.name]}
+function legTitle(L){return L.kind==='free'?['Free play · new stops coming as Matthew travels','Café Basecamp']:L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[`World Tour · stop ${L.i+1} of ${COUNTRIES.length}${L.round?' · encore':''}`,L.leg.name]}
 function chapterIndex(){return legAt(Math.min(stats().cleared,TOUR_AT-1)).i}
 const dailyDone=()=>!!SAVE.daily['d:'+todayKey()];
 function chapterHTML(ch,i){return `<div class="chapter"><div class="eyebrow">Chapter ${i+1} of ${CHAPTERS.length}</div><h3>${ch.title}</h3><p>${ch.text}</p></div>`}
@@ -1695,13 +1719,14 @@ function win(){
     if(L0.kind==='story'){
       const ls=LESSONS[L0.i],who=ls.cheer[0];
       await playScene({bg:L0.bg,party:true,title:['Chapter complete',L0.leg.title],cust:L0.i<6?L0.leg.cust:null,crowd:L0.i===6?STORY_CAST:null,lines:[[L0.i<6?'c':who,ls.cheer[1]],['m','Lesson learned: '+ls.lesson]]});
+      if(newLeg.kind==='tour'){SAVE.finished=true;save();await endCard()}
     }else{
       const w=WISDOM[L0.leg.id];
       await playScene({bg:L0.bg,party:true,title:['Country complete',L0.leg.name],cust:L0.leg.cust,lines:[['c',`You did it! Before you go, an old saying from here${w.say?': '+w.say:'.'}`],['c',`“${w.en}”`],['m','Lesson learned: '+w.why]]});
       if(stamp)await passportPop(stamp,SAVE.stamps.length);
       if(newLeg.kind==='free'){
-        await playScene({bg:CHAPTERS.length-1,party:true,title:['The journey is complete','8 of 8 stamps'],crowd:STORY_CAST,lines:[['m',"Eight countries. Eight stamps. One very full passport."],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Now it's your turn. Go start your own thing. I believe in you."]]});
-        SAVE.finished=true;save();await endCard();holdLeg=null;start();return;
+        await playScene({bg:CHAPTERS.length-1,party:true,title:['World Tour complete','8 of 8 stamps'],crowd:STORY_CAST,lines:[['m',"Eight countries. Eight stamps. One very full passport."],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Right. Time for a well-earned nap."]]});
+        SAVE.toured=true;save();await hammockEnding();holdLeg=null;start();return;
       }
     }
     holdLeg=null;renderTrip();
@@ -1724,7 +1749,7 @@ function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after}){
     ${unlockHTML(got||[])}
     ${triviaHTML(daily?null:L0done)}
     ${notes.length?`<div class="notes"><p><b>What changes next level</b></p>${notes.map(n=>`<p>${n}</p>`).join('')}</div>`:''}
-    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':`<button class="btn go" type="button" id="next">${after?(newLeg.kind==='free'?'Finish the journey ✦':newLeg.kind==='tour'?'Continue the trip ✈':'Continue the story ▸'):'Next level'}</button>`}<button class="btn" type="button" id="share">Copy result</button></div>
+    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':`<button class="btn go" type="button" id="next">${after?(newLeg.kind==='free'?'Finish the World Tour ✦':newLeg.kind==='tour'?'Continue the trip ✈':'Continue the story ▸'):'Next level'}</button>`}<button class="btn" type="button" id="share">Copy result</button></div>
     ${(daily||Lv%3===0)?ad():''}`;
   slip.hidden=false;
   const rows=[...slip.querySelectorAll('.tally div')],totN=document.getElementById('totN');
@@ -1999,12 +2024,58 @@ function endCard(){
   return new Promise(res=>{
     let host=document.getElementById('endhost');if(!host){host=document.createElement('div');host.id='endhost';document.body.appendChild(host)}
     host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="endTitle"><div class="helpcard endcard">
-      <div class="endart">${slothSVG(SAVE.equip)}</div><h2 id="endTitle">The end</h2>${endNote()}
-      <button class="btn" type="button" id="endGo">Keep playing (free play)</button>
-      <p class="fine">Free play: endless puzzles at Café Basecamp, no story. Your passport and wisdom stay in your Napsack.</p></div></div>`;
+      <div class="endart">${slothSVG(SAVE.equip)}</div><h2 id="endTitle">The café is open</h2>${endNote()}
+      <button class="btn" type="button" id="endGo">Start the World Tour ✈</button>
+      <p class="fine">8 countries, 5 levels each. This note stays in your Napsack.</p></div></div>`;
     sfx.win&&sfx.win();burst(90);
     const close=()=>{host.innerHTML='';res()};
     host.querySelector('#endGo').onclick=close;host.querySelector('#endGo').focus();
+  });
+}
+/* ================= the real ending: Mocha in a hammock, pan out, fade to black ================= */
+const IG_URL=''; /* Matthew's Instagram, e.g. https://www.instagram.com/handle/ — button hides while empty */
+function hammockArt(){
+  const mocha=slothSVG(SAVE.equip).replace('<svg viewBox','<svg x="186" y="128" width="46" height="48" viewBox');
+  return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  <defs><linearGradient id="hsky" gradientUnits="userSpaceOnUse" x1="0" y1="-250" x2="0" y2="200"><stop offset="0" stop-color="#3b4a72"/><stop offset=".45" stop-color="#e9866a"/><stop offset=".75" stop-color="#f2c27a"/></linearGradient></defs>
+  <rect x="-400" y="-500" width="1200" height="800" fill="url(#hsky)"/>
+  <circle cx="300" cy="196" r="34" fill="#fbe3a6" opacity=".95"/>
+  <rect x="-400" y="196" width="1200" height="40" fill="#c0563f" opacity=".55"/><path d="M0 206h400M40 214h320M90 222h220" stroke="#fbe3a6" stroke-width="2" opacity=".5"/>
+  <path d="M0 232q200-18 400 0v68H0z" fill="#e2c9a0"/><rect x="-400" y="232" width="400" height="600" fill="#e2c9a0"/><rect x="400" y="232" width="400" height="600" fill="#e2c9a0"/><rect x="-400" y="299" width="1200" height="600" fill="#e2c9a0"/>
+  <g class="hpalm"><path d="M92 300q-8-80 8-150" stroke="#5a3f2c" stroke-width="9" fill="none" stroke-linecap="round"/>
+   <path d="M100 150q-40-10-62 12M100 150q-30-30-58-20M100 150q10-38 44-40M100 150q40-12 58 10M100 150q20 10 30 40" stroke="#2f5d44" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+  <g class="hpalm b"><path d="M312 300q10-80-6-150" stroke="#5a3f2c" stroke-width="9" fill="none" stroke-linecap="round"/>
+   <path d="M306 150q40-10 62 12M306 150q30-30 58-20M306 150q-10-38-44-40M306 150q-40-12-58 10M306 150q-20 10-30 40" stroke="#2f5d44" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+  <g class="hsway">
+   <path d="M101 168Q205 222 308 168" stroke="#8a6416" stroke-width="2" fill="none"/>
+   <ellipse cx="214" cy="186" rx="40" ry="12" fill="${furColor()}"/>
+   ${mocha}
+   <path d="M232 178q14-8 20-22" stroke="${furColor()}" stroke-width="6" fill="none" stroke-linecap="round"/>
+   <g transform="rotate(18 254 150)"><rect x="250" y="138" width="9" height="20" rx="3" fill="#a8641f"/><rect x="252" y="131" width="5" height="9" rx="1.5" fill="#a8641f"/><rect x="250" y="144" width="9" height="6" fill="#fbf8f0"/></g>
+   <path d="M104 170Q205 238 306 170Q290 206 205 210Q122 206 104 170z" fill="#c0563f"/>
+   <path d="M120 182Q205 228 292 182" stroke="#e9b949" stroke-width="3" fill="none"/><path d="M130 194Q205 230 282 194" stroke="#2f5f9e" stroke-width="3" fill="none"/>
+  </g>
+  <text class="hzz" x="222" y="124" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="14" fill="#fbf8f0">z</text>
+  </svg>`;
+}
+function hammockEnding(){
+  return new Promise(res=>{
+    let host=document.getElementById('hmkhost');if(!host){host=document.createElement('div');host.id='hmkhost';document.body.appendChild(host)}
+    host.innerHTML=`<div class="hmk" role="dialog" aria-modal="true" aria-labelledby="hmkQ">
+      <div class="cam">${hammockArt()}</div><div class="black"></div>
+      <div class="txt">
+        <p class="q" id="hmkQ">“A good traveller has no fixed plans, and is not intent on arriving.”</p>
+        <p class="qby">Lao Tzu</p>
+        <p class="more">Mocha's not done travelling. Neither am I.<br>New stops get added to Slothdoku as I visit new places.</p>
+        ${IG_URL?`<a class="btn go" href="${IG_URL}" target="_blank" rel="noopener">Follow the trip on Instagram</a>`:''}
+        <button class="btn" type="button" id="hmkGo">Keep playing (free play)</button>
+      </div>
+      <button class="skip hskip" type="button" id="hmkSkip">Skip</button></div>`;
+    const el=host.querySelector('.hmk');
+    const showText=()=>{el.classList.add('done');host.querySelector('#hmkGo').focus()};
+    const t=setTimeout(showText,reduced?300:10500);
+    host.querySelector('#hmkSkip').onclick=()=>{clearTimeout(t);el.classList.add('skipped');showText()};
+    host.querySelector('#hmkGo').onclick=()=>{clearTimeout(t);host.innerHTML='';res()};
   });
 }
 /* ================= how to play: explainer + difficulty picker ================= */
