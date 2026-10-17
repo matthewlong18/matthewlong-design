@@ -123,18 +123,17 @@
   <div class="grain"></div>
 
   <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);position:relative;z-index:1">
-    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">A hero's journey, roughly</div>
-    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;max-width:640px">How a construction-site kid from Toronto stopped getting ready and started building.</h2>
+    <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">How I got here</div>
+    <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;max-width:640px">I took the Long way.</h2>
 
     <div style="margin-top:clamp(32px,5vw,52px);display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(24px,3vw,40px)">
-      <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="5">
+      <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="6">
         <div id="chapter-{{ $index }}" data-reveal class="rv">
           <div style="display:flex;align-items:center;gap:10px">
             <span style="width:10px;height:10px;border-radius:50%;background:#ec6a26;flex:none"></span>
             <div style="flex:1;height:0;border-top:1.5px dashed rgba(22,19,13,.3)"></div>
           </div>
-          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#a8391a;margin-top:16px">{{ ch.stage }}</div>
-          <h3 style="font:600 clamp(22px,2.6vw,28px)/1.1 'Space Grotesk',sans-serif;margin:8px 0 0">{{ ch.place }}</h3>
+          <h3 style="font:600 clamp(22px,2.6vw,28px)/1.1 'Space Grotesk',sans-serif;margin:16px 0 0">{{ ch.place }}</h3>
           <div style="font:500 12px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:6px">{{ ch.code }} · {{ ch.years }}</div>
           <p style="font:400 16px/1.55 'IBM Plex Sans',sans-serif;color:#3a342a;margin:14px 0 0">{{ ch.body }}</p>
         </div>
@@ -142,7 +141,7 @@
     </div>
 
     <div style="margin-top:clamp(40px,6vw,72px);border-top:1px solid rgba(22,19,13,.14);padding-top:clamp(28px,3vw,40px)">
-      <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">The elixir · what I brought back</div>
+      <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">What I brought back</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:clamp(22px,3vw,40px);margin-top:22px">
       <div data-reveal class="rv">
         <div style="font:700 14px 'IBM Plex Mono',monospace;color:#2b5fa8">01</div>
@@ -606,16 +605,18 @@ class Component extends DCLogic {
     const dim = '#5c5344', lit = '#a8391a';
 
     const chapterData = [
-      { stage: 'The ordinary world', code: 'YYZ', years: "'14–'19", place: 'Toronto, Canada',
-        body: "Construction sites, then ad budgets at a big telecom. On my way out I shipped an automation my boss didn't want, because he'd rather have more headcount. I always liked the systems more than the slides about them." },
-      { stage: 'The call', code: 'SE-ASIA', years: "'19–'21", place: 'Asia & the Pacific',
-        body: "Took the buyout right after my first trip to Peru and bought the ticket. Cafés, bad wifi, great coffee." },
-      { stage: 'The stall', code: 'CPH', years: "'21–'25", place: 'Copenhagen, Denmark',
-        body: "Followed my Danish partner to Copenhagen. Travel had turned into a checklist, and courses turned into a hiding spot. I kept collecting, waiting for permission to start." },
-      { stage: 'The ordeal', code: 'CPH → YYZ', years: "Jan '26", place: 'The metro platform',
+      { code: 'YYZ', years: "'14–'19", place: 'Toronto, Canada',
+        body: "Construction sites, then ad budgets at a big telecom. On my way out I shipped an automation my boss didn't want, because he'd rather have more headcount. Then I took the buyout." },
+      { code: 'SE-ASIA', years: "'19–'21", place: 'Asia & the Pacific',
+        body: "Peru lit the fuse, so I bought the ticket. Cafés, bad wifi, great coffee. Travel as a checklist: one more country, one more stamp." },
+      { code: 'COL', years: "'21", place: 'Colombia',
+        body: "Somewhere between the hostels I met my partner, and started wanting something more than the next stamp in my passport." },
+      { code: 'CPH', years: "'22–'25", place: 'Copenhagen, Denmark',
+        body: "Back to living paycheck to paycheck. Moved to Copenhagen, collected courses, and told myself I'd start once I was ready." },
+      { code: 'CPH → YYZ', years: "Jan '26", place: 'The metro platform',
         body: "Heading home to Canada after my working holiday, I couldn't afford the metro ticket to my own flight. That was the bottom." },
-      { stage: 'The return', code: 'CPH', years: "'26–now", place: 'Copenhagen, for real',
-        body: "Swapped courses for coaches. Less learning, more doing, someone to hold me to it. Now I build systems for solo business owners: slowly, with a good cup, and never alone." }
+      { code: 'CPH', years: "'26–now", place: 'Copenhagen, for real',
+        body: "So I bet on myself. Coaches instead of courses, and I started before I was ready. Now I'm launching: building systems for solo business owners, slowly, with a good cup, and never alone." }
     ];
 
     const projData = [
