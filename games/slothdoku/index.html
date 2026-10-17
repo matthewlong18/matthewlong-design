@@ -372,7 +372,11 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .preview p{margin:4px 0 0;color:var(--muted);line-height:1.4}
 .meter{height:8px;border-radius:99px;background:var(--bg);overflow:hidden;margin-top:8px}
 .meter span{display:block;height:100%;background:var(--forest)}
-.closet h3.sec{font-family:var(--f-display);font-weight:600;font-size:18px;margin:0}
+.nsnav{position:sticky;top:6px;z-index:5;display:flex;flex-wrap:wrap;justify-content:center;gap:5px;padding:6px;border-radius:16px;background:rgba(239,233,218,.86);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 6px 14px -12px rgba(31,58,44,.6)}
+.nsnav button{flex:none;border:2px solid var(--ink);background:var(--tray);border-radius:999px;padding:4px 10px;font:700 12.5px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap}
+.nsnav button:active{background:var(--forest);color:var(--tray);border-color:var(--forest)}
+.nsnav button:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.closet h3.sec{scroll-margin-top:88px;font-family:var(--f-display);font-weight:600;font-size:18px;margin:0}
 .closet .secnote{font-size:13px;color:var(--muted);margin:-10px 0 0}
 .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
 .item{border:2px solid var(--ink);border-radius:12px;background:var(--tray);padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;font:700 12.5px var(--f-body);color:var(--ink);cursor:pointer;text-align:center;line-height:1.2}
@@ -1859,7 +1863,8 @@ function renderCloset(){
     <p>${eb}: ${lt} · level ${SAVE.level}</p>
     <div class="meter" aria-label="Progress through this stop"><span style="width:${pct}%"></span></div><p style="font-size:12.5px">${L.len-L.k} more level${L.len-L.k===1?'':'s'} until the next stop · ${SAVE.stamps.length}/${COUNTRIES.length} stamps</p>
   </div></div>
-  <h3 class="sec">Shop & wardrobe</h3><p class="secnote">Earn coins from tips. Gold items are for sale; trip gear (below) unlocks as you travel; dashed ones are trophies you earn by doing something.</p>`;
+  <nav class="nsnav" aria-label="Napsack sections"><button type="button" data-jump="ns-shop">Shop</button><button type="button" data-jump="ns-gear">Gear</button><button type="button" data-jump="ns-pass">Passport</button><button type="button" data-jump="ns-wis">Wisdom</button><button type="button" data-jump="ns-reg">Regulars</button><button type="button" data-jump="ns-story">Story</button></nav>
+  <h3 class="sec" id="ns-shop">Shop & wardrobe</h3><p class="secnote">Earn coins from tips. Gold items are for sale; trip gear (below) unlocks as you travel; dashed ones are trophies you earn by doing something.</p>`;
   ['head','face','neck','hand'].forEach(sl=>{
     h+=`<h3 class="sec" style="font-size:15px">${SLOT_NAMES[sl]}</h3><div class="items">`;
     ITEMS.filter(i=>i.slot===sl&&(!GEAR_AT[i.id]||SAVE.unlocked.includes(i.id))).forEach(it=>{
@@ -1878,21 +1883,22 @@ function renderCloset(){
     else{const poor=SAVE.coins<f.price;h+=`<button type="button" class="item shop${poor?' poor':''}" data-buyfur="${f.id}">${art}${f.name}<small><span class="coin"></span>${f.price}${poor?` · need ${f.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
   });
   const ci=chapterIndex(),c=s.cleared;
-  h+=`</div><h3 class="sec">Trip gear</h3><p class="secnote">Every stop has two themed rewards: one halfway through, one when you finish it. Tap one you own to wear it.</p><div class="gearlist">${gearStops().map(g=>{
+  h+=`</div><h3 class="sec" id="ns-gear">Trip gear</h3><p class="secnote">Every stop has two themed rewards: one halfway through, one when you finish it. Tap one you own to wear it.</p><div class="gearlist">${gearStops().map(g=>{
     const reached=c>=g.start;
     return `<div class="gearrow${reached?'':' far'}"><div class="gname"><small>${g.label}</small><b>${reached?g.name:'???'}</b></div>${g.items.map((id,k)=>{const it=ITEM[id],own=SAVE.unlocked.includes(id),on=SAVE.equip[it.slot]===id;
       return own?`<button type="button" class="item" data-id="${id}" aria-pressed="${on}">${slothSVG(null,id)}${it.name}<small>${on?'Wearing':'Tap to wear'}</small></button>`
         :`<div class="item locked">${slothSVG(null,id)}${reached?it.name:'???'}<small>${k?'Finish':'Halfway'} · Lv ${g.at[k]}</small></div>`}).join('')}</div>`}).join('')}`;
   const met=id=>{const k=STORY_CAST.indexOf(id);if(k>=0)return k<=ci;const t=COUNTRIES.findIndex(x=>x.cust===id);return c>=TOUR_AT+t*TOUR_LEN};
-  h+=`</div><h3 class="sec">Passport</h3><p class="secnote">${SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish 5 levels in a country to earn its stamp.`}</p>`;
+  h+=`</div><h3 class="sec" id="ns-pass">Passport</h3><p class="secnote">${SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish 5 levels in a country to earn its stamp.`}</p>`;
   h+=passportBook();
   {const got=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
-   h+=`<h3 class="sec">Ancient wisdom</h3><p class="secnote">${got.length?'One old saying from every country you finish.':'Finish a World Tour country to collect its wisdom.'}</p>${got.length?`<div class="story">${got.map(wisdomCard).join('')}</div>`:''}`;}
-  h+=`<h3 class="sec">Regulars</h3><p class="secnote">Sloths Mocha has met along the way.</p><div class="regulars">${Object.entries(CUST).map(([id,cu])=>{const m=met(id);return `<div class="regular${m?'':' unmet'}">${custSVG(id)}<span>${m?cu.name:'???'}</span></div>`}).join('')}</div>`;
+   h+=`<h3 class="sec" id="ns-wis">Ancient wisdom</h3><p class="secnote">${got.length?'One old saying from every country you finish.':'Finish a World Tour country to collect its wisdom.'}</p>${got.length?`<div class="story">${got.map(wisdomCard).join('')}</div>`:''}`;}
+  h+=`<h3 class="sec" id="ns-reg">Regulars</h3><p class="secnote">Sloths Mocha has met along the way.</p><div class="regulars">${Object.entries(CUST).map(([id,cu])=>{const m=met(id);return `<div class="regular${m?'':' unmet'}">${custSVG(id)}<span>${m?cu.name:'???'}</span></div>`}).join('')}</div>`;
   const doneCh=i=>c>=(i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT);
   const stamped=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
-  h+=`<h3 class="sec">Mocha's story</h3><div class="story">${CHAPTERS.map((ch,i)=>i<=ci?chapterHTML(ch,i).replace(/<\/div>$/,doneCh(i)?`<p class="learned"><b>Lesson learned:</b> ${LESSONS[i].lesson}</p></div>`:'</div>'):`<div class="chapter locked"><div class="eyebrow">Chapter ${i+1}</div><h3>???</h3><p>Reach level ${ch.at+1} to unlock.</p></div>`).join('')}</div>`;
+  h+=`<h3 class="sec" id="ns-story">Mocha's story</h3><div class="story">${CHAPTERS.map((ch,i)=>i<=ci?chapterHTML(ch,i).replace(/<\/div>$/,doneCh(i)?`<p class="learned"><b>Lesson learned:</b> ${LESSONS[i].lesson}</p></div>`:'</div>'):`<div class="chapter locked"><div class="eyebrow">Chapter ${i+1}</div><h3>???</h3><p>Reach level ${ch.at+1} to unlock.</p></div>`).join('')}</div>`;
   closetEl.innerHTML=h;
+  closetEl.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.jump).scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'}));
   closetEl.querySelectorAll('[data-stamp]').forEach(b=>b.onclick=()=>{const k=COUNTRIES.find(c=>c.id===b.dataset.stamp);passportPop(k,SAVE.stamps.indexOf(k.id)+1,true)});
   closetEl.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{
     const it=ITEM[b.dataset.id];
