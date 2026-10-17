@@ -591,13 +591,13 @@ const CHAPTERS=[
   beats:[
    {i:[['c',"Order up! Table four! Wait, who's table four?!"],['m',"You run this whole stall alone?"]],x:['c',"Cooking, serving, money, all of it. Thanks for the help."]},
    {i:[['c',"I lose half my orders. They're written on napkins."],['m',"There's a better way. Let me take some notes."]],x:['c',"Notes? I don't have time for notes."]},
+   {i:[['c',"Back for more noodles?"],['m',"Back for more notes."]],x:['c',"You'll be a great café owner."]},
    {i:[['m',"What if your regulars could order before they arrive?"],['c',"Like magic? I might sleep for once."]],x:['m',"Not magic. Just a good system."]},
    {i:[['c',"Lantern festival tonight. Last year I ran out of noodles by eight."],['m',"Check last year's sales. Prep that much plus a quarter, and put your three best dishes up front."]],x:['c',"Sold out at ten, not eight. Smoothest night in years."]},
    {i:[['m',"I set up a little order board on my laptop for you."],['c',"It remembers everyone's usual?"]],x:['c',"Mocha, this changes everything."]},
    {i:[['c',"Every stall here needs one of you."],['m',"Maybe that's the café. A place where tired shop owners get sorted."]],x:['c',"Then go build it. I'll visit."]},
    {i:[['c',"Take some chilli oil. For courage."],['m',"Courage tastes spicy."]],x:['c',"Go north. Cold cities need warm cafés."]},
-   {i:[['c',"One last bowl before you go?"],['m',"Make it a slow one."]],x:['m',"North, then."]},
-   {i:[['c',"Back for more noodles?"],['m',"Back for more notes."]],x:['c',"You'll be a great café owner."]}
+   {i:[['c',"One last bowl before you go?"],['m',"Make it a slow one."]],x:['m',"North, then."]}
   ]},
  {at:33,title:'Canal City',cust:'freja',tease:'Cold, wet and full of bikes. I love it.',
   text:"A chilly city of bikes and canals. Mocha finds an empty corner shop with big windows and a draft. It needs paint, a sign and a very slow espresso machine.",
@@ -606,8 +606,13 @@ const CHAPTERS=[
    {i:[['c',"My repair queue is chaos. Everyone thinks their bike is first."],['m',"Numbered tags. First come, first served, and a text when it's ready."]],x:['c',"Nobody's yelled at me all day. Hygge restored."]},
    {i:[['m',"Freja, the corner shop by the canal. Is it empty?"],['c',"Has been for years. Big windows. Terrible draft."]],x:['m',"It's perfect."]},
    {i:[['c',"The landlord wants a real plan before you get the keys."],['m',"I've had a plan since the coconut."]],x:['c',"Show me the coconut."]},
+   {i:[['c',"Rent's due before you've sold a single cup."],['m',"Then pre-sell. Twenty coffee cards, ten cups each, before opening day."]],x:['c',"I sold fourteen to my bike customers already."]},
+   {i:[['c',"So what will you charge for a flat white?"],['m',"Add up beans, milk, cup and a slice of rent. Then triple it."]],x:['c',"Not cheap, not silly. Fair."]},
    {i:[['c',"Paint day! But the sign painter quoted double what we budgeted."],['m',"Get two more quotes. Always three quotes before spending real money."]],x:['c',"Half price. It's starting to look like a café."]},
-   {i:[['c',"The espresso machine arrived. It is VERY slow."],['m',"Then it's perfect."]],x:['m',"Sign goes up tomorrow."]},
+   {i:[['c',"The bean supplier wants you on a one-year contract."],['m',"One-month trial first. Never sign for a year with someone you met last week."]],x:['c',"Trial agreed. Smart sloth."]},
+   {i:[['c',"The espresso machine arrived. It is VERY slow."],['m',"Then it's perfect."]],x:['m',"Slow machine, fast queue. Now, the sign."]},
+   {i:[['c',"So you just open the doors and hope?"],['m',"Soft opening first. Ten neighbours, free coffee, fix whatever breaks."]],x:['c',"The grinder jammed twice. Better today than on opening day."]},
+   {i:[['c',"What goes on the sign? Just 'Coffee'?"],['m',"Say who it's for. 'Slow coffee for tired shop owners.' The right people will walk in."]],x:['m',"Sign goes up tomorrow."]},
    {i:[['c',"Nervous?"],['m',"Six years of spreadsheets, two continents, one café. A little."]],x:['c',"You'll be great. Slowly."]}
   ]},
  {at:45,title:'Café Basecamp',cust:null,tease:'The doors are open. Welcome to Café Basecamp.',
@@ -616,10 +621,8 @@ const CHAPTERS=[
    {all:true,i:[['m',"Grand opening. Everyone's here."],['m',"Rule one of opening day: learn every name. Rule two: remember their order."]],x:['m',"No spreadsheets. Just regulars. That's the dream."]},
    {c:'dale',i:[['c',"So this is where you ran off to."],['m',"Welcome to Café Basecamp, Dale. No meetings allowed."]],x:['c',"Can I stay? Forever?"]},
    {c:'juniper',i:[['c',"One postcard, as promised. I'm here for my flat white."],['m',"The very first one. Slowly."]],x:['c',"Worth the wait."]},
-   {c:'pablo',i:[['c',"I came to check your bloom."],['m',"Thirty seconds. Slow circle. Never rushing."]],x:['c',"Good. Now I can retire."]},
    {c:'kai',i:[['c',"Dude! You actually built the coconut menu!"],['m',"Coffee and naps. On the house for you."]],x:['c',"Hang loose, boss."]},
-   {c:'mei',i:[['c',"I brought every tired stall owner from the market."],['m',"Pull up a chair. Let's sort your systems."]],x:['c',"This is what you were building all along."]},
-   {c:'freja',i:[['c',"Full house. Every seat taken."],['m',"Best problem a café can have."]],x:['m',"Same time tomorrow, everyone."]}
+   {c:'mei',i:[['c',"I brought every tired stall owner from the market."],['m',"Pull up a chair. Let's sort your systems."]],x:['c',"This is what you were building all along."]}
   ]}
 ];
 /* Scene backdrops, one per chapter (viewBox 300×300). */
@@ -1325,7 +1328,7 @@ function sceneFor(L,part){
   return{bg:L.bg,cust:b.all?null:(b.c||L.leg.cust),crowd:b.all?STORY_CAST:null,lines:part==='in'?b.i:[b.x]};
 }
 let arriving=false;
-function introScene(){const L=curLeg(),sc=sceneFor(L,'in');if(L.k===0||!SAVE.seenIntro)sc.title=legTitle(L);if(arriving&&L.k===0)sc.lines=[['m',L.leg.tease],...sc.lines];arriving=false;return sc}
+function introScene(){const L=curLeg(),sc=sceneFor(L,'in');if(L.k===0||!SAVE.seenIntro)sc.title=legTitle(L);if((arriving||SAVE.level===1)&&L.k===0)sc.lines=[['m',L.leg.tease],...sc.lines];arriving=false;return sc}
 
 /* ================= game state ================= */
 const boardEl=document.getElementById('board'),slip=document.getElementById('slip'),brew=document.getElementById('brew'),piecesEl=document.getElementById('pieces');
@@ -1415,7 +1418,7 @@ function toSloths(){
 }
 let startToken=0;
 function start(){
-  slip.hidden=true;done=true;brew.hidden=false;piecesEl.hidden=true;
+  holdLeg=null;slip.hidden=true;done=true;brew.hidden=false;piecesEl.hidden=true;
   const token=++startToken;
   setTimeout(async()=>{
     if(token!==startToken)return;
@@ -1444,11 +1447,12 @@ function setScenery(idx){
   if(sceneryBg<0||reduced){sceneryBg=idx;paint();return}
   sceneryBg=idx;el.classList.add('swap');setTimeout(paint,450);
 }
+let holdLeg=null; /* keep showing the finished stop until the flight leaves */
 function renderTrip(){
-  setScenery(mode==='daily'?CHAPTERS.length-1:curLeg().bg);
+  setScenery(mode==='daily'?CHAPTERS.length-1:(holdLeg||curLeg()).bg);
   const w=document.getElementById('where'),btn=document.getElementById('dailyBtn');
   if(mode==='daily'){w.innerHTML=`<b>Today's puzzle</b>Same board for everyone today.`;btn.textContent='Back to the trip';btn.classList.remove('done');return}
-  const L=curLeg(),[eb,t]=legTitle(L);
+  const L=holdLeg||curLeg(),[eb,t]=legTitle(L);
   w.innerHTML=`<b>${t}</b>${eb}<span class="dots" aria-label="${L.k} of ${L.len} levels done here">${Array.from({length:L.len},(_,i)=>`<i class="${i<L.k?'on':''}"></i>`).join('')}</span>`;
   const dd=dailyDone();btn.textContent=dd?"Today's puzzle ✓":"Today's puzzle";btn.classList.toggle('done',dd);
 }
@@ -1671,6 +1675,7 @@ function win(){
   const got=checkUnlocks(),L1=legAt(c0+1),newLeg=L1.key!==L0.key?L1:null,notes=stageChanges(st0,stageAt(c0+1));
   refreshSloths();
   /* order: level thank-you → tip jar → (tap Continue) victory + wisdom → stamp → flight → new spot intro */
+  holdLeg=newLeg?Object.assign({},L0,{k:L0.len}):null;
   const after=newLeg?async()=>{
     slip.hidden=true;done=true;document.getElementById('trip').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'});
     if(L0.kind==='story'){
@@ -1680,7 +1685,9 @@ function win(){
       const w=WISDOM[L0.leg.id];
       await playScene({bg:L0.bg,party:true,title:['Country complete',L0.leg.name],cust:L0.leg.cust,lines:[['c',`You did it! Before you go, an old saying from here${w.say?': '+w.say:'.'}`],['c',`“${w.en}”`],['m','Lesson learned: '+w.why]]});
       if(stamp)await passportPop(stamp,SAVE.stamps.length);
+      if(stamp&&SAVE.stamps.length===COUNTRIES.length)await playScene({bg:CHAPTERS.length-1,party:true,title:['World Tour complete','8 of 8 stamps'],crowd:STORY_CAST,lines:[['m',"Eight countries. Eight stamps. One very full passport."],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Café Basecamp is open. But the world's still out there. Round two, even slower?"]]});
     }
+    holdLeg=null;renderTrip();
     const t=travelFor(L0,newLeg);await playScene({travel:t,lines:[['m',pick(TRAVEL_LINES[t.v])]]});
     arriving=true;start();
   }:null;
