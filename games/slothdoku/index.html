@@ -217,6 +217,18 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-s
 .rule b{font-size:14.5px;display:block}.rule small{font-size:12.5px;color:var(--muted);line-height:1.4;display:block}
 .custom.off .segs{opacity:.6}
 .linkbtn{border:0;background:none;padding:0;font:inherit;color:var(--forest);font-weight:800;text-decoration:underline;cursor:pointer}
+.endcard{text-align:center;align-items:center}
+.endcard .endart svg{width:110px}
+.endmsg{font-family:var(--f-display);font-weight:800;font-size:21px;line-height:1.25;margin:0;text-wrap:balance}
+.endcard p{margin:0;font-size:14.5px;line-height:1.5}
+.endcard .sig{font-style:italic;color:var(--muted)}
+.endbtn{text-decoration:none;display:block;width:100%;box-sizing:border-box}
+.endcard .btn{width:100%}
+.epilogue{background:var(--tray);border:2px solid var(--forest);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.epilogue p{margin:0}
+.epilogue .sig{font-style:italic;color:var(--muted)}
+.epilogue .eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--forest)}
+.epilogue .endbtn{text-align:center}
 /* lesson + travel notes cards */
 .lesson{background:var(--tray);border:2px solid var(--gold);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
 .slip .lesson{background:#fff8e8}
@@ -1128,17 +1140,19 @@ function checkUnlocks(){
   return fresh;
 }
 /* where the trip is after c cleared levels: a story chapter, or a World Tour country */
+const TOUR_END=TOUR_AT+COUNTRIES.length*TOUR_LEN; /* after Canada: the story is over, free play */
 function legAt(c){
   if(c<TOUR_AT){
     let i=0;CHAPTERS.forEach((ch,k)=>{if(c>=ch.at)i=k});
     const ch=CHAPTERS[i],end=i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT;
     return{kind:'story',i,leg:ch,k:c-ch.at,len:end-ch.at,bg:i,key:'s'+i};
   }
-  const t=c-TOUR_AT,i=Math.floor(t/TOUR_LEN)%COUNTRIES.length,round=Math.floor(t/(TOUR_LEN*COUNTRIES.length));
+  if(c>=TOUR_END)return{kind:'free',i:0,leg:{title:'Free play',name:'Café Basecamp',beats:[]},k:(c-TOUR_END)%10,len:10,bg:CHAPTERS.length-1,key:'free'};
+  const t=c-TOUR_AT,i=Math.floor(t/TOUR_LEN)%COUNTRIES.length,round=0;
   return{kind:'tour',i,leg:COUNTRIES[i],k:t%TOUR_LEN,len:TOUR_LEN,round,bg:CHAPTERS.length+i,key:'t'+i+'r'+round};
 }
 const curLeg=()=>legAt(stats().cleared);
-function legTitle(L){return L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[`World Tour · stop ${L.i+1} of ${COUNTRIES.length}${L.round?' · encore':''}`,L.leg.name]}
+function legTitle(L){return L.kind==='free'?['Free play · the journey is complete','Café Basecamp']:L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[`World Tour · stop ${L.i+1} of ${COUNTRIES.length}${L.round?' · encore':''}`,L.leg.name]}
 function chapterIndex(){return legAt(Math.min(stats().cleared,TOUR_AT-1)).i}
 const dailyDone=()=>!!SAVE.daily['d:'+todayKey()];
 function chapterHTML(ch,i){return `<div class="chapter"><div class="eyebrow">Chapter ${i+1} of ${CHAPTERS.length}</div><h3>${ch.title}</h3><p>${ch.text}</p></div>`}
@@ -1431,7 +1445,7 @@ function start(){
     if(!solvedDaily)setupJigsaw(); /* every level: build the board, then seat the sloths */
     brew.hidden=true;buildBoard();render();syncControls();renderTrip();
     if(solvedDaily){showDailyDone();return}
-    if(mode==='journey'&&SAVE.scenes){done=true;await playScene(introScene());if(token!==startToken)return;done=false;SAVE.seenIntro=true;save()}
+    if(mode==='journey'&&SAVE.scenes&&L.kind!=='free'){done=true;await playScene(introScene());if(token!==startToken)return;done=false;SAVE.seenIntro=true;save()}
     buildPieces();
     if(phase==='build'){say('idle','Build the floor first. Drag each piece into place.');document.getElementById('trip').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'})}
   },30);
@@ -1685,14 +1699,17 @@ function win(){
       const w=WISDOM[L0.leg.id];
       await playScene({bg:L0.bg,party:true,title:['Country complete',L0.leg.name],cust:L0.leg.cust,lines:[['c',`You did it! Before you go, an old saying from here${w.say?': '+w.say:'.'}`],['c',`“${w.en}”`],['m','Lesson learned: '+w.why]]});
       if(stamp)await passportPop(stamp,SAVE.stamps.length);
-      if(stamp&&SAVE.stamps.length===COUNTRIES.length)await playScene({bg:CHAPTERS.length-1,party:true,title:['World Tour complete','8 of 8 stamps'],crowd:STORY_CAST,lines:[['m',"Eight countries. Eight stamps. One very full passport."],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Café Basecamp is open. But the world's still out there. Round two, even slower?"]]});
+      if(newLeg.kind==='free'){
+        await playScene({bg:CHAPTERS.length-1,party:true,title:['The journey is complete','8 of 8 stamps'],crowd:STORY_CAST,lines:[['m',"Eight countries. Eight stamps. One very full passport."],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Now it's your turn. Go start your own thing. I believe in you."]]});
+        SAVE.finished=true;save();await endCard();holdLeg=null;start();return;
+      }
     }
     holdLeg=null;renderTrip();
     const t=travelFor(L0,newLeg);await playScene({travel:t,lines:[['m',pick(TRAVEL_LINES[t.v])]]});
     arriving=true;start();
   }:null;
   setTimeout(async()=>{
-    if(SAVE.scenes)await playScene(sceneFor(L0,'out'));
+    if(SAVE.scenes&&L0.kind!=='free')await playScene(sceneFor(L0,'out'));
     tipJar({k,tips,total,Lv,got,newLeg,notes,stamp,after});
   },1100);
 }
@@ -1703,11 +1720,11 @@ function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after}){
     <div id="jarArea" class="tipjar">${JAR}<div class="tally">${tips.map(([l,v])=>`<div><span>${l}</span><span>+${v}</span></div>`).join('')}<div class="tot"><span>Tips</span><span class="coins"><span class="coin"></span><span id="totN">0</span></span></div></div></div>
     ${stamp&&!SAVE.scenes?notesCard(stamp):''}
     ${newLeg&&newLeg.kind==='story'&&!SAVE.scenes?chapterHTML(newLeg.leg,newLeg.i):''}
-    ${newLeg?`<p><b>Next stop:</b> ${legTitle(newLeg)[1]}.${newLeg.kind==='story'?' Read every chapter in your Napsack.':''}</p>`:''}
+    ${newLeg&&newLeg.kind!=='free'?`<p><b>Next stop:</b> ${legTitle(newLeg)[1]}.${newLeg.kind==='story'?' Read every chapter in your Napsack.':''}</p>`:''}
     ${unlockHTML(got||[])}
     ${triviaHTML(daily?null:L0done)}
     ${notes.length?`<div class="notes"><p><b>What changes next level</b></p>${notes.map(n=>`<p>${n}</p>`).join('')}</div>`:''}
-    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':`<button class="btn go" type="button" id="next">${after?(newLeg.kind==='tour'?'Continue the trip ✈':'Continue the story ▸'):'Next level'}</button>`}<button class="btn" type="button" id="share">Copy result</button></div>
+    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':`<button class="btn go" type="button" id="next">${after?(newLeg.kind==='free'?'Finish the journey ✦':newLeg.kind==='tour'?'Continue the trip ✈':'Continue the story ▸'):'Next level'}</button>`}<button class="btn" type="button" id="share">Copy result</button></div>
     ${(daily||Lv%3===0)?ad():''}`;
   slip.hidden=false;
   const rows=[...slip.querySelectorAll('.tally div')],totN=document.getElementById('totN');
@@ -1901,7 +1918,7 @@ function renderCloset(){
   let h=`<div class="preview"><div class="big">${slothSVG(SAVE.equip)}</div><div style="min-width:0">
     <h2>Mocha ${coinHTML(SAVE.coins)}</h2><p>${fur.name} fur${eqNames.length?' · '+eqNames.join(', '):''}</p>
     <p>${eb}: ${lt} · level ${SAVE.level}</p>
-    <div class="meter" aria-label="Progress through this stop"><span style="width:${pct}%"></span></div><p style="font-size:12.5px">${L.len-L.k} more level${L.len-L.k===1?'':'s'} until the next stop · ${SAVE.stamps.length}/${COUNTRIES.length} stamps</p>
+    <div class="meter" aria-label="Progress through this stop"><span style="width:${pct}%"></span></div><p style="font-size:12.5px">${L.kind==='free'?'Free play. Every puzzle is a bonus':`${L.len-L.k} more level${L.len-L.k===1?'':'s'} until the next stop`} · ${SAVE.stamps.length}/${COUNTRIES.length} stamps</p>
   </div></div>
   <nav class="nsnav" aria-label="Napsack sections"><button type="button" data-jump="ns-shop">Shop</button><button type="button" data-jump="ns-gear">Gear</button><button type="button" data-jump="ns-pass">Passport</button><button type="button" data-jump="ns-wis">Wisdom</button><button type="button" data-jump="ns-reg">Regulars</button><button type="button" data-jump="ns-story">Story</button></nav>
   <h3 class="sec" id="ns-shop">Shop & wardrobe</h3><p class="secnote">Earn coins from tips. Gold items are for sale; trip gear (below) unlocks as you travel; dashed ones are trophies you earn by doing something.</p>`;
@@ -1937,6 +1954,7 @@ function renderCloset(){
   const doneCh=i=>c>=(i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT);
   const stamped=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
   h+=`<h3 class="sec" id="ns-story">Mocha's story</h3><div class="story">${CHAPTERS.map((ch,i)=>i<=ci?chapterHTML(ch,i).replace(/<\/div>$/,doneCh(i)?`<p class="learned"><b>Lesson learned:</b> ${LESSONS[i].lesson}</p></div>`:'</div>'):`<div class="chapter locked"><div class="eyebrow">Chapter ${i+1}</div><h3>???</h3><p>Reach level ${ch.at+1} to unlock.</p></div>`).join('')}</div>`;
+  if(SAVE.finished)h+=`<div class="epilogue"><div class="eyebrow">Epilogue</div>${endNote()}</div>`;
   closetEl.innerHTML=h;
   closetEl.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.jump).scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'}));
   closetEl.querySelectorAll('[data-stamp]').forEach(b=>b.onclick=()=>{const k=COUNTRIES.find(c=>c.id===b.dataset.stamp);passportPop(k,SAVE.stamps.indexOf(k.id)+1,true)});
@@ -1971,6 +1989,24 @@ function setMode(m){
 document.getElementById('tab-journey').onclick=()=>{if(mode!=='journey')setMode('journey')};
 document.getElementById('tab-closet').onclick=()=>setMode('closet');
 
+/* ================= the end: a note from the human behind Mocha ================= */
+const BOOK_URL='https://calendly.com/matt-nomadcafe?utm_source=slothdoku&utm_medium=game&utm_campaign=ending';
+function endNote(){return `<p class="endmsg">Go start your own thing. I believe in you.</p>
+  <p>If you want help getting it off the ground, call me. I build the systems for solo founders, so you can stay slow where it counts.</p>
+  <p class="sig">Matthew, the human behind Mocha</p>
+  <a class="btn go endbtn" href="${BOOK_URL}" target="_blank" rel="noopener">Book a free call</a>`}
+function endCard(){
+  return new Promise(res=>{
+    let host=document.getElementById('endhost');if(!host){host=document.createElement('div');host.id='endhost';document.body.appendChild(host)}
+    host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="endTitle"><div class="helpcard endcard">
+      <div class="endart">${slothSVG(SAVE.equip)}</div><h2 id="endTitle">The end</h2>${endNote()}
+      <button class="btn" type="button" id="endGo">Keep playing (free play)</button>
+      <p class="fine">Free play: endless puzzles at Café Basecamp, no story. Your passport and wisdom stay in your Napsack.</p></div></div>`;
+    sfx.win&&sfx.win();burst(90);
+    const close=()=>{host.innerHTML='';res()};
+    host.querySelector('#endGo').onclick=close;host.querySelector('#endGo').focus();
+  });
+}
 /* ================= how to play: explainer + difficulty picker ================= */
 function openHelp(first){
   let host=document.getElementById('helphost');if(!host){host=document.createElement('div');host.id='helphost';document.body.appendChild(host)}
