@@ -673,17 +673,17 @@ const BG=[
 ];
 
 /* ================= world tour: after the story, a new country every 5 levels ================= */
-const TOUR_AT=50,TOUR_LEN=5;
+const TOUR_AT=50,TOUR_LEN=3;
 Object.assign(CUST,{
   ines:{name:'Inês',fur:'#9b6b43',eq:{face:'readers',hand:'cup'}},
   haru:{name:'Haru',fur:'#8d8579',eq:{head:'headphones'}},
   lupe:{name:'Lupe',fur:'#6b4a33',eq:{head:'flowers',neck:'lei'}},
-  youssef:{name:'Youssef',fur:'#a87b4f',eq:{face:'sunnies',neck:'bowtie'}},
   sigga:{name:'Sigga',fur:'#b8ad9e',eq:{head:'beanie',neck:'scarf'}},
   linh:{name:'Linh',fur:'#55392a',eq:{hand:'cup'}},
   rosa:{name:'Nonna Rosa',fur:'#8a7f72',eq:{face:'readers',head:'flowers'}},
   bev:{name:'Bev',fur:'#7a5a3e',eq:{head:'beanie',hand:'cup'}}
 });
+const NUMW=['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve'];
 const COUNTRIES=[
  {id:'portugal',name:'Portugal',cust:'ines',tease:'Hills, trams and custard tarts. Hello, Lisbon.',
   stamp:{ring:'#2f5f9e',motif:`<rect x="10" y="30" width="80" height="50" rx="8" fill="#e9b949"/><rect x="18" y="40" width="18" height="16" fill="#bfd7df"/><rect x="41" y="40" width="18" height="16" fill="#bfd7df"/><rect x="64" y="40" width="18" height="16" fill="#bfd7df"/><path d="M50 30V10M35 10h30" stroke="#1f3a2c" stroke-width="4"/><circle cx="28" cy="84" r="7" fill="#1f3a2c"/><circle cx="72" cy="84" r="7" fill="#1f3a2c"/>`},
@@ -713,17 +713,7 @@ const COUNTRIES=[
    {i:[['c',"The new stall next door sells café de olla for half my price."],['m',"Don't race them down. Sell what they can't copy: your grandmother's recipe, your name on the cup."]],x:['c',"People pay more for a story. Who knew?"]},
    {i:[['m',"Your café has no menu?"],['c',"Everyone already knows their usual."]],x:['m',"That's the dream. Regulars."]},
    {i:[['c',"Fiesta tonight! The band wants paying up front and I can't afford it."],['m',"Offer free coffee all night and their name on your chalkboard. Trade before you pay."]],x:['c',"Best fiesta ever, and I kept my pesos!"]},
-   {i:[['c',"Take some cinnamon for the road."],['m',"Café de olla goes on the menu."]],x:['c',"Morocco next. Youssef pours tea from very high up."]}
-  ]},
- {id:'morocco',name:'Morocco',cust:'youssef',tease:'Mint tea and a thousand lamps. Marhaba, Morocco.',
-  stamp:{ring:'#b5532f',motif:`<path d="M20 95V50q0-38 30-42 30 4 30 42v45z" fill="#c0563f"/><path d="M34 95V55q0-22 16-26 16 4 16 26v40z" fill="#3b2a1d"/><circle cx="50" cy="62" r="8" fill="#e9a24a"/>`},
-  bg:`<rect width="300" height="300" fill="#f0c58f"/><circle cx="70" cy="70" r="26" fill="#f6e3b0"/><path d="M0 200q80-60 160-10t140-20V300H0z" fill="#e2a65e"/><path d="M0 240q90-40 180 0t120-10V300H0z" fill="#d08c45"/><path d="M170 300V140q0-70 60-80 60 10 60 80v160z" fill="#c0563f"/><path d="M196 300V150q0-44 34-52 34 8 34 52v150z" fill="#3b2a1d"/>${[[40,30],[110,22],[150,40]].map(([x,y])=>`<path d="M${x} 0v${y}" stroke="#5d6f61"/><path d="M${x-9} ${y}h18l-4 18h-10z" fill="#e9a24a"/><ellipse cx="${x}" cy="${y+9}" rx="16" ry="14" fill="#e9a24a" opacity=".2"/>`).join('')}`,
-  beats:[
-   {i:[['c',"Marhaba! First, mint tea. Then we talk."],['m',"I've never agreed with anything more."]],x:['c',"In the medina, nobody rushes tea."]},
-   {i:[['c',"Tourists haggle so hard I barely make anything on tea sets."],['m',"Decide your lowest price before they walk in. Then you can smile and walk away."]],x:['c',"I walked away once. He came back and paid. You have a gift."]},
-   {i:[['m',"How do you pour from so high without spilling?"],['c',"Practice. And never rushing the last drop."]],x:['m',"Never rushing. It keeps coming up."]},
-   {i:[['c',"Desert tour tonight, but half last week's bookings never showed."],['m',"Take a small deposit when they book. People turn up for things they've paid for."]],x:['c',"Every camel full. The stars out here are worth the sand."]},
-   {i:[['c',"Take this lamp for your café window."],['m',"It'll glow every evening."]],x:['c',"Iceland next. Pack a sweater. Two."]}
+   {i:[['c',"Take some cinnamon for the road."],['m',"Café de olla goes on the menu."]],x:['c',"Iceland next. Pack a sweater. Two."]}
   ]},
  {id:'iceland',name:'Iceland',cust:'sigga',tease:'Cold air, hot springs. Hæ, Iceland.',
   stamp:{ring:'#2b4f6e',motif:`<circle cx="50" cy="50" r="48" fill="#1f3346"/><path d="M5 50q20-25 45-10t45-15" stroke="#7fe0a8" stroke-width="8" fill="none" opacity=".9"/><path d="M5 66q25-20 45-8t45-12" stroke="#6ac0d0" stroke-width="6" fill="none" opacity=".8"/><path d="M8 82l26-22 18 13 18-18 22 27q-20 18-42 18T8 82z" fill="#e8eef0"/>`},
@@ -768,7 +758,7 @@ const COUNTRIES=[
 ];
 COUNTRIES.forEach(c=>BG.push(c.bg));
 /* square postage stamps: perforated edge, framed picture, country band, and a postmark once collected */
-const STAMP_VAL={portugal:'€0,95',japan:'¥110',mexico:'$15',morocco:'7 DH',iceland:'250 KR',vietnam:'4000₫',italy:'€1,25',canada:'92¢'};
+const STAMP_VAL={portugal:'€0,95',japan:'¥110',mexico:'$15',iceland:'250 KR',vietnam:'4000₫',italy:'€1,25',canada:'92¢'};
 let stampUid=0;
 function stampSVG(c,got=true,lv){
   const s=c.stamp,col=got?s.ring:'#a9bfa4',u='st'+(++stampUid);
@@ -838,7 +828,7 @@ Object.keys(ITEM).forEach(k=>delete ITEM[k]);ITEMS.forEach(i=>ITEM[i.id]=i);
 const GEAR={
  s0:['necktie','lanyard'], s1:['busticket','bandana'], s2:['poncho','grinder'], s3:['strawhat','lei'],
  s4:['laptop','lantern'], s5:['scarf','studenterhue'], s6:['apron','goldcup'],
- portugal:['nata','tramcap'], japan:['matcha','sakura'], mexico:['marigold','olla'], morocco:['teaglass','fez'],
+ portugal:['nata','tramcap'], japan:['matcha','sakura'], mexico:['marigold','olla'],
  iceland:['lopapeysa','puffin'], vietnam:['eggcoffee','nonla'], italy:['moka','goggles'], canada:['beaver','plaid']
 };
 /* level thresholds: halfway reward after ceil(len/2) levels at a stop, finish reward on its last level */
@@ -884,13 +874,6 @@ const NOTES={
    ["The orange marigolds used for Día de Muertos are called…",["Cempasúchil","Bougainvillea","Jacaranda","Nopal"],"Their bright colour and scent are said to guide spirits home."],
    ["Café de olla is traditionally brewed in a clay pot with…",["Cinnamon and piloncillo","Mint and lime","Chili and salt","Coconut milk"],"Piloncillo is unrefined cane sugar. The clay pot adds an earthy taste."],
    ["What was the name of the Aztec capital city?",["Tenochtitlan","Teotihuacan","Chichén Itzá","Monte Albán"],"Modern Mexico City grew right on top of it."]]},
- morocco:{lang:'Moroccan Arabic (Darija)',words:[['Salam','hello'],['Shukran','thank you'],['Atay','tea']],
-  coffee:['Bacha Coffee','Marrakech · inside the Dar el Bacha palace museum'],cowork:['Spaces Marrakech','Marrakech'],
-  facts:[["Moroccan mint tea is made with fresh mint and…",["Green tea","Black coffee","Hibiscus","Rooibos"],"It's poured from high up to make a little foam on top."],
-   ["Which Moroccan city is home to a university founded in 859, often called the world's oldest still running?",["Fez","Rabat","Agadir","Tangier"],"The University of al-Qarawiyyin was founded by Fatima al-Fihri."],
-   ["A tagine is both a slow-cooked dish and…",["The clay pot it's cooked in","A spice blend","A type of bread","A tea glass"],"The cone-shaped lid traps steam and keeps everything tender."],
-   ["What is the highest peak in the Atlas Mountains?",["Toubkal","Kilimanjaro","Mont Blanc","Olympus"],"Toubkal is about 4,167 m, the highest in North Africa."],
-   ["The town of Chefchaouen is famous for its…",["Blue-painted streets","Floating markets","Ice caves","Pink sand"],"Almost every wall in the old town is painted shades of blue."]]},
  iceland:{lang:'Icelandic',words:[['Hæ','hi'],['Takk','thanks'],['Gluggaveður','weather that only looks nice through a window']],
   coffee:['Reykjavík Roasters','Reykjavík'],cowork:['Hafnar.Haus','Reykjavík · by the old harbour'],
   facts:[["Iceland's parliament, founded in 930, is called the…",["Althing","Folketing","Riksdag","Storting"],"It's one of the oldest parliaments in the world."],
@@ -925,7 +908,6 @@ const WISDOM={
  portugal:{say:'Devagar se vai ao longe.',en:'Slowly, you go far.',from:'Old Portuguese proverb',why:'Pick a pace you can keep for years, not weeks.'},
  japan:{say:'Ichi-go ichi-e',en:'One time, one meeting.',from:'Saying from the Japanese tea ceremony',why:'Treat every guest like this visit will never happen again.'},
  mexico:{say:'Dime con quién andas, y te diré quién eres.',en:"Tell me who you walk with, and I'll tell you who you are.",from:'Old Mexican dicho',why:'Your circle shapes your work. Choose it on purpose.'},
- morocco:{say:'',en:'Ask the one who has lived it, not the one who has read about it.',from:'Old Arabic proverb, told across Morocco',why:'Advice from people who did the thing beats advice from people who studied it.'},
  iceland:{say:'Maður er manns gaman.',en:'People are the joy of people.',from:'The Hávamál, a Viking-age poem',why:'Going it alone gets old fast. Find your people.'},
  vietnam:{say:'Có công mài sắt, có ngày nên kim.',en:'Keep grinding the iron bar, and one day it becomes a needle.',from:'Old Vietnamese proverb',why:'Small, boring effort every day turns into something sharp.'},
  italy:{say:'Festina lente.',en:'Make haste slowly.',from:"Latin. Emperor Augustus's favourite motto",why:'Move with purpose, but never rush the important stuff.'},
@@ -1140,6 +1122,7 @@ function load(){
     if(!v.v){o.coins=backPay(o);o.v=5}
     if(o.v<5){o.coins=Math.min(o.coins,backPay(o));o.v=5}
     if(o.v<6){o.level=1+sumL(o);o.v=6} /* three difficulty tracks merge into one journey */
+    o.stamps=(o.stamps||[]).filter(id=>COUNTRIES.some(c=>c.id===id));
     return o;
   }
   try{const old=JSON.parse(localStorage.getItem('slothdoku-v2')||'null');if(old){b.levels.chill=old.level||1;b.level=b.levels.chill;b.sound=old.sound!==false;b.autox=old.autox!==false;b.coins=backPay(b)}}catch(e){}
@@ -1360,7 +1343,7 @@ function playScene(sc){
     if(!sc.title){i=0;show()}
   });
 }
-function beatFor(L){const b=L.leg.beats;return b[L.k%b.length]}
+function beatFor(L){const b=L.leg.beats;if(L.kind==='tour'&&b.length>L.len)return L.k===L.len-1?b[b.length-1]:b[L.k];return b[L.k%b.length]} /* short stops keep hello, first tip, goodbye */
 function sceneFor(L,part){
   const b=beatFor(L);
   return{bg:L.bg,cust:b.all?null:(b.c||L.leg.cust),crowd:b.all?STORY_CAST:null,lines:part==='in'?b.i:[b.x]};
@@ -1725,7 +1708,7 @@ function win(){
       await playScene({bg:L0.bg,party:true,title:['Country complete',L0.leg.name],cust:L0.leg.cust,lines:[['c',`You did it! Before you go, an old saying from here${w.say?': '+w.say:'.'}`],['c',`“${w.en}”`],['m','Lesson learned: '+w.why]]});
       if(stamp)await passportPop(stamp,SAVE.stamps.length);
       if(newLeg.kind==='free'){
-        await playScene({bg:CHAPTERS.length-1,party:true,title:['World Tour complete','8 of 8 stamps'],crowd:STORY_CAST,lines:[['m',"Eight countries. Eight stamps. One very full passport."],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Right. Time for a well-earned nap."]]});
+        await playScene({bg:CHAPTERS.length-1,party:true,title:['World Tour complete',`${COUNTRIES.length} of ${COUNTRIES.length} stamps`],crowd:STORY_CAST,lines:[['m',`${NUMW[COUNTRIES.length]} countries. ${NUMW[COUNTRIES.length]} stamps. One very full passport.`],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Right. Time for a well-earned nap."]]});
         SAVE.toured=true;save();await hammockEnding();holdLeg=null;start();return;
       }
     }
@@ -2026,7 +2009,7 @@ function endCard(){
     host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="endTitle"><div class="helpcard endcard">
       <div class="endart">${slothSVG(SAVE.equip)}</div><h2 id="endTitle">The café is open</h2>${endNote()}
       <button class="btn" type="button" id="endGo">Start the World Tour ✈</button>
-      <p class="fine">8 countries, 5 levels each. This note stays in your Napsack.</p></div></div>`;
+      <p class="fine">${COUNTRIES.length} countries, ${TOUR_LEN} levels each. This note stays in your Napsack.</p></div></div>`;
     sfx.win&&sfx.win();burst(90);
     const close=()=>{host.innerHTML='';res()};
     host.querySelector('#endGo').onclick=close;host.querySelector('#endGo').focus();
@@ -2088,7 +2071,7 @@ function openHelp(first){
     ${step(2,'Place the sloths','Every row, every column and every colour gets exactly one sloth. Sloths never touch, not even corners.')}
     ${step(3,'Controls','<b>Tap</b> a square to mark an X. <b>Hold</b> (or right-click) to place a sloth. <b>Swipe</b> to X lots of squares. Wrong sloths cost a leaf. Lose 3 leaves and you retry.')}
     ${step(4,'Earn tips','Clear a level to fill the tip jar. Spend coins on outfits in your <b>Napsack</b>. Answer the trivia for bonus tips.')}
-    ${step(5,'Travel','The story takes Mocha to 7 stops. Then the World Tour: 8 countries, 5 levels each. Finish one to get a passport stamp, travel notes and a piece of ancient wisdom.')}
+    ${step(5,'Travel',`The story takes Mocha to 7 stops. Then the World Tour: ${COUNTRIES.length} countries, ${TOUR_LEN} levels each. Finish one to get a passport stamp, travel notes and a piece of ancient wisdom.`)}
     <div><h3 style="margin:0 0 8px;font-size:15.5px">Pick your mode</h3><div class="modes">${Object.entries(DIFFS).filter(([k])=>k!=='custom').map(([k,d])=>`<button type="button" data-diff="${k}" aria-pressed="${(SAVE.diff||'normal')===k}"><b>${d.name}</b><span>${d.blurb}</span></button>`).join('')}</div></div>
     <p class="fine">Want to fine-tune each rule, or turn off the piece shadow? Open <button type="button" class="linkbtn" id="helpSet">⚙ Settings</button>. Your level, coins and stamps never change.</p>
     <button class="btn go" type="button" id="helpGo">${first?"Let's go":'Back to the puzzle'}</button></div></div>`;
