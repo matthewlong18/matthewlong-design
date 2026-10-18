@@ -546,7 +546,17 @@ const ITEMS=[
  {id:'stache',slot:'face',name:'Barista stache',how:'Hit an 8-sloth combo',need:s=>[s.combo,8],svg:`<path d="M32 42.5c-4-3-10-2-13 3 4-1 9-0.5 13 1.5 4-2 9-2.5 13-1.5-3-5-9-6-13-3z" fill="#2a1c12"/>`},
  {id:'partyhat',slot:'head',name:'Party hat',how:'Finish 3 daily puzzles',need:s=>[s.dailies,3],svg:`<path d="M22 14L32-7l10 21z" fill="#c9962f"/><path d="M25 8l11-5M23.5 11.5l15-6" stroke="#c0563f" stroke-width="2.5"/><circle cx="32" cy="-7" r="3.5" fill="#d9c3dd"/>`},
  {id:'crown',slot:'head',name:'Wild crown',how:'Reach the Wild stretch (level 71)',need:s=>[s.cleared,70],svg:`<path d="M16 15l2-14 7 8 7-10 7 10 7-8 2 14z" fill="#c9962f" stroke="#8a6416" stroke-width="1.2"/><circle cx="32" cy="10" r="2.4" fill="#c0563f"/><circle cx="22" cy="11" r="1.8" fill="#2f5d44"/><circle cx="42" cy="11" r="1.8" fill="#2f5d44"/>`},
- {id:'napmask',slot:'face',name:'Nap mask',how:'Secret: bother the barista',secret:true,need:s=>[s.pokes,10],svg:`<path d="M5 30q1-5 6-5h42q5 0 6 5" stroke="#b7a2c4" stroke-width="2.5" fill="none"/><rect x="9" y="25" width="46" height="15" rx="7.5" fill="#d9c3dd"/><path d="M15 33q5 4 10 0M39 33q5 4 10 0" stroke="#7a5a8a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M31 27v11" stroke="#c7aed0" stroke-width="1"/>`}
+ {id:'napmask',slot:'face',name:'Nap mask',how:'Secret: bother the barista',secret:true,need:s=>[s.pokes,10],svg:`<path d="M5 30q1-5 6-5h42q5 0 6 5" stroke="#b7a2c4" stroke-width="2.5" fill="none"/><rect x="9" y="25" width="46" height="15" rx="7.5" fill="#d9c3dd"/><path d="M15 33q5 4 10 0M39 33q5 4 10 0" stroke="#7a5a8a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M31 27v11" stroke="#c7aed0" stroke-width="1"/>`},
+ /* world tour v2: one souvenir per country */
+ {id:'chullo',slot:'head',name:'Chullo',svg:`<path d="M4 21h10v11q-5 6-10 0zM50 21h10v11q-5 6-10 0z" fill="#c0392b"/><path d="M9 36v8M55 36v8" stroke="#e9b949" stroke-width="1.6"/><circle cx="9" cy="45" r="2.6" fill="#2b6f8e"/><circle cx="55" cy="45" r="2.6" fill="#2b6f8e"/><path d="M7 24Q7 1 32 1T57 24Z" fill="#c0392b"/><path d="M13 13l4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3" stroke="#e9b949" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M10 18.5h44" stroke="#fbf8f0" stroke-width="1.6" stroke-dasharray="2 2.4"/><rect x="5" y="20" width="54" height="5" rx="2.5" fill="#2b6f8e"/><circle cx="32" cy="1" r="4.2" fill="#e9b949"/>`},
+ {id:'maneki',slot:'hand',name:'Maneki-neko',svg:`<ellipse cx="55" cy="60" rx="7" ry="7.5" fill="#fbf8f0" stroke="#3b2a1d" stroke-width=".9"/><ellipse cx="55" cy="62" rx="2.8" ry="3.4" fill="#e9b949" stroke="#c9962f" stroke-width=".6"/><ellipse cx="62.5" cy="46" rx="2.3" ry="3.4" fill="#fbf8f0" stroke="#3b2a1d" stroke-width=".9"/><path d="M61 49.5l1.5 4" stroke="#3b2a1d" stroke-width=".9"/><path d="M49.6 46.5l.8-5.6 4.2 3.2zM60.4 46.5l-.8-5.6-4.2 3.2z" fill="#fbf8f0" stroke="#3b2a1d" stroke-width=".9" stroke-linejoin="round"/><circle cx="55" cy="50" r="6" fill="#fbf8f0" stroke="#3b2a1d" stroke-width=".9"/><circle cx="58.4" cy="46.8" r="1.7" fill="#e8742f"/><path d="M51.6 50q1.2-1.3 2.4 0M56 50q1.2-1.3 2.4 0" stroke="#3b2a1d" stroke-width=".9" fill="none" stroke-linecap="round"/><circle cx="55" cy="52.2" r=".8" fill="#e07a9f"/><path d="M49.8 55.4q5.2 2.6 10.4 0" stroke="#c0392b" stroke-width="1.9" fill="none"/><circle cx="55" cy="57.4" r="1.4" fill="#e9b949" stroke="#c9962f" stroke-width=".5"/>`},
+ {id:'champa',slot:'head',name:'Champa flower',svg:`<path d="M41 19q5-8 12-4q-5 7-12 4z" fill="#7a9f6a"/>${[0,72,144,216,288].map(a=>`<ellipse cx="51" cy="9.5" rx="3.4" ry="5.6" fill="#fbf8f0" stroke="#e9d6a9" stroke-width=".7" transform="rotate(${a+15} 51 15)"/>`).join('')}<circle cx="51" cy="15" r="2.8" fill="#f2c23e"/><circle cx="51" cy="15" r="1.2" fill="#e8a02f"/>`},
+ {id:'krama',slot:'neck',name:'Krama scarf',svg:`<path d="M10 51q22 13 44 0v6.5q-22 13-44 0z" fill="#c0392b"/>${[...Array(14)].map((_,k)=>{const x=11+k*3.05,t=(x+1.5-10)/44,y=51+26*t*(1-t);return `<rect x="${x.toFixed(1)}" y="${(y+(k%2?3.2:0)).toFixed(1)}" width="3" height="3.2" fill="#fbf8f0"/>`}).join('')}<path d="M39 58.5l4 11h7l-3-12z" fill="#c0392b"/>${[[42,60],[45,59.5],[43.5,63.5],[46.5,63],[45,67],[48,66.5]].map(([x,y],k)=>k%2===0?`<rect x="${x}" y="${y}" width="2.6" height="3" fill="#fbf8f0" transform="rotate(-15 ${x} ${y})"/>`:'').join('')}<path d="M43.5 69.5v2.6M45.5 69.5v2.6M47.5 69.5v2.6M49.5 69.5v2.6" stroke="#c0392b" stroke-width="1.1"/>`},
+ {id:'orchid',slot:'neck',name:'Orchid corsage',svg:`<path d="M14 64q4-6 10-8M16 66l6-1" stroke="#2f5d44" stroke-width="2" stroke-linecap="round"/><path d="M13 59q-3 7 2 10M27 60q3 6-1 9" stroke="#7a9f6a" stroke-width="2" fill="none" stroke-linecap="round"/>${[[0,'#d58bc9'],[120,'#d58bc9'],[240,'#d58bc9'],[60,'#e7b6dd'],[300,'#e7b6dd']].map(([a,c])=>`<ellipse cx="20" cy="53.2" rx="2.6" ry="4.2" fill="${c}" transform="rotate(${a} 20 57.5)"/>`).join('')}<path d="M18 57.5q2 5 4 0q-2-1.5-4 0z" fill="#8e3b7a"/><circle cx="20" cy="57" r="1" fill="#f2c23e"/>`},
+ {id:'skigoggles',slot:'face',name:'Ski goggles',svg:`<path d="M5 18q27-9 54 0" stroke="#2f5d44" stroke-width="3.6" fill="none"/><rect x="17" y="8" width="30" height="13" rx="6.5" fill="#e8742f" stroke="#1f2a30" stroke-width="2.4"/><path d="M21 12.5q9-3.5 18 0" stroke="#f6d07a" stroke-width="2" fill="none" stroke-linecap="round" opacity=".9"/><path d="M38 17q3-1 5-3" stroke="#fbf8f0" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".7"/>`},
+ {id:'carnival',slot:'face',name:'Carnival mask',svg:`<path d="M52 27q8-12 3-24q-7 10-3 24z" fill="#2b6f8e"/><path d="M50 27q2-13-4-20q-3 11 4 20z" fill="#c0392b"/><path d="M7 31q4-10 15-8 6 1 10 4 4-3 10-4 11-2 15 8-2 10-13 10-7 0-12-5-5 5-12 5-11 0-13-10z" fill="#e9b949" stroke="#c9962f" stroke-width="1"/><path d="M9 36q11 8 23 1 12 7 23-1" stroke="#2b6f8e" stroke-width="1.8" fill="none"/><path d="M10 38.5q10 7 22 1 12 6 22-1" stroke="#c0392b" stroke-width="1.4" fill="none"/><ellipse cx="21.5" cy="32.5" rx="4.8" ry="3.6" fill="#3b2a1d"/><ellipse cx="42.5" cy="32.5" rx="4.8" ry="3.6" fill="#3b2a1d"/><circle cx="21.5" cy="33" r="2.2" fill="#fbf8f0"/><circle cx="42.5" cy="33" r="2.2" fill="#fbf8f0"/>${[[12,28],[16,25],[48,25],[52,28],[32,30]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="#fbf8f0"/>`).join('')}`},
+ {id:'songkran',slot:'paint',name:'Songkran powder',svg:`<g fill="#fbf8f0" stroke="#d6cbbb" stroke-width=".5">${[[27,16,3.4],[32.5,14.5,3.8],[37.5,16.5,3],[30,19.5,2.4],[35.5,19.8,2.2],[9.5,41,3],[13,44.5,2.6],[8.5,46,1.8],[54.5,41,3],[51,44.5,2.6],[55.5,46,1.8]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}"/>`).join('')}</g>`},
+ {id:'zinc',slot:'paint',name:'Zinc stripes',svg:`<path d="M25 38.6h14" stroke="#e85d9c" stroke-width="3.2" stroke-linecap="round"/><path d="M10.5 41h7M11 44.6h6.5" stroke="#3fa9d6" stroke-width="2.6" stroke-linecap="round"/><path d="M53.5 41h-7M53 44.6h-6.5" stroke="#f2c23e" stroke-width="2.6" stroke-linecap="round"/>`}
 ];
 const ITEM=Object.fromEntries(ITEMS.map(i=>[i.id,i]));
 const FURS=[
@@ -560,8 +570,8 @@ const FURS=[
  {id:'midnight',name:'Midnight',color:'#3d3530',price:75},
  {id:'strawberry',name:'Strawberry',color:'#b07a7a',price:90,note:'Not found in nature. Yet.'},
 ];
-const SLOT_ORDER=['neck','hand','face','head'];
-const SLOT_NAMES={head:'Head',face:'Face',neck:'Neck',hand:'Paws'};
+const SLOT_ORDER=['paint','neck','hand','face','head'];
+const SLOT_NAMES={head:'Head',face:'Face',neck:'Neck',hand:'Paws',paint:'Face paint'};
 function slothSVG(eq,only,fur){
   fur=fur||furColor();
   const ids=only?[only]:SLOT_ORDER.map(s=>eq&&eq[s]).filter(Boolean);
@@ -571,8 +581,8 @@ function slothSVG(eq,only,fur){
 
 /* ================= story ================= */
 const CUST={
-  dale:{name:'Dale',fur:'#8d8579',eq:{face:'readers',neck:'bowtie'}},
-  juniper:{name:'Juniper',fur:'#a87b4f',eq:{head:'headphones',face:'sunnies'}},
+  dale:{name:'Gary from Accounts',fur:'#8d8579',eq:{face:'readers',neck:'bowtie'}},
+  juniper:{name:'Skye',fur:'#a87b4f',eq:{head:'headphones',face:'sunnies'}},
   pablo:{name:'Pablo',fur:'#55392a',eq:{head:'strawhat',face:'stache'}},
   kai:{name:'Kai',fur:'#b08a62',eq:{neck:'lei'}},
   mei:{name:'Mei',fur:'#6b4a33',eq:{head:'flowers'}},
@@ -589,12 +599,12 @@ const CHAPTERS=[
    {i:[['c',"Accounts and Marketing both say the other team is slowing them down."],['m',"Put both teams' to-do lists on one board. Hard to argue when everyone sees the same thing."]],x:['c',"Huh. The real bottleneck was approvals. Who knew?"]},
    {i:[['c',"The printer's jammed and twelve sloths are crowding it."],['m',"Better question: why are we printing? Nobody reads page two."]],x:['m',"Six years of fixing everyone else's mess. Something has to change."]},
    {i:[['c',"Big quarterly review today. Spreadsheets for everyone!"],['m',"I'm going to need a bigger nap."]],x:['m',"That's it. I'm writing a note."]},
-   {i:[['c',"Mocha, is that a resignation letter?"],['m',"It says 'Gone slow.' It's two words, Dale."]],x:['c',"Fine. Take your stapler."]}
+   {i:[['c',"Mocha, is that a resignation letter?"],['m',"It says 'Gone slow.' It's two words, Gary."]],x:['c',"Fine. Take your stapler."]}
   ]},
  {at:5,title:'Gone Slow',cust:'juniper',tease:'Gone slow. Where do I even start?',
   text:"Mocha prints one sentence, pins it to the boss's branch and walks out: Gone slow. Packing the backpack takes three days. Totally normal.",
   beats:[
-   {i:[['c',"First time at the bus station? You look terrified."],['m',"I've never left the canopy before."]],x:['c',"Stick with me. I'm Juniper. I've been slow-travelling for years."]},
+   {i:[['c',"First time at the bus station? You look terrified."],['m',"I've never left the canopy before."]],x:['c',"Stick with me. I'm Skye. I've been slow-travelling for years."]},
    {i:[['c',"Your bag weighs more than you. What's in there?"],['m',"Everything. Just in case."]],x:['c',"Rule of thumb: if you haven't used it in three days, post it home. Travel light, decide fast."]},
    {i:[['m',"Do you ever miss having a plan?"],['c',"I have a plan. It's just very, very slow."]],x:['m',"I like that plan."]},
    {i:[['c',"Where are you headed, anyway?"],['m',"Somewhere I can open a café. Somewhere warm."]],x:['c',"Then go up the mountain first. Learn coffee from Pablo."]},
@@ -655,7 +665,7 @@ const CHAPTERS=[
   text:"The doors open. Sloths arrive from every branch of the world, laptops out, nobody rushing. Mocha pours the first flat white and does not open a single spreadsheet. The end. The puzzles keep going, and so do the naps.",
   beats:[
    {all:true,i:[['m',"Grand opening. Everyone's here."],['m',"Rule one of opening day: learn every name. Rule two: remember their order."]],x:['m',"No spreadsheets. Just regulars. That's the dream."]},
-   {c:'dale',i:[['c',"So this is where you ran off to."],['m',"Welcome to Café Basecamp, Dale. No meetings allowed."]],x:['c',"Can I stay? Forever?"]},
+   {c:'dale',i:[['c',"So this is where you ran off to."],['m',"Welcome to Café Basecamp, Gary. No meetings allowed."]],x:['c',"Can I stay? Forever?"]},
    {c:'juniper',i:[['c',"One postcard, as promised. I'm here for my flat white."],['m',"The very first one. Slowly."]],x:['c',"Worth the wait."]},
    {c:'kai',i:[['c',"Dude! You actually built the coconut menu!"],['m',"Coffee and naps. On the house for you."]],x:['c',"Hang loose, boss."]},
    {c:'mei',i:[['c',"I brought every tired stall owner from the market."],['m',"Pull up a chair. Let's sort your systems."]],x:['c',"This is what you were building all along."]}
@@ -672,19 +682,130 @@ const BG=[
  `<rect width="300" height="300" fill="#f3ead8"/><rect x="20" y="40" width="120" height="110" rx="6" fill="#bfd7df" stroke="#7a5a3e" stroke-width="6"/><path d="M80 40v110M20 95h120" stroke="#7a5a3e" stroke-width="4"/><rect x="168" y="30" width="114" height="30" rx="6" fill="#2f5d44"/><text x="225" y="51" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="15" fill="#fbf8f0" text-anchor="middle">BASECAMP</text><path d="M200 60v24M250 60v24" stroke="#5d6f61"/><circle cx="200" cy="92" r="10" fill="#7a9f6a"/><circle cx="250" cy="92" r="10" fill="#7a9f6a"/><rect x="160" y="130" width="130" height="80" fill="#7a5a3e"/><rect x="180" y="104" width="40" height="26" rx="4" fill="#5d6f61"/><circle cx="200" cy="117" r="5" fill="#c9962f"/><rect y="210" width="300" height="90" fill="#c8a77a"/><path d="M0 240h300M0 270h300" stroke="#a88a5f" stroke-width="2"/>`
 ];
 
-/* ================= world tour: after the story, a new country every 5 levels ================= */
-const TOUR_AT=50,TOUR_LEN=3;
+/* ================= world tour: after the story, a new country every 4 levels ================= */
+const TOUR_AT=50,TOUR_LEN=4;
 Object.assign(CUST,{
+  doug:{name:'Doug',fur:'#7a5a3e',eq:{head:'redtoque',hand:'cup'}},
+  carmen:{name:'Carmen',fur:'#6b4a33',eq:{neck:'poncho'}},
+  yuki:{name:'Yuki',fur:'#8d8579',eq:{head:'headphones'}},
+  nok:{name:'Nok',fur:'#b08a62',eq:{hand:'boba'}},
+  noy:{name:'Noy',fur:'#9b6b43',eq:{head:'flowers'}},
+  linh:{name:'Linh',fur:'#55392a',eq:{hand:'cup'}},
+  bopha:{name:'Bopha',fur:'#a87b4f',eq:{head:'bucket',face:'sunnies'}},
+  lim:{name:'Uncle Lim',fur:'#8a7f72',eq:{face:'readers',neck:'apron'}},
+  shazza:{name:'Shazza',fur:'#c9b79a',eq:{face:'redsunnies',head:'visor'}},
+  aroha:{name:'Aroha',fur:'#55392a',eq:{head:'beanie',neck:'scarf'}},
+  luz:{name:'Doña Luz',fur:'#8a6d55',eq:{head:'strawhat',neck:'kerchief'}},
+  /* parked countries */
   ines:{name:'Inês',fur:'#9b6b43',eq:{face:'readers',hand:'cup'}},
-  haru:{name:'Haru',fur:'#8d8579',eq:{head:'headphones'}},
   lupe:{name:'Lupe',fur:'#6b4a33',eq:{head:'flowers',neck:'lei'}},
   sigga:{name:'Sigga',fur:'#b8ad9e',eq:{head:'beanie',neck:'scarf'}},
-  linh:{name:'Linh',fur:'#55392a',eq:{hand:'cup'}},
-  rosa:{name:'Nonna Rosa',fur:'#8a7f72',eq:{face:'readers',head:'flowers'}},
-  bev:{name:'Bev',fur:'#7a5a3e',eq:{head:'beanie',hand:'cup'}}
+  rosa:{name:'Nonna Rosa',fur:'#8a7f72',eq:{face:'readers',head:'flowers'}}
 });
 const NUMW=['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve'];
 const COUNTRIES=[
+ {id:'canada',name:"Canada",cust:'doug',tease:"Lakes, pines and a double-double. Hello, Canada.",
+  stamp:{ring:'#c0563f',motif:`<path d="M50 4l8 18 12-6-4 22 16-10 2 12 12 2-14 14 4 8-26-4 2 28h-8l2-28-26 4 4-8-14-14 12-2 2-12 16 10-4-22 12 6z" fill="#c0563f"/>`},
+  bg:`<rect width="300" height="300" fill="#cfe3ea"/><path d="M0 150l40-50 30 30 40-60 40 50 40-40 50 50 60-30V200H0z" fill="#8fa3ad"/>${[10,40,70,230,260,290].map((x,k)=>`<path d="M${x} ${200-30-(k%2)*14}l18 40h-36z" fill="#2f5d44"/><path d="M${x} ${200-50-(k%2)*14}l14 32h-28z" fill="#3f6b3a"/>`).join('')}<rect y="200" width="300" height="100" fill="#7fa9bb"/><path d="M90 236q40 14 90 0l-8 8q-36 8-74 0z" fill="#c0563f"/><circle cx="120" cy="150" r="22" fill="#c0563f"/><circle cx="140" cy="140" r="18" fill="#e07a5f"/><rect x="124" y="160" width="6" height="40" fill="#6b4e36"/><rect x="190" y="166" width="46" height="34" fill="#7a5a3e"/><path d="M186 168l27-20 27 20z" fill="#3b2a1d"/><rect x="206" y="178" width="12" height="12" fill="#e9b949"/>`,
+  beats:[
+   {i:[['c',"Hey there, you made it! Grab a double-double and a blanket, eh."],['m',"Two creams, two sugars? Bold start."]],x:['c',"Up here we say sorry first and ask questions later. Welcome to the lake, bud."]},
+   {i:[['c',"I rent canoes, but folks only book on sunny weekends. Weekdays I just sit on the dock."],['m',"Every single weekday?"]],x:['c',"Monday to Thursday it's me and the loons. Lovely, but the loons don't pay."]},
+   {i:[['m',"Sell the sunrise. A weekday dawn paddle, hot coffee in the boat, small group. Quiet days need a reason to exist."]],x:['c',"Tuesday sunrise sold out in two days. The loons sang. I cried a little."]},
+   {i:[['c',"Take Buddy. He's been chewing my dock for years. He's ready to travel."],['m',"He can be café security."]],x:['c',"Peru next. Carmen grows coffee way up in the clouds."]}
+  ]},
+ {id:'peru',name:"Peru",cust:'carmen',tease:"Thin air, terraces and coca tea. ¡Hola, Perú!",
+  stamp:{ring:'#8e3b2b',motif:`<circle cx="80" cy="18" r="9" fill="#e9b949"/><path d="M4 96L38 30l14 18 14-34 30 82z" fill="#5d8a4e"/><path d="M60 22l6-8 6 14z" fill="#2f5d44"/><path d="M16 82h68M22 72h56M30 62h40" stroke="#a9bfa4" stroke-width="3"/>`},
+  bg:`<rect width="300" height="300" fill="#dfe8e4"/><circle cx="235" cy="70" r="28" fill="#f0d7a0"/><path d="M0 230L90 70l50 70 60-110 100 200V300H0z" fill="#7a9f6a"/><path d="M150 140l50-110 30 55z" fill="#5d8a4e"/>${[0,1,2,3,4,5].map(k=>`<path d="M${40+k*10} ${190+k*12}h${220-k*20}" stroke="#a9bfa4" stroke-width="5"/>`).join('')}<ellipse cx="80" cy="150" rx="90" ry="14" fill="#fbf8f0" opacity=".6"/><ellipse cx="230" cy="118" rx="70" ry="10" fill="#fbf8f0" opacity=".55"/><rect y="262" width="300" height="38" fill="#5d8a4e"/>`,
+  beats:[
+   {i:[['c',"¡Bienvenida! First, coca tea. The air up here is thin, so we take everything slowly."],['m',"Finally, a country that gets me."]],x:['c',"Sip, breathe, sip. That's the whole Andes plan."]},
+   {i:[['c',"Tourists love my beans. They buy one bag, fly home, and I never hear from them again."],['m',"Do they ever try to order more?"]],x:['c',"They email me in five languages and I lose half of them. My inbox is a llama stampede."]},
+   {i:[['m',"Slip a little card in every bag with a QR code. One scan and they reorder from home."]],x:['c',"Three orders from Germany this week. Germany! My beans are going global."]},
+   {i:[['c',"Take this chullo. Earflaps for the cold flight."],['m',"I'm never taking it off."]],x:['c',"Japan next. Yuki brews coffee slower than you nap."]}
+  ]},
+ {id:'japan',name:"Japan",cust:'yuki',tease:"Jazz, siphons and very slow coffee. Konnichiwa, Japan.",
+  stamp:{ring:'#c0563f',motif:`<circle cx="72" cy="28" r="16" fill="#c0563f"/><path d="M4 92L50 20l46 72z" fill="#7d93a8"/><path d="M36 42l14-22 14 22-7-3-7 5-7-5z" fill="#fff"/>`},
+  bg:`<rect width="300" height="300" fill="#f6e6e3"/><circle cx="215" cy="85" r="34" fill="#e07a5f"/><path d="M40 220L150 60l110 160z" fill="#7d93a8"/><path d="M118 106l32-46 32 46-14-6-18 10-16-10z" fill="#fbf8f0"/><rect y="215" width="300" height="85" fill="#a9bfa4"/><path d="M228 140v120M268 140v120" stroke="#c0563f" stroke-width="9"/><path d="M212 140h72M218 156h60" stroke="#c0563f" stroke-width="8"/><path d="M30 300V170" stroke="#6b4e36" stroke-width="10"/><path d="M30 190l-28-30M30 210l34-28" stroke="#6b4e36" stroke-width="6"/>${[[8,150],[30,135],[55,150],[-5,175],[66,170],[40,160],[18,165]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="20" fill="#f0cfd8"/>`).join('')}${[[120,240],[160,262],[90,270],[200,250]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="4" ry="2.5" fill="#f0cfd8"/>`).join('')}`,
+  beats:[
+   {i:[['c',"Irasshaimase. Welcome to my kissaten. Jazz, siphon coffee, quiet voices."],['m',"Quiet voices is my native language."]],x:['c',"Eight minutes for one coffee. You didn't even blink. Rare for a tourist."]},
+   {i:[['c',"It's hanami season. Everyone is under the cherry blossoms. My café is empty."],['m',"Every day?"]],x:['c',"Two weeks a year. They should be my best two weeks."]},
+   {i:[['m',"Then go where they are. Fill flasks and sell coffee by the busiest tree."]],x:['c',"Sold out in an hour. Blossoms and coffee. A perfect hanami."]},
+   {i:[['c',"Take this maneki-neko. He waves customers in."],['m',"He's sitting right by the door at Basecamp."]],x:['c',"Thailand next. Nok makes the best cha yen in Chiang Mai."]}
+  ]},
+ {id:'thailand',name:"Thailand",cust:'nok',tease:"Orange tea and golden temples. Sawasdee, Thailand.",
+  stamp:{ring:'#c9962f',motif:`<path d="M50 4l3 16h-6z" fill="#e9b949"/><path d="M40 40q10-22 20 0z" fill="#e9b949"/><rect x="38" y="40" width="24" height="9" fill="#c9962f"/><path d="M28 49h44l6 14H22z" fill="#e9b949"/><rect x="18" y="63" width="64" height="11" fill="#c0563f"/><path d="M10 74h80v18H10z" fill="#e9b949"/>`},
+  bg:`<rect width="300" height="300" fill="#f6d9b0"/><circle cx="70" cy="72" r="30" fill="#f0a868"/>${[[40,40],[230,30],[262,92],[26,150],[250,150],[200,70]].map(([x,y])=>`<rect x="${x}" y="${y}" width="12" height="16" rx="4" fill="#e9a24a" opacity=".85"/><circle cx="${x+6}" cy="${y+12}" r="2.5" fill="#fbf8f0" opacity=".7"/>`).join('')}<path d="M150 130v-34" stroke="#e9b949" stroke-width="4"/><path d="M100 192l50-62 50 62z" fill="#c0563f"/><path d="M82 218l68-58 68 58z" fill="#2f5d44"/><path d="M100 192q-9-3-7-13M200 192q9-3 7-13M82 218q-9-3-7-13M218 218q9-3 7-13" stroke="#e9b949" stroke-width="3" fill="none"/><rect x="108" y="218" width="84" height="58" fill="#fbf8f0"/><rect x="138" y="236" width="24" height="40" rx="10" fill="#c9962f"/><rect y="274" width="300" height="26" fill="#c8a77a"/>`,
+  beats:[
+   {i:[['c',"Sawasdee ka! Cha yen? Orange, sweet and very cold."],['m',"It's so orange. I love it."]],x:['c',"Hot day, cold tea, no rush. Mai pen rai."]},
+   {i:[['c',"Most of my orders come through delivery apps now. They take thirty percent of every cup."],['m',"Thirty percent? From a coffee cart?"]],x:['c',"Busy every day and somehow still broke."]},
+   {i:[['m',"Keep the apps for new people. Give your regulars a stamp card and let them order direct on LINE."]],x:['c',"Half my regulars order direct now. I kept the thirty percent!"]},
+   {i:[['c',"It's Songkran! Hold still, this powder is for good luck."],['m',"Is it on my nose? It's definitely on my nose."]],x:['c',"Laos next. Noy's guesthouse sits right on the Mekong."]}
+  ]},
+ {id:'laos',name:"Laos",cust:'noy',tease:"Sticky rice and a slow, wide river. Sabaidee, Laos.",
+  stamp:{ring:'#2f5f9e',motif:`<circle cx="50" cy="44" r="18" fill="#e9a24a"/><path d="M4 60q12-24 24 0zM68 60q14-28 28 0z" fill="#5d8a4e"/><path d="M0 60h100v36H0z" fill="#c9a77a"/><path d="M18 68h64l-8 8H26z" fill="#7a5a3e"/><path d="M40 68v-9h20v9z" fill="#c0563f"/>`},
+  bg:`<rect width="300" height="300" fill="#f3dcc0"/><circle cx="150" cy="122" r="40" fill="#f0a868"/><path d="M-10 192q20-92 50-92t40 92zM60 192q20-112 55-112t45 112zM180 192q15-82 45-82t40 82zM240 192q20-102 50-102t20 102z" fill="#7a9f6a"/><rect y="190" width="300" height="110" fill="#c9a77a"/><path d="M0 206q150 10 300 0M0 250q150 8 300 0" stroke="#e2c49a" stroke-width="3" fill="none"/><path d="M88 232h124l-16 14H104z" fill="#7a5a3e"/><path d="M124 232v-16h52v16z" fill="#c0563f"/><path d="M120 216h60" stroke="#7a5a3e" stroke-width="3"/>`,
+  beats:[
+   {i:[['c',"Sabaidee! You're just in time. The monks pass by at sunrise."],['m',"Sunrise? On purpose?"]],x:['c',"Coffee from the Bolaven Plateau helps. Bo pen nyang."]},
+   {i:[['c',"I love my guests, but they ask me the same ten questions all day. Bus times, waterfalls, laundry."],['m',"The exact same ten?"]],x:['c',"Every single day. I haven't finished a warm coffee since March."]},
+   {i:[['m',"Write them on a chalkboard by the door. Answer once, point forever."]],x:['c',"They read the board, then ask me how my day is instead. So much better."]},
+   {i:[['c',"Take a champa flower. Behind the ear, like this."],['m',"I feel very elegant."]],x:['c',"Vietnam next. Linh will make you egg coffee."]}
+  ]},
+ {id:'vietnam',name:"Vietnam",cust:'linh',tease:"Scooters, lanterns and egg coffee. Xin chào, Vietnam.",
+  stamp:{ring:'#8e3b2b',motif:`<path d="M50 4v12" stroke="#1f3a2c" stroke-width="3"/><ellipse cx="50" cy="52" rx="32" ry="36" fill="#e9a24a"/><path d="M32 22q18 30 0 60M68 22q-18 30 0 60M50 16v72" stroke="#c0563f" stroke-width="3" fill="none"/><rect x="38" y="86" width="24" height="8" fill="#c0563f"/>`},
+  bg:`<rect width="300" height="300" fill="#e8dcc8"/><path d="M20 200q0-120 30-120t30 120zM90 200q0-150 35-150t35 150zM180 200q0-100 28-100t28 100zM240 200q0-130 30-130t30 130z" fill="#7a9f6a" opacity=".85"/><ellipse cx="150" cy="170" rx="180" ry="18" fill="#fbf8f0" opacity=".55"/><rect y="200" width="300" height="100" fill="#8fb9c4"/><path d="M100 236h90l-14 16h-62z" fill="#7a5a3e"/><path d="M140 236v-34l26 26z" fill="#e9d6a9"/><path d="M0 26q150 30 300 0" stroke="#5d6f61" stroke-width="2" fill="none"/>${[[30,34,'#c0563f'],[80,42,'#e9a24a'],[130,46,'#c0563f'],[180,46,'#e9a24a'],[230,42,'#c0563f'],[275,34,'#e9a24a']].map(([x,y,c])=>`<ellipse cx="${x}" cy="${y+12}" rx="11" ry="13" fill="${c}"/>`).join('')}`,
+  beats:[
+   {i:[['c',"Xin chào! Egg coffee? It's like tiramisu you can drink."],['m',"Say no more."]],x:['c',"Most people say wow. You said nothing. You were drinking."]},
+   {i:[['c',"Everyone photographs my egg coffee. Hundreds of photos. Nobody tags my café."],['m',"So nobody can find you?"]],x:['c',"Famous coffee, secret café. Not the plan."]},
+   {i:[['m',"Put your café's name on the saucer. Every photo becomes a free ad."]],x:['c',"Tagged forty times this week. People walk in holding their phones!"]},
+   {i:[['c',"Take this nón lá. Shade for the road."],['m',"I'll nap under it."]],x:['c',"Cambodia next. Bopha drives the friendliest tuk-tuk in Siem Reap."]}
+  ]},
+ {id:'cambodia',name:"Cambodia",cust:'bopha',tease:"Temples at sunrise. Suostei, Cambodia.",
+  stamp:{ring:'#8e3b2b',motif:`<circle cx="80" cy="20" r="9" fill="#e07a5f"/><path d="M20 90V62l8-10 8 10v28zM64 90V62l8-10 8 10v28z" fill="#7a5a3e"/><path d="M38 90V48l12-30 12 30v42z" fill="#5d4330"/><rect x="10" y="88" width="80" height="8" fill="#7a5a3e"/>`},
+  bg:`<rect width="300" height="300" fill="#f3cfc4"/><circle cx="150" cy="108" r="36" fill="#f0a868"/><path d="M40 190v-40l15-20 15 20v40zM230 190v-40l15-20 15 20v40zM88 190v-55l17-26 17 26v55zM178 190v-55l17-26 17 26v55zM124 190v-82l26-52 26 52v82z" fill="#5d4330"/><rect x="18" y="186" width="264" height="10" fill="#5d4330"/><rect y="196" width="300" height="104" fill="#a9bfc8"/><path d="M124 196v42l26 32 26-32v-42z" fill="#5d4330" opacity=".22"/>${[[50,250],[240,262],[92,282]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="16" ry="5" fill="#7a9f6a"/><path d="M${x-6} ${y-2}q6-13 12 0z" fill="#f0cfd8"/>`).join('')}`,
+  beats:[
+   {i:[['c',"Suostei! Hop in. Angkor Wat at sunrise is worth the 4am alarm."],['m',"4am. For you, I'll try."]],x:['m',"Okay. That sunrise was worth it."]},
+   {i:[['c',"Fifty drivers wait at the same gate, all shouting 'tuk-tuk!' Nobody can tell us apart."],['m',"So tourists just pick whoever's closest?"]],x:['c',"Closest or loudest. I'm neither."]},
+   {i:[['m',"Ask every happy rider for a review. Keep a little card in the tuk-tuk with your name on it."]],x:['c',"Now people ask for me by name. 'Bopha, the one with all the stars!'"]},
+   {i:[['c',"Take my krama. It's a scarf, a towel, a sunhat. Everything."],['m',"The Napsack of scarves."]],x:['c',"Singapore next. Uncle Lim has poured kopi for forty years."]}
+  ]},
+ {id:'singapore',name:"Singapore",cust:'lim',tease:"Kopi, kaya toast and a tissue on every seat. Hello, Singapore.",
+  stamp:{ring:'#a03d7a',motif:`${[0,72,144,216,288].map(a=>`<ellipse cx="50" cy="30" rx="11" ry="20" fill="${a%144?'#d58bc9':'#b45aa6'}" transform="rotate(${a} 50 50)"/>`).join('')}<circle cx="50" cy="50" r="8" fill="#8e3b7a"/><circle cx="50" cy="50" r="3" fill="#e9b949"/>`},
+  bg:`<rect width="300" height="300" fill="#f6efe2"/>${[['#e9a2b8',0],['#8fc7c0',60],['#f0d070',120],['#b7c7e8',180],['#e9a2b8',240]].map(([c,x])=>`<rect x="${x}" y="80" width="60" height="220" fill="${c}" stroke="#fbf8f0" stroke-width="3"/><path d="M${x} 80h60l-6-14h-48z" fill="#c0563f"/>${[0,1].map(r=>`<rect x="${x+12}" y="${110+r*70}" width="14" height="30" rx="7" fill="#fbf8f0"/><rect x="${x+34}" y="${110+r*70}" width="14" height="30" rx="7" fill="#fbf8f0"/>`).join('')}`).join('')}<path d="M0 58q150 30 300 0" stroke="#5d6f61" stroke-width="1.5" fill="none"/>${[30,90,150,210,270].map((x,k)=>`<ellipse cx="${x}" cy="${66+[3,9,12,9,3][k]}" rx="7" ry="9" fill="#c0392b"/>`).join('')}<rect y="270" width="300" height="30" fill="#c8c2b0"/>`,
+  beats:[
+   {i:[['c',"Kopi-O or kopi-C? Decide fast, queue behind you."],['m',"Kopi-C, please. Slowly."]],x:['c',"Can. Chope your seat with a tissue packet first."]},
+   {i:[['c',"Lunch rush, office people only got thirty minutes. My queue too long, they go to the chain café."],['m',"How long is the wait?"]],x:['c',"Twelve minutes. Too long for them, lah."]},
+   {i:[['m',"Make three fixed sets. Kopi and kaya toast, kopi and eggs, kopi and both. No thinking, faster orders."]],x:['c',"Queue now five minutes. Office people all back. Shiok!"]},
+   {i:[['c',"Take one orchid. National flower, for luck."],['m',"I'll pin it right here."]],x:['c',"Australia next. Shazza says their flat white is better. Don't believe her."]}
+  ]},
+ {id:'australia',name:"Australia",cust:'shazza',tease:"Laneways, brunch and a proper flat white. G'day, Australia.",
+  stamp:{ring:'#c0563f',motif:`<path d="M50 6l44 44-44 44L6 50z" fill="#e9b949" stroke="#1f2a30" stroke-width="4" stroke-linejoin="round"/><g fill="#1f2a30"><ellipse cx="46" cy="57" rx="11" ry="8" transform="rotate(-35 46 57)"/><path d="M51 50l7-9 4 3-6 9z"/><ellipse cx="61" cy="40" rx="5.5" ry="3.6" transform="rotate(-15 61 40)"/><path d="M58 37l1-6 2.5 5zM55 52l6 4-1 1.5-6-3z"/><path d="M38 62q-9 6-13 14h4q6-8 11-10z"/><path d="M45 62l9 10h8l-11-12z"/></g>`},
+  bg:`<rect width="300" height="300" fill="#e8dccb"/><path d="M0 0h92l28 300H0z" fill="#b5703d"/><path d="M300 0h-92l-28 300h120z" fill="#a8603a"/>${[...Array(14)].map((_,k)=>`<path d="M0 ${k*22}h${92+k*2}M300 ${k*22}h-${92+k*2}" stroke="#8e5230" stroke-width="1.5"/>`).join('')}<circle cx="40" cy="122" r="22" fill="#4f9fbf" opacity=".85"/><path d="M18 182q20-30 50 0t40 10" stroke="#e85d9c" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="256" cy="110" r="18" fill="#e9b949"/><path d="M232 202l40-30" stroke="#5d8a4e" stroke-width="12" stroke-linecap="round"/><path d="M92 40q58 30 116 0" stroke="#3b2a1d" stroke-width="1.5" fill="none"/>${[104,122,140,158,176,194].map(x=>`<circle cx="${x}" cy="${Math.round(40+30*Math.sin((x-92)/116*Math.PI)*.5)}" r="3.6" fill="#f6d07a"/>`).join('')}<path d="M120 300l-8-110h76l-8 110z" fill="#cbbda7"/>`,
+  beats:[
+   {i:[['c',"G'day! Flat white? Don't tell the Kiwis, but we invented it."],['m',"My lips are sealed. Mostly with foam."]],x:['c',"Brunch here is a competitive sport, mate."]},
+   {i:[['c',"Remote workers camp here all day on one coffee. Laptops everywhere, no tables left for brunch."],['m',"Do you want them gone?"]],x:['c',"Nah, I like 'em. I just need them to buy more than one flat white."]},
+   {i:[['m',"Sell a day pass: a desk, wifi and coffee refills. Keep the window tables laptop-free at lunch."]],x:['c',"Twelve passes this week. Brunch crowd's happy, nomads are happy, I'm stoked."]},
+   {i:[['c',"Hold still. Zinc on the nose, or you'll cook out there."],['m',"Am I... fashionable?"]],x:['c',"New Zealand next. Tell Aroha we invented the flat white."]}
+  ]},
+ {id:'newzealand',name:"New Zealand",cust:'aroha',tease:"Lakes, mountains and one famous tree. Kia ora, Aotearoa.",
+  stamp:{ring:'#2b6f8e',motif:`<path d="M4 70l22-36 14 18 20-30 36 48z" fill="#e8eef0"/><path d="M4 70l22-36 8 12-12 6z" fill="#b9c7cf"/><rect y="70" width="100" height="26" fill="#8fb9c4"/><path d="M50 84V68" stroke="#5d4330" stroke-width="2.5"/><ellipse cx="50" cy="66" rx="9" ry="7" fill="#7a9f6a"/><path d="M42 71q-2 6 0 10M58 71q2 6 0 10" stroke="#7a9f6a" stroke-width="2" fill="none"/>`},
+  bg:`<rect width="300" height="300" fill="#dbe8ef"/><path d="M0 172l60-92 40 50 60-100 70 92 30-30 40 80z" fill="#9fb0bb"/><path d="M60 80l20 28-14-4-12 10-10-8zM160 30l26 40-16-6-14 12-10-10z" fill="#fbf8f0"/><rect y="170" width="300" height="130" fill="#7fa9bb"/><path d="M0 172q150 6 300 0" stroke="#a9c7d4" stroke-width="3" fill="none"/><path d="M150 240v-50" stroke="#5d4330" stroke-width="5"/><path d="M150 200q-30 0-34 30M150 200q30 0 34 30M150 195q-20 6-26 34M150 195q20 6 26 34" stroke="#7a9f6a" stroke-width="5" fill="none"/><ellipse cx="150" cy="190" rx="26" ry="18" fill="#7a9f6a"/><path d="M150 242v30" stroke="#5d4330" stroke-width="5" opacity=".25"/>`,
+  beats:[
+   {i:[['c',"Kia ora! Welcome to Wānaka. Lake, mountains, one very famous tree."],['m',"Is the tree a regular?"]],x:['c',"Most photographed customer we've got."]},
+   {i:[['c',"I do everything myself. Bake, brew, till, dishes. I haven't had a day off since winter."],['m',"What happens if you get sick?"]],x:['c',"The café closes and the whole town asks why. She'll be right... I hope."]},
+   {i:[['m',"Write down your routine. Recipes, opening steps, closing steps. Then a weekend helper can run it."]],x:['c',"Took my first Sunday off in a year. Went skiing. The café didn't burn down!"]},
+   {i:[['c',"Take these goggles. Fresh snow on the mountain."],['m',"Pushed up on the head, like a pro."]],x:['c',"Last stop, Colombia. Doña Luz grows coffee in the valley of giant palms."]}
+  ]},
+ {id:'colombia',name:"Colombia",cust:'luz',tease:"Wax palms, tinto and hammocks. ¡Hola, Colombia!",
+  stamp:{ring:'#2f8a6a',motif:`<circle cx="80" cy="18" r="8" fill="#e9b949"/><path d="M4 92q46-28 92 0z" fill="#7a9f6a"/><path d="M40 90V22M64 90V36" stroke="#d2cab5" stroke-width="3.5"/>${[[40,22],[64,36]].map(([x,y])=>`<path d="M${x} ${y}q-14-2-18 8M${x} ${y}q14-2 18 8M${x} ${y}q-8-10-16-8M${x} ${y}q8-10 16-8" stroke="#2f5d44" stroke-width="3" fill="none" stroke-linecap="round"/>`).join('')}`},
+  bg:`<rect width="300" height="300" fill="#e1ecdf"/><path d="M0 200q60-80 140-40t160-40V300H0z" fill="#a9bfa4"/><path d="M0 240q90-50 180-10t120-20V300H0z" fill="#7a9f6a"/>${[[60,60,200],[100,92,222],[210,40,192],[250,80,232]].map(([x,top,bot])=>`<path d="M${x} ${bot}V${top}" stroke="#d2cab5" stroke-width="4"/><path d="M${x} ${top}q-20-2-26 12M${x} ${top}q20-2 26 12M${x} ${top}q-12-14-24-10M${x} ${top}q12-14 24-10M${x} ${top}v-18" stroke="#2f5d44" stroke-width="4" fill="none" stroke-linecap="round"/>`).join('')}<ellipse cx="150" cy="150" rx="140" ry="12" fill="#fbf8f0" opacity=".55"/><path d="M100 200q55 34 110 -12" stroke="#c0563f" stroke-width="6" fill="none" stroke-linecap="round"/>`,
+  beats:[
+   {i:[['c',"¡Bienvenida, mija! A tinto? Small, black and strong, like me."],['m',"Perfect. And are those hammocks?"]],x:['c',"Everything here grows slowly. Coffee, palms and friendships."]},
+   {i:[['c',"I grow some of the best beans in this valley, but the big buyers pay me almost nothing."],['m',"Who drinks your coffee?"]],x:['c',"People far away who will never know my name."]},
+   {i:[['m',"Sell direct. Farm tours in the morning, then bags with your name on them for every visitor."]],x:['c',"The tourists cried on the tour, then bought three bags each. My coffee has my name on it now."]},
+   {i:[['c',"It's Carnival season! Take this mask, mija. Dance a little before you nap."],['m',"One dance. Then the longest nap of my life."]],x:['c',"Your hammock is waiting, Mocha. Go rest. You earned it."]}
+  ]}
+];
+/* parked World Tour countries: written, ready to bring back as new stops */
+const PARKED_COUNTRIES=[
  {id:'portugal',name:'Portugal',cust:'ines',tease:'Hills, trams and custard tarts. Hello, Lisbon.',
   stamp:{ring:'#2f5f9e',motif:`<rect x="10" y="30" width="80" height="50" rx="8" fill="#e9b949"/><rect x="18" y="40" width="18" height="16" fill="#bfd7df"/><rect x="41" y="40" width="18" height="16" fill="#bfd7df"/><rect x="64" y="40" width="18" height="16" fill="#bfd7df"/><path d="M50 30V10M35 10h30" stroke="#1f3a2c" stroke-width="4"/><circle cx="28" cy="84" r="7" fill="#1f3a2c"/><circle cx="72" cy="84" r="7" fill="#1f3a2c"/>`},
   bg:`<rect width="300" height="300" fill="#f3e6cf"/><path d="M0 150Q150 70 300 130V300H0z" fill="#e2c9a0"/>${[['#f0cfd8',10,110],['#fbf8f0',70,95],['#e9d6a9',130,88],['#bfd7df',190,96],['#fbf8f0',250,108]].map(([c,x,y])=>`<rect x="${x}" y="${y}" width="56" height="${200-y}" fill="${c}"/><path d="M${x} ${y}h56l-6-12h-44z" fill="#c0563f"/>${[0,1,2].map(r=>[0,1].map(q=>`<rect x="${x+8+q*24}" y="${y+12+r*26}" width="16" height="16" fill="#2f5f9e" opacity=".75"/>`).join('')).join('')}`).join('')}<rect y="200" width="300" height="100" fill="#d2cab5"/><path d="M0 262h300M0 270h300" stroke="#5d6f61" stroke-width="3"/><path d="M0 172h300" stroke="#1f3a2c" stroke-width="1.5"/><rect x="40" y="186" width="170" height="70" rx="12" fill="#e9b949"/><rect x="40" y="226" width="170" height="8" fill="#c0563f"/>${[0,1,2,3].map(k=>`<rect x="${52+k*38}" y="196" width="28" height="24" rx="3" fill="#bfd7df"/>`).join('')}<path d="M125 186v-14" stroke="#1f3a2c" stroke-width="3"/>`,
@@ -694,16 +815,6 @@ const COUNTRIES=[
    {i:[['m',"Your tiles are beautiful. How long does one take?"],['c',"A week. You can't rush blue."]],x:['m',"Somebody put that on a mug, too."]},
    {i:[['c',"Custard tarts are out of the oven and the queue is wild."],['m',"Sell them in boxes of six. Fewer trips to the counter, bigger orders."]],x:['c',"Warm tarts, happy people, faster line. Obrigada!"]},
    {i:[['c',"Take a tile for your café wall."],['m',"It'll go right above the espresso machine."]],x:['c',"Japan next? Bring an umbrella for the blossoms."]}
-  ]},
- {id:'japan',name:'Japan',cust:'haru',tease:'Blossoms and very slow coffee. Hello, Japan.',
-  stamp:{ring:'#c0563f',motif:`<circle cx="72" cy="28" r="16" fill="#c0563f"/><path d="M4 92L50 20l46 72z" fill="#7d93a8"/><path d="M36 42l14-22 14 22-7-3-7 5-7-5z" fill="#fff"/>`},
-  bg:`<rect width="300" height="300" fill="#f6e6e3"/><circle cx="215" cy="85" r="34" fill="#e07a5f"/><path d="M40 220L150 60l110 160z" fill="#7d93a8"/><path d="M118 106l32-46 32 46-14-6-18 10-16-10z" fill="#fbf8f0"/><rect y="215" width="300" height="85" fill="#a9bfa4"/><path d="M228 140v120M268 140v120" stroke="#c0563f" stroke-width="9"/><path d="M212 140h72M218 156h60" stroke="#c0563f" stroke-width="8"/><path d="M30 300V170" stroke="#6b4e36" stroke-width="10"/><path d="M30 190l-28-30M30 210l34-28" stroke="#6b4e36" stroke-width="6"/>${[[8,150],[30,135],[55,150],[-5,175],[66,170],[40,160],[18,165]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="20" fill="#f0cfd8"/>`).join('')}${[[120,240],[160,262],[90,270],[200,250]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="4" ry="2.5" fill="#f0cfd8"/>`).join('')}`,
-  beats:[
-   {i:[['c',"Welcome to my kissaten. We play jazz and speak softly."],['m',"My kind of place."]],x:['c',"You sit very quietly. Rare for a tourist."]},
-   {i:[['c',"Hanami season. My kissaten is empty. Everyone's in the park."],['m',"Then go where they are. Sell coffee from a flask by the busiest tree."]],x:['c',"Sold out in an hour. A perfect hanami."]},
-   {i:[['m',"How do you brew so slowly?"],['c',"Siphon coffee. Eight minutes. Worth every one."]],x:['m',"Eight minutes. I feel seen."]},
-   {i:[['c',"My regulars ride the 7:40 train. They never have time to stop."],['m',"Have their usual ready at 7:35. Let them pay once a week."]],x:['c',"They stop now. Every single morning."]},
-   {i:[['c',"Take this record for your café."],['m',"Slow jazz for slow coffee."]],x:['c',"Mexico next. Ask Lupe about café de olla."]}
   ]},
  {id:'mexico',name:'Mexico',cust:'lupe',tease:'Cinnamon in the air. Hola, México.',
   stamp:{ring:'#2f8a6a',motif:`<rect x="40" y="18" width="20" height="78" rx="10" fill="#5d8a4e"/><rect x="18" y="36" width="12" height="32" rx="6" fill="#5d8a4e"/><rect x="18" y="58" width="26" height="10" rx="5" fill="#5d8a4e"/><rect x="70" y="26" width="12" height="32" rx="6" fill="#5d8a4e"/><rect x="56" y="48" width="26" height="10" rx="5" fill="#5d8a4e"/><circle cx="50" cy="16" r="6" fill="#e07a9f"/>`},
@@ -725,16 +836,6 @@ const COUNTRIES=[
    {i:[['c',"Aurora tour tonight, and everyone asks if they'll actually see the lights."],['m',"Promise it: if the sky stays dark, they come back free. Confidence sells."]],x:['c',"The whole sky danced. Nobody asked for a refund."]},
    {i:[['c',"Take a wool sweater for the café."],['m',"Sloths love wool."]],x:['c',"Vietnam next. Try Linh's egg coffee."]}
   ]},
- {id:'vietnam',name:'Vietnam',cust:'linh',tease:'Scooters, lanterns and egg coffee. Xin chào, Vietnam.',
-  stamp:{ring:'#8e3b2b',motif:`<path d="M50 4v12" stroke="#1f3a2c" stroke-width="3"/><ellipse cx="50" cy="52" rx="32" ry="36" fill="#e9a24a"/><path d="M32 22q18 30 0 60M68 22q-18 30 0 60M50 16v72" stroke="#c0563f" stroke-width="3" fill="none"/><rect x="38" y="86" width="24" height="8" fill="#c0563f"/>`},
-  bg:`<rect width="300" height="300" fill="#e8dcc8"/><path d="M20 200q0-120 30-120t30 120zM90 200q0-150 35-150t35 150zM180 200q0-100 28-100t28 100zM240 200q0-130 30-130t30 130z" fill="#7a9f6a" opacity=".85"/><ellipse cx="150" cy="170" rx="180" ry="18" fill="#fbf8f0" opacity=".55"/><rect y="200" width="300" height="100" fill="#8fb9c4"/><path d="M100 236h90l-14 16h-62z" fill="#7a5a3e"/><path d="M140 236v-34l26 26z" fill="#e9d6a9"/><path d="M0 26q150 30 300 0" stroke="#5d6f61" stroke-width="2" fill="none"/>${[[30,34,'#c0563f'],[80,42,'#e9a24a'],[130,46,'#c0563f'],[180,46,'#e9a24a'],[230,42,'#c0563f'],[275,34,'#e9a24a']].map(([x,y,c])=>`<ellipse cx="${x}" cy="${y+12}" rx="11" ry="13" fill="${c}"/>`).join('')}`,
-  beats:[
-   {i:[['c',"Egg coffee? It's like tiramisu you can drink."],['m',"Say no more."]],x:['c',"Most people say wow. You said nothing. You were drinking."]},
-   {i:[['c',"Everyone photographs my egg coffee, but nobody tags my café."],['m',"Put your name on the saucer. Every photo becomes a free ad."]],x:['c',"Best people-watching in Hanoi, and now they can find me."]},
-   {i:[['m',"How do you run this with no staff?"],['c',"My grandmother's system: a notebook and good regulars."]],x:['m',"Systems and regulars. Always the answer."]},
-   {i:[['c',"Lantern night. Last year I stayed open till 2am and was useless for three days."],['m',"Close at midnight. Tired owners make bad coffee. Protect your mornings."]],x:['c',"Glowing lanterns, and I actually slept. Perfect."]},
-   {i:[['c',"Take some of my beans for Café Basecamp."],['m',"Egg coffee goes on the specials board."]],x:['c',"Italy next. Nonna Rosa will judge your espresso."]}
-  ]},
  {id:'italy',name:'Italy',cust:'rosa',tease:'Espresso at the bar, standing up. Ciao, Italia.',
   stamp:{ring:'#3f6b3a',motif:`<path d="M4 96q46-42 92 0z" fill="#a9bfa4"/><ellipse cx="38" cy="50" rx="10" ry="38" fill="#2f5d44"/><ellipse cx="62" cy="58" rx="9" ry="30" fill="#2f5d44"/><circle cx="80" cy="20" r="10" fill="#e9b949"/>`},
   bg:`<rect width="300" height="300" fill="#f5e1bd"/><circle cx="240" cy="60" r="26" fill="#f0c56a"/><path d="M0 170q80-50 160-10t140-20V300H0z" fill="#a9bfa4"/><path d="M0 200q100-40 200 0t100-10V300H0z" fill="#7a9f6a"/>${[[40,150,46],[60,160,36],[230,150,40],[250,165,30]].map(([x,y,h])=>`<ellipse cx="${x}" cy="${y}" rx="8" ry="${h}" fill="#2f5d44"/>`).join('')}${[[100,190,'#e8a27a'],[150,180,'#e9d6a9'],[190,195,'#e8a27a']].map(([x,y,c])=>`<rect x="${x}" y="${y}" width="44" height="${260-y}" fill="${c}"/><path d="M${x-4} ${y}l26-16 26 16z" fill="#b5532f"/><rect x="${x+16}" y="${y+16}" width="12" height="16" fill="#3b2a1d" opacity=".7"/>`).join('')}<rect y="250" width="300" height="50" fill="#d2cab5"/>`,
@@ -744,21 +845,11 @@ const COUNTRIES=[
    {i:[['m',"Nonna, how long have you run this bar?"],['c',"Fifty-two years. Same cups. Same regulars."]],x:['m',"That's the goal."]},
    {i:[['c',"My grandson says I need a website. I don't even have a phone!"],['m',"Start with one thing: a free map listing with your hours. That's where tourists look."]],x:['c',"A family from Oslo found me today. On the map! You'd make a good Italian."]},
    {i:[['c',"Take my moka pot. Treat it kindly."],['m',"Like family."]],x:['c',"Where next? Somewhere cold with lakes, I hear."]}
-  ]},
- {id:'canada',name:'Canada',cust:'bev',tease:'Lakes, pines and a toque. Hello, Canada.',
-  stamp:{ring:'#c0563f',motif:`<path d="M50 4l8 18 12-6-4 22 16-10 2 12 12 2-14 14 4 8-26-4 2 28h-8l2-28-26 4 4-8-14-14 12-2 2-12 16 10-4-22 12 6z" fill="#c0563f"/>`},
-  bg:`<rect width="300" height="300" fill="#cfe3ea"/><path d="M0 150l40-50 30 30 40-60 40 50 40-40 50 50 60-30V200H0z" fill="#8fa3ad"/>${[10,40,70,230,260,290].map((x,k)=>`<path d="M${x} ${200-30-(k%2)*14}l18 40h-36z" fill="#2f5d44"/><path d="M${x} ${200-50-(k%2)*14}l14 32h-28z" fill="#3f6b3a"/>`).join('')}<rect y="200" width="300" height="100" fill="#7fa9bb"/><path d="M90 236q40 14 90 0l-8 8q-36 8-74 0z" fill="#c0563f"/><circle cx="120" cy="150" r="22" fill="#c0563f"/><circle cx="140" cy="140" r="18" fill="#e07a5f"/><rect x="124" y="160" width="6" height="40" fill="#6b4e36"/><rect x="190" y="166" width="46" height="34" fill="#7a5a3e"/><path d="M186 168l27-20 27 20z" fill="#3b2a1d"/><rect x="206" y="178" width="12" height="12" fill="#e9b949"/>`,
-  beats:[
-   {i:[['c',"Hey there! You must be freezing. Want a coffee?"],['m',"Black, please. And a blanket."]],x:['c',"Welcome to the lake, bud."]},
-   {i:[['c',"I rent canoes, but people only book on sunny weekends."],['m',"Run a weekday sunrise paddle with coffee included. Give quiet days a reason."]],x:['c',"Tuesday sunrise sold out. The loons approve."]},
-   {i:[['m',"Do you get busy up here?"],['c',"Summers, eh. Winters it's just me and the regulars."]],x:['m',"Regulars again. It's always the regulars."]},
-   {i:[['c',"Hockey on the lake tonight, and I can never remember who still owes me for skates."],['m',"Write it down the second it happens. Never trust your memory with money."]],x:['c',"Everyone paid. Nobody fell in. Huge win."]},
-   {i:[['c',"So where's home for you now?"],['m',"Wherever there's a slow café and good regulars."]],x:['c',"Then you're home everywhere. Safe travels, Mocha."]}
   ]}
 ];
 COUNTRIES.forEach(c=>BG.push(c.bg));
 /* square postage stamps: perforated edge, framed picture, country band, and a postmark once collected */
-const STAMP_VAL={portugal:'€0,95',japan:'¥110',mexico:'$15',iceland:'250 KR',vietnam:'4000₫',italy:'€1,25',canada:'92¢'};
+const STAMP_VAL={canada:'92¢',peru:'S/ 6,50',japan:'¥110',thailand:'฿15',laos:'₭8000',vietnam:'4000₫',cambodia:'៛2000',singapore:'S$0.90',australia:'$1.50',newzealand:'$3.30',colombia:'$3.200'};
 let stampUid=0;
 function stampSVG(c,got=true,lv){
   const s=c.stamp,col=got?s.ring:'#a9bfa4',u='st'+(++stampUid);
@@ -828,17 +919,19 @@ Object.keys(ITEM).forEach(k=>delete ITEM[k]);ITEMS.forEach(i=>ITEM[i.id]=i);
 const GEAR={
  s0:['necktie','lanyard'], s1:['busticket','bandana'], s2:['poncho','grinder'], s3:['strawhat','lei'],
  s4:['laptop','lantern'], s5:['scarf','studenterhue'], s6:['apron','goldcup'],
- portugal:['nata','tramcap'], japan:['matcha','sakura'], mexico:['marigold','olla'],
- iceland:['lopapeysa','puffin'], vietnam:['eggcoffee','nonla'], italy:['moka','goggles'], canada:['beaver','plaid']
+ canada:['beaver'], peru:['chullo'], japan:['maneki'], thailand:['songkran'], laos:['champa'], vietnam:['nonla'], cambodia:['krama'],
+ singapore:['orchid'], australia:['zinc'], newzealand:['skigoggles'], colombia:['carnival'],
+ /* parked */ portugal:['nata','tramcap'], mexico:['marigold','olla'],
+ iceland:['lopapeysa','puffin'], italy:['moka','goggles']
 };
 /* level thresholds: halfway reward after ceil(len/2) levels at a stop, finish reward on its last level */
 function gearStops(){
   const out=[];
   CHAPTERS.forEach((ch,i)=>{const a=ch.at,b=i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT;out.push({key:'s'+i,name:ch.title,label:`Chapter ${i+1}`,start:a,len:b-a})});
   COUNTRIES.forEach((c,i)=>out.push({key:c.id,name:c.name,label:'World Tour',start:TOUR_AT+i*TOUR_LEN,len:TOUR_LEN}));
-  return out.map(g=>Object.assign(g,{items:GEAR[g.key],at:[g.start+Math.ceil(g.len/2),g.start+g.len]}));
+  return out.map(g=>{const items=GEAR[g.key]||[];return Object.assign(g,{items,at:items.length>1?[g.start+Math.ceil(g.len/2),g.start+g.len]:[g.start+g.len]})});
 }
-const GEAR_AT={};gearStops().forEach(g=>g.items.forEach((id,k)=>GEAR_AT[id]={at:g.at[k],stop:g,half:k===0}));
+const GEAR_AT={};gearStops().forEach(g=>g.items.forEach((id,k)=>GEAR_AT[id]={at:g.at[k],stop:g,half:g.items.length>1&&k===0}));
 
 /* ================= chapter lessons + country travel notes ================= */
 /* end-of-chapter celebration: who cheers, what Mocha learned */
@@ -1343,7 +1436,7 @@ function playScene(sc){
     if(!sc.title){i=0;show()}
   });
 }
-function beatFor(L){const b=L.leg.beats;if(L.kind==='tour'&&b.length>L.len)return L.k===L.len-1?b[b.length-1]:b[L.k];return b[L.k%b.length]} /* short stops keep hello, first tip, goodbye */
+function beatFor(L){const b=L.leg.beats;return b[L.k%b.length]}
 function sceneFor(L,part){
   const b=beatFor(L);
   return{bg:L.bg,cust:b.all?null:(b.c||L.leg.cust),crowd:b.all?STORY_CAST:null,lines:part==='in'?b.i:[b.x]};
@@ -1914,7 +2007,7 @@ function passportBook(){
     return got?`<button type="button" class="sslot" data-stamp="${k.id}" style="--rot:${rot(i)}" aria-label="${k.name} stamp, open travel notes">${stampSVG(k,true,lv)}<b>${k.name}</b><small>${lv?'LV '+lv:'STAMPED'}</small></button>`
       :`<div class="sslot empty" style="--rot:none">${stampSVG(k,false)}<b>Visa pending</b><small>LV ${from}–${to}</small></div>`;
   };
-  const pages=[COUNTRIES.slice(0,4),COUNTRIES.slice(4)].map((grp,p)=>`<div class="ppage"><h4>Visas · Stamps</h4><div class="sgrid">${grp.map((k,i)=>slot(k,i+p*4)).join('')}</div><span class="pno">${p+2}</span></div>`).join('');
+  const pages=Array.from({length:Math.ceil(COUNTRIES.length/4)},(_,p)=>COUNTRIES.slice(p*4,p*4+4)).map((grp,p)=>`<div class="ppage"><h4>Visas · Stamps</h4><div class="sgrid">${grp.map((k,i)=>slot(k,i+p*4)).join('')}</div><span class="pno">${p+2}</span></div>`).join('');
   return `<div class="pbook"><div class="cover"><b>PASSPORT</b><span>Republic of Slow<br>Café Basecamp</span></div>${id}${pages}</div>`;
 }
 const closetEl=document.getElementById('closet'),gameEl=document.getElementById('game');
@@ -1930,9 +2023,9 @@ function renderCloset(){
   </div></div>
   <nav class="nsnav" aria-label="Napsack sections"><button type="button" data-jump="ns-shop">Shop</button><button type="button" data-jump="ns-gear">Gear</button><button type="button" data-jump="ns-pass">Passport</button><button type="button" data-jump="ns-wis">Wisdom</button><button type="button" data-jump="ns-reg">Regulars</button><button type="button" data-jump="ns-story">Story</button></nav>
   <h3 class="sec" id="ns-shop">Shop & wardrobe</h3><p class="secnote">Earn coins from tips. Gold items are for sale; trip gear (below) unlocks as you travel; dashed ones are trophies you earn by doing something.</p>`;
-  ['head','face','neck','hand'].forEach(sl=>{
+  ['head','face','paint','neck','hand'].forEach(sl=>{
     h+=`<h3 class="sec" style="font-size:15px">${SLOT_NAMES[sl]}</h3><div class="items">`;
-    ITEMS.filter(i=>i.slot===sl&&(!GEAR_AT[i.id]||SAVE.unlocked.includes(i.id))).forEach(it=>{
+    ITEMS.filter(i=>i.slot===sl&&(SAVE.unlocked.includes(i.id)||(!GEAR_AT[i.id]&&(i.price!=null||i.need)))).forEach(it=>{
       const owned=SAVE.unlocked.includes(it.id),on=SAVE.equip[sl]===it.id;
       if(owned)h+=`<button type="button" class="item" data-id="${it.id}" aria-pressed="${on}">${slothSVG(null,it.id)}${it.name}<small>${on?'Wearing · tap to remove':'Tap to wear'}</small></button>`;
       else if(it.price!=null){const poor=SAVE.coins<it.price;h+=`<button type="button" class="item shop${poor?' poor':''}" data-buy="${it.id}" ${poor?'aria-disabled="true"':''}>${slothSVG(null,it.id)}${it.name}<small><span class="coin"></span>${it.price}${poor?` · need ${it.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
@@ -1948,13 +2041,13 @@ function renderCloset(){
     else{const poor=SAVE.coins<f.price;h+=`<button type="button" class="item shop${poor?' poor':''}" data-buyfur="${f.id}">${art}${f.name}<small><span class="coin"></span>${f.price}${poor?` · need ${f.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
   });
   const ci=chapterIndex(),c=s.cleared;
-  h+=`</div><h3 class="sec" id="ns-gear">Trip gear</h3><p class="secnote">Every stop has two themed rewards: one halfway through, one when you finish it. Tap one you own to wear it.</p><div class="gearlist">${gearStops().map(g=>{
+  h+=`</div><h3 class="sec" id="ns-gear">Trip gear</h3><p class="secnote">Story chapters give two rewards (halfway and at the end). Each World Tour country gives one souvenir when you finish it. Tap one you own to wear it.</p><div class="gearlist">${gearStops().map(g=>{
     const reached=c>=g.start;
     return `<div class="gearrow${reached?'':' far'}"><div class="gname"><small>${g.label}</small><b>${reached?g.name:'???'}</b></div>${g.items.map((id,k)=>{const it=ITEM[id],own=SAVE.unlocked.includes(id),on=SAVE.equip[it.slot]===id;
       return own?`<button type="button" class="item" data-id="${id}" aria-pressed="${on}">${slothSVG(null,id)}${it.name}<small>${on?'Wearing':'Tap to wear'}</small></button>`
-        :`<div class="item locked">${slothSVG(null,id)}${reached?it.name:'???'}<small>${k?'Finish':'Halfway'} · Lv ${g.at[k]}</small></div>`}).join('')}</div>`}).join('')}`;
+        :`<div class="item locked">${slothSVG(null,id)}${reached?it.name:'???'}<small>${k||g.items.length===1?'Finish':'Halfway'} · Lv ${g.at[k]}</small></div>`}).join('')}</div>`}).join('')}`;
   const met=id=>{const k=STORY_CAST.indexOf(id);if(k>=0)return k<=ci;const t=COUNTRIES.findIndex(x=>x.cust===id);return c>=TOUR_AT+t*TOUR_LEN};
-  h+=`</div><h3 class="sec" id="ns-pass">Passport</h3><p class="secnote">${SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish 5 levels in a country to earn its stamp.`}</p>`;
+  h+=`</div><h3 class="sec" id="ns-pass">Passport</h3><p class="secnote">${SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish ${TOUR_LEN} levels in a country to earn its stamp.`}</p>`;
   h+=passportBook();
   {const got=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
    h+=`<h3 class="sec" id="ns-wis">Ancient wisdom</h3><p class="secnote">${got.length?'One old saying from every country you finish.':'Finish a World Tour country to collect its wisdom.'}</p>${got.length?`<div class="story">${got.map(wisdomCard).join('')}</div>`:''}`;}
