@@ -911,7 +911,7 @@ const WISDOM={
  iceland:{say:'Maður er manns gaman.',en:'People are the joy of people.',from:'The Hávamál, a Viking-age poem',why:'Going it alone gets old fast. Find your people.'},
  vietnam:{say:'Có công mài sắt, có ngày nên kim.',en:'Keep grinding the iron bar, and one day it becomes a needle.',from:'Old Vietnamese proverb',why:'Small, boring effort every day turns into something sharp.'},
  italy:{say:'Festina lente.',en:'Make haste slowly.',from:"Latin. Emperor Augustus's favourite motto",why:'Move with purpose, but never rush the important stuff.'},
- canada:{say:'',en:'Think about how today’s choices will land seven generations from now.',from:'The Seventh Generation principle of the Haudenosaunee Confederacy',why:'Build for the long game, not the next quarter.'}
+ canada:{say:'Etuaptmumk',en:'Learn to see with one eye the strengths of Indigenous ways of knowing, and with the other the strengths of Western ways of knowing, and use both eyes together.',from:'Two-Eyed Seeing, a teaching from Mi’kmaw Elder Albert Marshall',why:'Mix the old ways with new tools. You don’t have to pick one.'}
 };
 function wisdomCard(c){const w=WISDOM[c.id];return `<div class="lesson wisdom"><div class="tag">Ancient wisdom · ${c.name}</div>${w.say?`<p class="orig">${w.say}</p>`:''}<p>“${w.en}”</p><p class="where">${w.from}. ${w.why}</p></div>`}
 function lessonCard(i){return `<div class="lesson"><div class="tag">Lesson learned · Chapter ${i+1}</div><p>${LESSONS[i].lesson}</p></div>`}
