@@ -744,7 +744,7 @@ const COUNTRIES=[
   stamp:{ring:'#2f5f9e',motif:`<circle cx="50" cy="44" r="18" fill="#e9a24a"/><path d="M4 60q12-24 24 0zM68 60q14-28 28 0z" fill="#5d8a4e"/><path d="M0 60h100v36H0z" fill="#c9a77a"/><path d="M18 68h64l-8 8H26z" fill="#7a5a3e"/><path d="M40 68v-9h20v9z" fill="#c0563f"/>`},
   bg:`<rect width="300" height="300" fill="#f3dcc0"/><circle cx="150" cy="122" r="40" fill="#f0a868"/><path d="M-10 192q20-92 50-92t40 92zM60 192q20-112 55-112t45 112zM180 192q15-82 45-82t40 82zM240 192q20-102 50-102t20 102z" fill="#7a9f6a"/><rect y="190" width="300" height="110" fill="#c9a77a"/><path d="M0 206q150 10 300 0M0 250q150 8 300 0" stroke="#e2c49a" stroke-width="3" fill="none"/><path d="M88 232h124l-16 14H104z" fill="#7a5a3e"/><path d="M124 232v-16h52v16z" fill="#c0563f"/><path d="M120 216h60" stroke="#7a5a3e" stroke-width="3"/>`,
   beats:[
-   {i:[['c',"Sabaidee! You're just in time. The monks pass by at sunrise."],['m',"Sunrise? On purpose?"]],x:['c',"Coffee from the Bolaven Plateau helps. Bo pen nyang."]},
+   {i:[['c',"Sabaidee! You're just in time. The monks pass by at sunrise."],['m',"Sunrise? On purpose?"]],x:['c',"Coffee from the Bolaven Plateau helps. Baw pen nyang."]},
    {i:[['c',"I love my guests, but they ask me the same ten questions all day. Bus times, waterfalls, laundry."],['m',"The exact same ten?"]],x:['c',"Every single day. I haven't finished a warm coffee since March."]},
    {i:[['m',"Write them on a chalkboard by the door. Answer once, point forever."]],x:['c',"They read the board, then ask me how my day is instead. So much better."]},
    {i:[['c',"Take a champa flower. Behind the ear, like this."],['m',"I feel very elegant."]],x:['c',"Vietnam next. Linh will make you egg coffee."]}
@@ -758,11 +758,11 @@ const COUNTRIES=[
    {i:[['m',"Put your café's name on the saucer. Every photo becomes a free ad."]],x:['c',"Tagged forty times this week. People walk in holding their phones!"]},
    {i:[['c',"Take this nón lá. Shade for the road."],['m',"I'll nap under it."]],x:['c',"Cambodia next. Bopha drives the friendliest tuk-tuk in Siem Reap."]}
   ]},
- {id:'cambodia',name:"Cambodia",cust:'bopha',tease:"Temples at sunrise. Suostei, Cambodia.",
+ {id:'cambodia',name:"Cambodia",cust:'bopha',tease:"Temples at sunrise. Chom reap suor, Cambodia.",
   stamp:{ring:'#8e3b2b',motif:`<circle cx="80" cy="20" r="9" fill="#e07a5f"/><path d="M20 90V62l8-10 8 10v28zM64 90V62l8-10 8 10v28z" fill="#7a5a3e"/><path d="M38 90V48l12-30 12 30v42z" fill="#5d4330"/><rect x="10" y="88" width="80" height="8" fill="#7a5a3e"/>`},
   bg:`<rect width="300" height="300" fill="#f3cfc4"/><circle cx="150" cy="108" r="36" fill="#f0a868"/><path d="M40 190v-40l15-20 15 20v40zM230 190v-40l15-20 15 20v40zM88 190v-55l17-26 17 26v55zM178 190v-55l17-26 17 26v55zM124 190v-82l26-52 26 52v82z" fill="#5d4330"/><rect x="18" y="186" width="264" height="10" fill="#5d4330"/><rect y="196" width="300" height="104" fill="#a9bfc8"/><path d="M124 196v42l26 32 26-32v-42z" fill="#5d4330" opacity=".22"/>${[[50,250],[240,262],[92,282]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="16" ry="5" fill="#7a9f6a"/><path d="M${x-6} ${y-2}q6-13 12 0z" fill="#f0cfd8"/>`).join('')}`,
   beats:[
-   {i:[['c',"Suostei! Hop in. Angkor Wat at sunrise is worth the 4am alarm."],['m',"4am. For you, I'll try."]],x:['m',"Okay. That sunrise was worth it."]},
+   {i:[['c',"Chom reap suor! Hop in. Angkor Wat at sunrise is worth the 4am alarm."],['m',"4am. For you, I'll try."]],x:['m',"Okay. That sunrise was worth it."]},
    {i:[['c',"Fifty drivers wait at the same gate, all shouting 'tuk-tuk!' Nobody can tell us apart."],['m',"So tourists just pick whoever's closest?"]],x:['c',"Closest or loudest. I'm neither."]},
    {i:[['m',"Ask every happy rider for a review. Keep a little card in the tuk-tuk with your name on it."]],x:['c',"Now people ask for me by name. 'Bopha, the one with all the stars!'"]},
    {i:[['c',"Take my krama. It's a scarf, a towel, a sunhat. Everything."],['m',"The Napsack of scarves."]],x:['c',"Singapore next. Uncle Lim has poured kopi for forty years."]}
@@ -849,7 +849,7 @@ const PARKED_COUNTRIES=[
 ];
 COUNTRIES.forEach(c=>BG.push(c.bg));
 /* square postage stamps: perforated edge, framed picture, country band, and a postmark once collected */
-const STAMP_VAL={canada:'92¢',peru:'S/ 6,50',japan:'¥110',thailand:'฿15',laos:'₭8000',vietnam:'4000₫',cambodia:'៛2000',singapore:'S$0.90',australia:'$1.50',newzealand:'$3.30',colombia:'$3.200'};
+const STAMP_VAL={canada:'92¢',peru:'S/ 6,50',japan:'¥110',thailand:'฿15',laos:'₭8000',vietnam:'4000₫',cambodia:'៛2000',singapore:'90¢',australia:'$1.50',newzealand:'$3',colombia:'$500'};
 let stampUid=0;
 function stampSVG(c,got=true,lv){
   const s=c.stamp,col=got?s.ring:'#a9bfa4',u='st'+(++stampUid);
@@ -858,7 +858,7 @@ function stampSVG(c,got=true,lv){
   if(!got)return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs>${mask}</defs><g mask="url(#${u}m)"><rect x="3" y="3" width="94" height="94" fill="#f4efe2"/></g>
     <rect x="10" y="10" width="80" height="80" fill="none" stroke="${col}" stroke-width="1.6" stroke-dasharray="4 3"/>
     <text x="50" y="57" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="24" fill="${col}">?</text></svg>`;
-  const val=STAMP_VAL[c.id]||'',name=c.name.toUpperCase(),fs=name.length>7?7:8;
+  const val=STAMP_VAL[c.id]||'',name=c.name.toUpperCase(),fs=name.length>9?5.8:name.length>7?7:8;
   const pm=`<g transform="rotate(-14 74 30)" opacity=".8" fill="none" stroke="#1f2a30" stroke-width="1.4">
     <circle cx="74" cy="30" r="16"/><circle cx="74" cy="30" r="11.5" stroke-width=".8"/>
     <path d="M30 22q4-3 8 0t8 0t8 0M28 28q4-3 8 0t8 0t8 0M30 34q4-3 8 0t8 0t8 0" stroke-width="1.6"/>
@@ -946,6 +946,30 @@ const LESSONS=[
 ];
 /* per country: 3 local words, a great coffee spot, a co-working space (checked October 2026), and 5 fun facts for the tip jar */
 const NOTES={
+ peru:{lang:"Quechua & Spanish",words:[["Rimaykullayki", "hello (Quechua)"], ["Sulpayki", "thank you (Quechua)"], ["Munay", "love (Quechua)"]],
+  coffee:["Three Monkeys Coffee", "Cusco · San Blas, started life as a coffee cart"],cowork:["Genba Coworking Cusco", "Cusco · on the Plazoleta de San Blas"],
+  facts:[["Machu Picchu was built by the…", ["Inca", "Maya", "Aztecs", "Olmecs"], "It was built in the 1400s, high on a ridge above the Urubamba River."], ["Peru is home to thousands of native kinds of…", ["Potatoes", "Bananas", "Apples", "Rice"], "Potatoes were first farmed in the Andes, and Peru grows thousands of varieties."], ["Lake Titicaca, shared with Bolivia, is often called the world's highest…", ["Navigable lake", "Saltwater lake", "Frozen lake", "Volcano lake"], "It sits at about 3,800 m, and boats cross it every day."], ["Ceviche is raw fish 'cooked' in…", ["Lime juice", "Coconut milk", "Soy sauce", "Hot tea"], "The citrus firms up the fish, no heat needed."], ["Alpacas and llamas are cousins of the…", ["Camel", "Sheep", "Goat", "Horse"], "They're South American camelids, just without the humps."]]},
+ thailand:{lang:"Thai",words:[["Sawasdee", "hello"], ["Khob khun", "thank you"], ["Sanuk", "fun. Thais like life to have some"]],
+  coffee:["Ristr8to", "Chiang Mai · Nimman, run by a world latte-art champion"],cowork:["Punspace Tha Phae Gate", "Chiang Mai · Old City, one of the first co-working spots in town"],
+  facts:[["Songkran, Thai New Year in April, is famous for…", ["A giant water fight", "Snowball fights", "Pumpkin carving", "Kite racing"], "It began as gently pouring water over elders' hands for good luck."], ["Thailand is the only Southeast Asian country that was never…", ["Colonised by a European power", "Hit by a monsoon", "Ruled by a king", "Part of an empire"], "It stayed independent while its neighbours were colonised."], ["Chiang Mai's lantern festival, when thousands of paper lanterns float into the sky, is called…", ["Yi Peng", "Diwali", "Hanami", "Holi"], "It falls on the full moon of the twelfth Lanna lunar month, usually in November."], ["Pad thai is made with which noodles?", ["Rice noodles", "Egg noodles", "Soba", "Spaghetti"], "Flat rice noodles, tamarind, peanuts and a squeeze of lime."], ["Bangkok's full ceremonial name holds which record?", ["The world's longest place name", "The shortest capital name", "The oldest city name", "A name with no vowels"], "Locals just call it Krung Thep, the City of Angels."]]},
+ laos:{lang:"Lao",words:[["Sabaidee", "hello"], ["Khop jai", "thank you"], ["Baw pen nyang", "no worries, never mind"]],
+  coffee:["Saffron Coffee", "Luang Prabang · on the Mekong, buys from highland Lao farmers"],cowork:["The Desk Co-Working", "Luang Prabang · Old Town"],
+  facts:[["Laos is the only Southeast Asian country that is…", ["Landlocked", "An island", "Below sea level", "Uninhabited"], "It has no coastline. The Mekong River is its highway."], ["The Mekong River flows through how many countries?", ["Six", "Two", "Ten", "One"], "China, Myanmar, Laos, Thailand, Cambodia and Vietnam."], ["At dawn in Luang Prabang, monks walk the streets to collect…", ["Sticky rice", "Coffee beans", "Flowers", "Books"], "The alms-giving ceremony is called tak bat. Watch quietly from a distance."], ["Most Lao coffee grows on the…", ["Bolaven Plateau", "Mekong Delta", "Himalayas", "Gobi Desert"], "Cool air and volcanic soil in the south make it great for coffee."], ["The Kuang Si waterfalls are famous for their…", ["Turquoise water", "Hot springs", "Pink sand", "Frozen ice"], "Minerals from limestone give the pools that milky blue-green colour."]]},
+ cambodia:{lang:"Khmer",words:[["Chom reap suor", "hello (polite)"], ["Arkun", "thank you"], ["Chhnang", "delicious"]],
+  coffee:["The Bean Embassy", "Siem Reap · garden roastery near Wat Damnak"],cowork:["Footprint Cafes Hub", "Siem Reap · social-enterprise café with free co-working upstairs"],
+  facts:[["Angkor Wat is the world's largest…", ["Religious monument", "Shopping mall", "Castle", "Stadium"], "It was built in the 1100s, first as a Hindu temple, later Buddhist."], ["Cambodia's flag shows a…", ["Temple", "Tiger", "Star", "Tree"], "Angkor Wat is right in the middle of the flag."], ["Every rainy season, the Tonlé Sap river does something unusual. It…", ["Flows backwards", "Freezes", "Turns pink", "Disappears"], "The Mekong floods so high it pushes the river back into the lake."], ["Alongside the riel, which currency do people often pay with in Cambodia?", ["US dollars", "Euros", "Yen", "Pounds"], "Prices are often in dollars, with change in riel."], ["Fish amok, a creamy steamed curry, is often served in a cup made of…", ["Banana leaf", "Coconut shell", "Bamboo", "Clay"], "The leaf is folded into a little bowl and steamed with the curry inside."]]},
+ singapore:{lang:"Singlish",words:[["Shiok", "delicious, great"], ["Makan", "to eat"], ["Chope", "to reserve a seat, usually with a tissue packet"]],
+  coffee:["Ya Kun Kaya Toast", "Singapore · Far East Square, kopi and kaya toast since 1944"],cowork:["The Working Capitol", "Singapore · shophouses on Keong Saik Road"],
+  facts:[["How many official languages does Singapore have?", ["Four", "One", "Two", "Seven"], "English, Malay, Mandarin and Tamil."], ["At a kopitiam, 'kopi-O' means coffee…", ["Black, with sugar", "With condensed milk", "Iced", "With an egg"], "Kopi-C comes with evaporated milk. Add 'kosong' for no sugar."], ["Since 1992, Singapore has banned the sale of…", ["Chewing gum", "Coffee", "Umbrellas", "Bicycles"], "Gum was gumming up the trains."], ["To 'chope' a seat at a hawker centre, you leave a…", ["Tissue packet", "Shoe", "Coin", "Business card"], "A packet of tissues on the table means it's taken."], ["In 2020, UNESCO recognised Singapore's…", ["Hawker culture", "Tallest building", "Skateboard parks", "Snow festival"], "It joined UNESCO's list of intangible cultural heritage."]]},
+ australia:{lang:"Aussie",words:[["G'day", "hello"], ["Ta", "thanks"], ["Arvo", "afternoon"]],
+  coffee:["Patricia Coffee Brewers", "Melbourne · standing-room-only espresso bar off Little Bourke St"],cowork:["The Commons", "Melbourne · several spaces, including the CBD and Collingwood"],
+  facts:[["Which two countries both claim to have invented the flat white?", ["Australia and New Zealand", "Italy and France", "USA and Canada", "Japan and Korea"], "Nobody has won the argument yet. Order one in each to compare."], ["Australia's capital city is…", ["Canberra", "Sydney", "Melbourne", "Perth"], "It was built as a compromise between Sydney and Melbourne."], ["The Great Barrier Reef is the world's largest…", ["Coral reef system", "Lake", "Desert", "Rainforest"], "It's so big it can be seen from space."], ["A baby kangaroo is called a…", ["Joey", "Kit", "Cub", "Pup"], "It lives in its mum's pouch for months."], ["Melbourne's Hosier Lane is famous for…", ["Street art", "A giant clock", "Its beach", "Free taxis"], "The murals change all the time, so no two visits look the same."]]},
+ newzealand:{lang:"Māori & Kiwi",words:[["Kia ora", "hello, thanks, good health"], ["Whānau", "family"], ["Ka pai", "good, well done"]],
+  coffee:["The Coffee Shack", "Wānaka · great coffee from a converted garage"],cowork:["General Service", "Wānaka · Dunmore St, with a little café in the alley"],
+  facts:[["New Zealanders are nicknamed Kiwis after a…", ["Flightless bird", "Fruit", "Boat", "Mountain"], "The kiwi bird lays an egg that's huge for its size."], ["In 1893, New Zealand became the first country where…", ["Women could vote in national elections", "People drank flat whites", "Cars were sold", "The Olympics were held"], "Kate Sheppard led the campaign."], ["Roughly how many sheep are there for every person in New Zealand?", ["About 5", "About 100", "About 1", "None"], "There used to be over 20 per person back in the 1980s."], ["The famous lone tree standing in Lake Wānaka is a…", ["Willow", "Palm", "Pine", "Oak"], "It grew from an old fence post, probably planted around 1939."], ["The world's first commercial bungee jump opened in 1988 near…", ["Queenstown", "Auckland", "Sydney", "Vancouver"], "From the Kawarau Gorge Suspension Bridge, 43 m above the river."]]},
+ colombia:{lang:"Colombian Spanish",words:[["¿Qué más?", "what's up? (hello)"], ["Parce", "buddy"], ["Tinto", "a small black coffee"]],
+  coffee:["Finca El Ocaso", "Salento · coffee farm tours, roasting and tastings"],cowork:["Atom House", "Medellín · Laureles, a nomad favourite"],
+  facts:[["Colombia's national tree, the wax palm, is the world's tallest…", ["Palm", "Pine", "Cactus", "Bamboo"], "They grow up to around 60 m in the Cocora Valley, near Salento."], ["Colombia is the only South American country with coastlines on…", ["Both the Pacific and the Caribbean", "The Arctic", "No ocean at all", "The Indian Ocean"], "Two coasts, mountains and the Amazon, all in one country."], ["In Colombia, ordering a 'tinto' gets you…", ["A small black coffee", "A glass of red wine", "Hot chocolate", "A tattoo"], "In Spain the same word means red wine."], ["Which Colombian writer wrote One Hundred Years of Solitude?", ["Gabriel García Márquez", "Pablo Neruda", "Isabel Allende", "Jorge Luis Borges"], "He won the Nobel Prize in Literature in 1982."], ["In 2011, UNESCO listed Colombia's…", ["Coffee Cultural Landscape", "Tallest building", "Longest bridge", "Desert dunes"], "The coffee region around Salento is a World Heritage Site."]]},
  portugal:{lang:'Portuguese',words:[['Olá','hello'],['Obrigado / Obrigada','thank you'],['Saudade','a deep, bittersweet longing']],
   coffee:['Fábrica Coffee Roasters','Lisbon · one of the first third-wave roasters in the city'],cowork:['Second Home Lisboa','Lisbon · inside the Mercado da Ribeira market hall'],
   facts:[["Lisbon's famous custard tart is called…",["Pastel de nata","Churro","Bolo rei","Pão de queijo"],"Crispy pastry, creamy custard, a dusting of cinnamon. Best eaten warm."],
@@ -998,6 +1022,14 @@ const NOTES={
 };
 /* per country: one piece of old wisdom Mocha takes home (the country's lesson) */
 const WISDOM={
+ peru:{say:"Ayni",en:"What you give comes back around: today I help you, tomorrow you help me.",from:"The Andean principle of reciprocity, in Quechua and Aymara communities",why:"Give before you ask. Generosity is a long game."},
+ thailand:{say:"Nam khuen hai rip tak.",en:"When the water rises, hurry to scoop it.",from:"Old Thai proverb",why:"When a good opportunity shows up, act while it lasts."},
+ laos:{say:"Jai yen",en:"Keep a cool heart.",from:"A Lao value: stay calm and unhurried, whatever happens",why:"The calm owner makes better decisions than the rushed one."},
+ cambodia:{say:"",en:"When the water rises, the fish eat the ants. When the water falls, the ants eat the fish.",from:"Old Cambodian saying",why:"Fortunes turn. Be kind on the way up."},
+ singapore:{say:"Ài piànn tsiah ē iânn",en:"Only those who strive will win.",from:"Hokkien saying, and Singapore’s favourite Hokkien song",why:"Show up and push, even when the queue is long."},
+ australia:{say:"Dadirri",en:"Inner, deep listening and quiet, still awareness.",from:"A teaching shared by Aboriginal Elder Miriam-Rose Ungunmerr-Baumann of Nauiyu, Daly River",why:"Listen properly before you build anything."},
+ newzealand:{say:"Nāu te rourou, nāku te rourou, ka ora ai te iwi.",en:"With your food basket and my food basket, the people will thrive.",from:"Māori whakataukī (proverb)",why:"Build with others. Pooling what you have beats going it alone."},
+ colombia:{say:"Vísteme despacio, que tengo prisa.",en:"Dress me slowly, I’m in a hurry.",from:"Old Spanish proverb, heard all over Colombia",why:"Rushing costs more time than it saves."},
  portugal:{say:'Devagar se vai ao longe.',en:'Slowly, you go far.',from:'Old Portuguese proverb',why:'Pick a pace you can keep for years, not weeks.'},
  japan:{say:'Ichi-go ichi-e',en:'One time, one meeting.',from:'Saying from the Japanese tea ceremony',why:'Treat every guest like this visit will never happen again.'},
  mexico:{say:'Dime con quién andas, y te diré quién eres.',en:"Tell me who you walk with, and I'll tell you who you are.",from:'Old Mexican dicho',why:'Your circle shapes your work. Choose it on purpose.'},
@@ -1216,6 +1248,9 @@ function load(){
     if(o.v<5){o.coins=Math.min(o.coins,backPay(o));o.v=5}
     if(o.v<6){o.level=1+sumL(o);o.v=6} /* three difficulty tracks merge into one journey */
     o.stamps=(o.stamps||[]).filter(id=>COUNTRIES.some(c=>c.id===id));
+    /* tour changed under older saves: stamp every country whose levels are already behind you */
+    COUNTRIES.forEach((c,i)=>{if(o.level-1>=TOUR_AT+(i+1)*TOUR_LEN&&!o.stamps.includes(c.id))o.stamps.push(c.id)});
+    o.stamps.sort((a,b)=>COUNTRIES.findIndex(c=>c.id===a)-COUNTRIES.findIndex(c=>c.id===b));
     return o;
   }
   try{const old=JSON.parse(localStorage.getItem('slothdoku-v2')||'null');if(old){b.levels.chill=old.level||1;b.level=b.levels.chill;b.sound=old.sound!==false;b.autox=old.autox!==false;b.coins=backPay(b)}}catch(e){}
