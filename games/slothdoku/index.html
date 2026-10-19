@@ -940,6 +940,22 @@ const GEAR={
  singapore:['kopibag'], australia:['snorkel'], newzealand:['campervan'], colombia:['carnival'],
  /* parked */ portugal:['nata','tramcap'], mexico:['marigold','olla'], iceland:['lopapeysa','puffin'], italy:['moka','goggles']
 };
+/* the shop restocks as you travel: each item appears once you finish the stop it belongs to (no entry = on the shelf from day one) */
+const SHOP_AT={
+ busticket:'s1',bucket:'s1',sunnies:'s1',headphones:'s1',passport:'s1',camera:'s1',
+ poncho:'s2',kerchief:'s2',bean:'s2',
+ lei:'s3',visor:'s3',redsunnies:'s3',hearts:'s3',
+ lantern:'s4',boba:'s4',flowers:'s4',
+ scarf:'s5',beret:'s5',plant:'s5',gradcap:'s5',aviators:'s5',
+ apron:'s6',chef:'s6',
+ redtoque:'canada',plaid:'canada',chullo:'peru',maneki:'japan',matcha:'japan',sakura:'japan',songkran:'thailand',champa:'laos',
+ eggcoffee:'vietnam',krama:'cambodia',orchid:'singapore',zinc:'australia',skigoggles:'newzealand',
+ teaglass:'parked',fez:'parked'
+};
+function stopEnd(key){const g=gearStops().find(g=>g.key===key);return g?g.start+g.len:Infinity}
+function onShelf(id,c){const k=SHOP_AT[id];return !k||c>=stopEnd(k)}
+/* new arrivals the moment a stop is finished */
+function shopArrivals(c0,c1){return ITEMS.filter(i=>i.price!=null&&SHOP_AT[i.id]&&!SAVE.unlocked.includes(i.id)&&c0<stopEnd(SHOP_AT[i.id])&&c1>=stopEnd(SHOP_AT[i.id]))}
 /* gear that's no longer a gift moves to the shop, so nothing is lost (parked-country gear waits for its country) */
 {const gifts=new Set(),parked=new Set();Object.entries(GEAR).forEach(([k,v])=>v.forEach(id=>(['portugal','mexico','iceland','italy'].includes(k)?parked:gifts).add(id)));
  const PRICE={head:45,face:45,neck:40,hand:35,paint:40};
@@ -1841,6 +1857,7 @@ function win(){
   let stamp=null;
   if(L0.kind==='tour'&&L0.k===L0.len-1&&!SAVE.stamps.includes(L0.leg.id)){SAVE.stamps.push(L0.leg.id);SAVE.stampLv=SAVE.stampLv||{};SAVE.stampLv[L0.leg.id]=Lv;stamp=L0.leg;SAVE.newItems=true}
   SAVE.chapter=Math.max(SAVE.chapter,chapterIndex());save();
+  const arrived=shopArrivals(c0,c0+1);if(arrived.length){SAVE.newItems=true;save()}
   const got=checkUnlocks(),L1=legAt(c0+1),newLeg=L1.key!==L0.key?L1:null,notes=stageChanges(st0,stageAt(c0+1));
   refreshSloths();
   /* order: level thank-you → tip jar → (tap Continue) victory + wisdom → stamp → flight → new spot intro */
@@ -1866,10 +1883,10 @@ function win(){
   }:null;
   setTimeout(async()=>{
     if(SAVE.scenes&&L0.kind!=='free')await playScene(sceneFor(L0,'out'));
-    tipJar({k,tips,total,Lv,got,newLeg,notes,stamp,after});
+    tipJar({k,tips,total,Lv,got,newLeg,notes,stamp,after,arrived});
   },1100);
 }
-function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after}){
+function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after,arrived=[]}){
   const L0done=legAt(daily?0:Lv-1);
   slip.innerHTML=`<div class="stars">${starHTML(k)}</div>
     <h2>${daily?"Today's puzzle, solved":`Level ${Lv} cleared in ${fmt(elapsed)}`}</h2>
@@ -1877,7 +1894,7 @@ function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after}){
     ${stamp&&!SAVE.scenes?notesCard(stamp):''}
     ${newLeg&&newLeg.kind==='story'&&!SAVE.scenes?chapterHTML(newLeg.leg,newLeg.i):''}
     ${newLeg&&newLeg.kind!=='free'?`<p><b>Next stop:</b> ${legTitle(newLeg)[1]}.${newLeg.kind==='story'?' Read every chapter in your Napsack.':''}</p>`:''}
-    ${unlockHTML(got||[])}
+    ${unlockHTML(got||[])}${arrived.length?`<p><b>New in the shop</b></p><div class="unlocks">${arrived.map(it=>`<span class="unlock">${slothSVG(null,it.id)}${it.name}</span>`).join('')}</div>`:''}
     ${triviaHTML(daily?null:L0done)}
     ${notes.length?`<div class="notes"><p><b>What changes next level</b></p>${notes.map(n=>`<p>${n}</p>`).join('')}</div>`:''}
     <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':`<button class="btn go" type="button" id="next">${after?(newLeg.kind==='free'?'Finish the World Tour ✦':newLeg.kind==='tour'?'Continue the trip ✈':'Continue the story ▸'):'Next level'}</button>`}<button class="btn" type="button" id="share">Copy result</button></div>
@@ -2083,7 +2100,7 @@ function renderCloset(){
   const pv=h;let shop='';
   ['head','face','paint','neck','hand'].forEach(sl=>{
     shop+=`<h4 class="slot">${SLOT_NAMES[sl]}</h4><div class="items">`;
-    ITEMS.filter(i=>i.slot===sl&&(SAVE.unlocked.includes(i.id)||(!GEAR_AT[i.id]&&(i.price!=null||i.need)))).forEach(it=>{
+    ITEMS.filter(i=>i.slot===sl&&(SAVE.unlocked.includes(i.id)||(!GEAR_AT[i.id]&&(i.need||(i.price!=null&&onShelf(i.id,s.cleared)))))).forEach(it=>{
       const owned=SAVE.unlocked.includes(it.id),on=SAVE.equip[sl]===it.id;
       if(owned)shop+=`<button type="button" class="item" data-id="${it.id}" aria-pressed="${on}">${slothSVG(null,it.id)}${it.name}<small>${on?'Wearing · tap to remove':'Tap to wear'}</small></button>`;
       else if(it.price!=null){const poor=SAVE.coins<it.price;shop+=`<button type="button" class="item shop${poor?' poor':''}" data-buy="${it.id}" ${poor?'aria-disabled="true"':''}>${slothSVG(null,it.id)}${it.name}<small><span class="coin"></span>${it.price}${poor?` · need ${it.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
@@ -2108,7 +2125,7 @@ function renderCloset(){
   const met=id=>{const k=STORY_CAST.indexOf(id);if(k>=0)return k<=ci;const t=COUNTRIES.findIndex(x=>x.cust===id);return c>=TOUR_AT+t*TOUR_LEN};
   const gearOut=gear+'</div>';
   if(mode==='closet'){
-    h=pv+fold('shop','Shop & wardrobe','Earn coins from tips. Gold items are for sale; dashed ones are trophies you earn by doing something.',shop)
+    h=pv+fold('shop','Shop & wardrobe','Earn coins from tips. Gold items are for sale; dashed ones are trophies. The shelves restock with local goods every time you finish a stop.',shop)
       +fold('fur','Fur','',furs)
       +fold('gear','Trip gifts','Everyone Mocha helps gives you one gift when you finish their stop. Tap one you own to wear it.',gearOut);
   }else{
