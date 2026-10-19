@@ -418,6 +418,13 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .preview p{margin:4px 0 0;color:var(--muted);line-height:1.4}
 .meter{height:8px;border-radius:99px;background:var(--bg);overflow:hidden;margin-top:8px}
 .meter span{display:block;height:100%;background:var(--forest)}
+.fold{border:2px solid var(--ink);border-radius:16px;background:rgba(251,248,240,.72);margin:12px 0;padding:0 12px}
+.fold>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:12px 2px;font:800 18px var(--f-display);color:var(--ink)}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary:focus-visible{outline:3px solid var(--forest);outline-offset:3px;border-radius:10px}
+.fold .chev{font-size:16px;transition:transform .2s}.fold[open] .chev{transform:rotate(180deg)}
+.fold[open]{padding-bottom:12px}
+.fold h4.slot{margin:12px 0 6px;font:700 14px var(--f-body);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .nsnav{position:sticky;top:6px;z-index:5;display:flex;flex-wrap:wrap;justify-content:center;gap:5px;padding:6px;border-radius:16px;background:rgba(239,233,218,.86);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 6px 14px -12px rgba(31,58,44,.6)}
 .nsnav button{flex:none;border:2px solid var(--ink);background:var(--tray);border-radius:999px;padding:4px 10px;font:700 12.5px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap}
 .nsnav button:active{background:var(--forest);color:var(--tray);border-color:var(--forest)}
@@ -476,6 +483,7 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
   <div class="tabs" role="tablist">
     <button role="tab" id="tab-journey" aria-selected="true" type="button">Journey</button>
     <button role="tab" id="tab-closet" aria-selected="false" type="button">Napsack<span class="dot" id="newdot" hidden></span></button>
+    <button role="tab" id="tab-pass" aria-selected="false" type="button">Passport</button>
   </div>
   <div class="closet" id="closet" hidden></div>
   <div id="game">
@@ -545,7 +553,7 @@ const ITEMS=[
  {id:'chef',slot:'head',name:'Chef hat',price:65,svg:`<rect x="17" y="6" width="30" height="13" rx="1.5" fill="#fbf8f0" stroke="#d2cab5"/><circle cx="20" cy="2" r="8" fill="#fbf8f0" stroke="#d2cab5"/><circle cx="44" cy="2" r="8" fill="#fbf8f0" stroke="#d2cab5"/><circle cx="32" cy="-2" r="10" fill="#fbf8f0" stroke="#d2cab5"/><rect x="18" y="0" width="28" height="12" fill="#fbf8f0"/>`},
  {id:'stache',slot:'face',name:'Barista stache',how:'Hit an 8-sloth combo',need:s=>[s.combo,8],svg:`<path d="M32 42.5c-4-3-10-2-13 3 4-1 9-0.5 13 1.5 4-2 9-2.5 13-1.5-3-5-9-6-13-3z" fill="#2a1c12"/>`},
  {id:'partyhat',slot:'head',name:'Party hat',how:'Finish 3 daily puzzles',need:s=>[s.dailies,3],svg:`<path d="M22 14L32-7l10 21z" fill="#c9962f"/><path d="M25 8l11-5M23.5 11.5l15-6" stroke="#c0563f" stroke-width="2.5"/><circle cx="32" cy="-7" r="3.5" fill="#d9c3dd"/>`},
- {id:'crown',slot:'head',name:'Wild crown',how:'Reach the Wild stretch (level 71)',need:s=>[s.cleared,70],svg:`<path d="M16 15l2-14 7 8 7-10 7 10 7-8 2 14z" fill="#c9962f" stroke="#8a6416" stroke-width="1.2"/><circle cx="32" cy="10" r="2.4" fill="#c0563f"/><circle cx="22" cy="11" r="1.8" fill="#2f5d44"/><circle cx="42" cy="11" r="1.8" fill="#2f5d44"/>`},
+ {id:'crown',slot:'head',name:'Explorer crown',how:'Reach level 71',need:s=>[s.cleared,70],svg:`<path d="M16 15l2-14 7 8 7-10 7 10 7-8 2 14z" fill="#c9962f" stroke="#8a6416" stroke-width="1.2"/><circle cx="32" cy="10" r="2.4" fill="#c0563f"/><circle cx="22" cy="11" r="1.8" fill="#2f5d44"/><circle cx="42" cy="11" r="1.8" fill="#2f5d44"/>`},
  {id:'napmask',slot:'face',name:'Nap mask',how:'Secret: bother the barista',secret:true,need:s=>[s.pokes,10],svg:`<path d="M5 30q1-5 6-5h42q5 0 6 5" stroke="#b7a2c4" stroke-width="2.5" fill="none"/><rect x="9" y="25" width="46" height="15" rx="7.5" fill="#d9c3dd"/><path d="M15 33q5 4 10 0M39 33q5 4 10 0" stroke="#7a5a8a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M31 27v11" stroke="#c7aed0" stroke-width="1"/>`},
  /* world tour v2: one souvenir per country */
  {id:'chullo',slot:'head',name:'Chullo',svg:`<path d="M4 21h10v11q-5 6-10 0zM50 21h10v11q-5 6-10 0z" fill="#c0392b"/><path d="M9 36v8M55 36v8" stroke="#e9b949" stroke-width="1.6"/><circle cx="9" cy="45" r="2.6" fill="#2b6f8e"/><circle cx="55" cy="45" r="2.6" fill="#2b6f8e"/><path d="M7 24Q7 1 32 1T57 24Z" fill="#c0392b"/><path d="M13 13l4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3" stroke="#e9b949" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M10 18.5h44" stroke="#fbf8f0" stroke-width="1.6" stroke-dasharray="2 2.4"/><rect x="5" y="20" width="54" height="5" rx="2.5" fill="#2b6f8e"/><circle cx="32" cy="1" r="4.2" fill="#e9b949"/>`},
@@ -1069,23 +1077,23 @@ const STAGES=[
  {from:24,n:7, autox:false,hints:2,check:true, minTier:3,maxTier:9,mult:1.5},
  {from:33,n:8, autox:false,hints:1,check:true, minTier:3,maxTier:9,mult:1.5},
  {from:50,n:9, autox:false,hints:1,check:true, minTier:3,maxTier:9,mult:1.5},
- {from:70,n:9, autox:false,hints:0,check:false,minTier:3,maxTier:9,mult:2},
- {from:85,n:10,autox:false,hints:0,check:false,minTier:3,maxTier:9,mult:2}
+ {from:70,n:9, autox:false,hints:1,check:true, minTier:3,maxTier:9,mult:2},
+ {from:85,n:10,autox:false,hints:1,check:true, minTier:3,maxTier:9,mult:2}
 ];
 const DAILY_STAGE=Object.assign({},STAGES[3],{n:7});
 function baseStageAt(c){let st=STAGES[0];STAGES.forEach(x=>{if(c>=x.from)st=x});return st}
 /* Easy / Normal / Hard: same journey, different rules on top of the ramp */
 const DIFFS={
  easy:{name:'Easy',blurb:'Auto-X always on, 3 hints and 3 leaves every board, gentle logic, boards top out at 8×8. Standard tips.'},
- normal:{name:'Normal',blurb:'The classic ramp. Rules tighten slowly as you travel: Auto-X retires, hints shrink, the Wild stretch has no safety net.'},
- hard:{name:'Hard',blurb:'No Auto-X, one less hint, bigger boards sooner, real-deduction puzzles from level 17, Wild from level 51. +0.5 tip bonus on every board.'},
+ normal:{name:'Normal',blurb:'The classic ramp. Rules tighten slowly as you travel: Auto-X retires, hints shrink, boards grow to 10×10 near the end.'},
+ hard:{name:'Hard',blurb:'No Auto-X, one less hint, bigger boards sooner, real-deduction puzzles from level 17. +0.5 tip bonus on every board.'},
  custom:{name:'Custom',blurb:'Set each rule yourself.'},
 };
 /* Custom: each rule either follows the journey ramp or is fixed */
 const CUSTOM_OPTS=[
  {k:'autox',lab:'Auto-X',note:'Marks X’s for you around each sloth.',opts:[['ramp','Journey'],['on','Always on'],['off','Off']]},
  {k:'hints',lab:'Hints per board',opts:[['ramp','Journey'],['0','0'],['1','1'],['2','2'],['3','3']]},
- {k:'check',lab:'Leaves & checking',note:'Off = Wild: wrong sloths aren’t flagged.',opts:[['ramp','Journey'],['on','Always on'],['off','Off']]},
+ {k:'check',lab:'Leaves & checking',note:'Off = no lives and wrong sloths aren’t flagged. For experts only.',opts:[['ramp','Journey'],['on','Always on'],['off','Off']]},
  {k:'logic',lab:'Puzzle logic',opts:[['ramp','Journey'],['gentle','Gentle'],['sharp','Sharp']]},
  {k:'size',lab:'Biggest board',opts:[['ramp','Journey'],['6','6×6'],['7','7×7'],['8','8×8'],['9','9×9'],['10','10×10']]}
 ];
@@ -1103,7 +1111,7 @@ function applyDiff(st,c){
     return r}
   if(d==='easy')return Object.assign({},st,{autox:true,hints:Math.max(st.hints,3),check:true,minTier:1,maxTier:2,n:Math.min(st.n,8),mult:1});
   if(d==='hard')return Object.assign({},st,{autox:false,hints:Math.max(0,st.hints-1),n:c>=10?Math.min(st.n+1,10):st.n,
-    minTier:c>=16?3:st.minTier,maxTier:c>=16?9:st.maxTier,check:c>=50?false:st.check,mult:st.mult+.5});
+    minTier:c>=16?3:st.minTier,maxTier:c>=16?9:st.maxTier,mult:st.mult+.5});
   return st;
 }
 function stageAt(c){return applyDiff(baseStageAt(c),c)}
@@ -2059,6 +2067,10 @@ function passportBook(){
 }
 const closetEl=document.getElementById('closet'),gameEl=document.getElementById('game');
 function coinHTML(n){return `<span class="coins"><span class="coin"></span>${n}</span>`}
+/* foldable Napsack / Passport sections; which ones are open is remembered */
+const OPEN_DEF={shop:true,fur:false,gear:false,pass:true,wis:false,reg:false,story:false};
+function fold(key,title,note,body){const o=(SAVE.open||{})[key];const open=o==null?OPEN_DEF[key]:o;
+  return `<details class="fold" data-fold="${key}"${open?' open':''}><summary><span>${title}</span><span class="chev" aria-hidden="true">▾</span></summary>${note?`<p class="secnote">${note}</p>`:''}${body}</details>`}
 function renderCloset(){
   const s=stats(),L=curLeg(),[eb,lt]=legTitle(L),pct=Math.round(100*L.k/L.len);
   const eqNames=SLOT_ORDER.map(sl=>SAVE.equip[sl]).filter(Boolean).map(id=>ITEM[id].name);
@@ -2067,44 +2079,51 @@ function renderCloset(){
     <h2>Mocha ${coinHTML(SAVE.coins)}</h2><p>${fur.name} fur${eqNames.length?' · '+eqNames.join(', '):''}</p>
     <p>${eb}: ${lt} · level ${SAVE.level}</p>
     <div class="meter" aria-label="Progress through this stop"><span style="width:${pct}%"></span></div><p style="font-size:12.5px">${L.kind==='free'?'Free play. Every puzzle is a bonus':`${L.len-L.k} more level${L.len-L.k===1?'':'s'} until the next stop`} · ${SAVE.stamps.length}/${COUNTRIES.length} stamps</p>
-  </div></div>
-  <nav class="nsnav" aria-label="Napsack sections"><button type="button" data-jump="ns-shop">Shop</button><button type="button" data-jump="ns-gear">Gear</button><button type="button" data-jump="ns-pass">Passport</button><button type="button" data-jump="ns-wis">Wisdom</button><button type="button" data-jump="ns-reg">Regulars</button><button type="button" data-jump="ns-story">Story</button></nav>
-  <h3 class="sec" id="ns-shop">Shop & wardrobe</h3><p class="secnote">Earn coins from tips. Gold items are for sale; trip gear (below) unlocks as you travel; dashed ones are trophies you earn by doing something.</p>`;
+  </div></div>`;
+  const pv=h;let shop='';
   ['head','face','paint','neck','hand'].forEach(sl=>{
-    h+=`<h3 class="sec" style="font-size:15px">${SLOT_NAMES[sl]}</h3><div class="items">`;
+    shop+=`<h4 class="slot">${SLOT_NAMES[sl]}</h4><div class="items">`;
     ITEMS.filter(i=>i.slot===sl&&(SAVE.unlocked.includes(i.id)||(!GEAR_AT[i.id]&&(i.price!=null||i.need)))).forEach(it=>{
       const owned=SAVE.unlocked.includes(it.id),on=SAVE.equip[sl]===it.id;
-      if(owned)h+=`<button type="button" class="item" data-id="${it.id}" aria-pressed="${on}">${slothSVG(null,it.id)}${it.name}<small>${on?'Wearing · tap to remove':'Tap to wear'}</small></button>`;
-      else if(it.price!=null){const poor=SAVE.coins<it.price;h+=`<button type="button" class="item shop${poor?' poor':''}" data-buy="${it.id}" ${poor?'aria-disabled="true"':''}>${slothSVG(null,it.id)}${it.name}<small><span class="coin"></span>${it.price}${poor?` · need ${it.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
-      else{const[v,g]=it.need(s);h+=`<div class="item locked">${slothSVG(null,it.id)}${it.secret?'???':it.name}<small>${it.how}${it.secret?'':` · ${Math.min(v,g)}/${g}`}</small></div>`}
+      if(owned)shop+=`<button type="button" class="item" data-id="${it.id}" aria-pressed="${on}">${slothSVG(null,it.id)}${it.name}<small>${on?'Wearing · tap to remove':'Tap to wear'}</small></button>`;
+      else if(it.price!=null){const poor=SAVE.coins<it.price;shop+=`<button type="button" class="item shop${poor?' poor':''}" data-buy="${it.id}" ${poor?'aria-disabled="true"':''}>${slothSVG(null,it.id)}${it.name}<small><span class="coin"></span>${it.price}${poor?` · need ${it.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
+      else{const[v,g]=it.need(s);shop+=`<div class="item locked">${slothSVG(null,it.id)}${it.secret?'???':it.name}<small>${it.how}${it.secret?'':` · ${Math.min(v,g)}/${g}`}</small></div>`}
     });
-    h+='</div>';
+    shop+='</div>';
   });
-  h+=`<h3 class="sec" style="font-size:15px">Fur</h3><div class="items">`;
+  let furs='<div class="items">';
   FURS.forEach(f=>{
     const owned=SAVE.furs.includes(f.id),on=SAVE.fur===f.id,eq={...SAVE.equip};
     const art=slothSVG(eq,null,f.color);
-    if(owned)h+=`<button type="button" class="item" data-fur="${f.id}" aria-pressed="${on}">${art}${f.name}<small>${on?'Wearing':(f.note||'Tap to wear')}</small></button>`;
-    else{const poor=SAVE.coins<f.price;h+=`<button type="button" class="item shop${poor?' poor':''}" data-buyfur="${f.id}">${art}${f.name}<small><span class="coin"></span>${f.price}${poor?` · need ${f.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
+    if(owned)furs+=`<button type="button" class="item" data-fur="${f.id}" aria-pressed="${on}">${art}${f.name}<small>${on?'Wearing':(f.note||'Tap to wear')}</small></button>`;
+    else{const poor=SAVE.coins<f.price;furs+=`<button type="button" class="item shop${poor?' poor':''}" data-buyfur="${f.id}">${art}${f.name}<small><span class="coin"></span>${f.price}${poor?` · need ${f.price-SAVE.coins} more`:' · tap to buy'}</small></button>`}
   });
   const ci=chapterIndex(),c=s.cleared;
-  h+=`</div><h3 class="sec" id="ns-gear">Trip gear</h3><p class="secnote">Everyone Mocha helps gives you one gift when you finish their stop. Tap one you own to wear it.</p><div class="gearlist">${gearStops().map(g=>{
+  furs+='</div>';
+  const gear=`<div class="gearlist">${gearStops().map(g=>{
     const reached=c>=g.start;
     return `<div class="gearrow${reached?'':' far'}"><div class="gname"><small>${g.label}</small><b>${reached?g.name:'???'}</b></div>${g.items.map((id,k)=>{const it=ITEM[id],own=SAVE.unlocked.includes(id),on=SAVE.equip[it.slot]===id;
       return own?`<button type="button" class="item" data-id="${id}" aria-pressed="${on}">${slothSVG(null,id)}${it.name}<small>${on?'Wearing':'Tap to wear'}</small></button>`
         :`<div class="item locked">${slothSVG(null,id)}${reached?it.name:'???'}<small>${k||g.items.length===1?'Finish':'Halfway'} · Lv ${g.at[k]}</small></div>`}).join('')}</div>`}).join('')}`;
   const met=id=>{const k=STORY_CAST.indexOf(id);if(k>=0)return k<=ci;const t=COUNTRIES.findIndex(x=>x.cust===id);return c>=TOUR_AT+t*TOUR_LEN};
-  h+=`</div><h3 class="sec" id="ns-pass">Passport</h3><p class="secnote">${SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish ${TOUR_LEN} levels in a country to earn its stamp.`}</p>`;
-  h+=passportBook();
+  const gearOut=gear+'</div>';
+  if(mode==='closet'){
+    h=pv+fold('shop','Shop & wardrobe','Earn coins from tips. Gold items are for sale; dashed ones are trophies you earn by doing something.',shop)
+      +fold('fur','Fur','',furs)
+      +fold('gear','Trip gifts','Everyone Mocha helps gives you one gift when you finish their stop. Tap one you own to wear it.',gearOut);
+  }else{
+  h=pv+fold('pass','Passport',SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish ${TOUR_LEN} levels in a country to earn its stamp.`,passportBook());
   {const got=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
-   h+=`<h3 class="sec" id="ns-wis">Ancient wisdom</h3><p class="secnote">${got.length?'One old saying from every country you finish.':'Finish a World Tour country to collect its wisdom.'}</p>${got.length?`<div class="story">${got.map(wisdomCard).join('')}</div>`:''}`;}
-  h+=`<h3 class="sec" id="ns-reg">Regulars</h3><p class="secnote">Sloths Mocha has met along the way.</p><div class="regulars">${Object.entries(CUST).map(([id,cu])=>{const m=met(id);return `<div class="regular${m?'':' unmet'}">${custSVG(id)}<span>${m?cu.name:'???'}</span></div>`}).join('')}</div>`;
+   h+=fold('wis','Ancient wisdom',got.length?'One old saying from every country you finish.':'Finish a World Tour country to collect its wisdom.',got.length?`<div class="story">${got.map(wisdomCard).join('')}</div>`:'');}
+  h+=fold('reg','Regulars','Sloths Mocha has met along the way.',`<div class="regulars">${Object.entries(CUST).filter(([id])=>STORY_CAST.includes(id)||COUNTRIES.some(c=>c.cust===id)).map(([id,cu])=>{const m=met(id);return `<div class="regular${m?'':' unmet'}">${custSVG(id)}<span>${m?cu.name:'???'}</span></div>`}).join('')}</div>`);
   const doneCh=i=>c>=(i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT);
   const stamped=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
-  h+=`<h3 class="sec" id="ns-story">Mocha's story</h3><div class="story">${CHAPTERS.map((ch,i)=>i<=ci?chapterHTML(ch,i).replace(/<\/div>$/,doneCh(i)?`<p class="learned"><b>Lesson learned:</b> ${LESSONS[i].lesson}</p></div>`:'</div>'):`<div class="chapter locked"><div class="eyebrow">Chapter ${i+1}</div><h3>???</h3><p>Reach level ${ch.at+1} to unlock.</p></div>`).join('')}</div>`;
-  if(SAVE.finished)h+=`<div class="epilogue"><div class="eyebrow">Epilogue</div>${endNote()}</div>`;
+  let storyH=`<div class="story">${CHAPTERS.map((ch,i)=>i<=ci?chapterHTML(ch,i).replace(/<\/div>$/,doneCh(i)?`<p class="learned"><b>Lesson learned:</b> ${LESSONS[i].lesson}</p></div>`:'</div>'):`<div class="chapter locked"><div class="eyebrow">Chapter ${i+1}</div><h3>???</h3><p>Reach level ${ch.at+1} to unlock.</p></div>`).join('')}</div>`;
+  if(SAVE.finished)storyH+=`<div class="epilogue"><div class="eyebrow">Epilogue</div>${endNote()}</div>`;
+  h+=fold('story',"Mocha's story",'',storyH);
+  }
   closetEl.innerHTML=h;
-  closetEl.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.jump).scrollIntoView({behavior:reduced?'auto':'smooth',block:'start'}));
+  closetEl.querySelectorAll('details[data-fold]').forEach(d=>d.addEventListener('toggle',()=>{SAVE.open=SAVE.open||{};SAVE.open[d.dataset.fold]=d.open;save()}));
   closetEl.querySelectorAll('[data-stamp]').forEach(b=>b.onclick=()=>{const k=COUNTRIES.find(c=>c.id===b.dataset.stamp);passportPop(k,SAVE.stamps.indexOf(k.id)+1,true)});
   closetEl.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{
     const it=ITEM[b.dataset.id];
@@ -2128,14 +2147,17 @@ function renderCloset(){
 function setMode(m){
   if(sceneOn&&sceneEnd)sceneEnd();
   mode=m;
-  document.getElementById('tab-journey').setAttribute('aria-selected',m!=='closet');
+  document.getElementById('tab-journey').setAttribute('aria-selected',m!=='closet'&&m!=='pass');
   document.getElementById('tab-closet').setAttribute('aria-selected',m==='closet');
-  closetEl.hidden=m!=='closet';gameEl.hidden=m==='closet';
-  if(m==='closet'){done=true;SAVE.newItems=false;save();refreshSloths();renderCloset();setScenery(curLeg().bg);return}
+  document.getElementById('tab-pass').setAttribute('aria-selected',m==='pass');
+  const side=m==='closet'||m==='pass';
+  closetEl.hidden=!side;gameEl.hidden=side;
+  if(side){done=true;if(m==='closet'){SAVE.newItems=false;save()}refreshSloths();renderCloset();setScenery(curLeg().bg);return}
   start();
 }
 document.getElementById('tab-journey').onclick=()=>{if(mode!=='journey')setMode('journey')};
 document.getElementById('tab-closet').onclick=()=>setMode('closet');
+document.getElementById('tab-pass').onclick=()=>setMode('pass');
 
 /* ================= the end: a note from the human behind Mocha ================= */
 const BOOK_URL='https://calendly.com/matt-nomadcafe?utm_source=slothdoku&utm_medium=game&utm_campaign=ending';
