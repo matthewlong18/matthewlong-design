@@ -1,6 +1,6 @@
 // Slothdoku offline cache. The page loads fresh when online (so updates show up),
 // and falls back to the saved copy when offline. Bump VERSION to clear old caches.
-const VERSION = 'slothdoku-v19';
+const VERSION = 'slothdoku-v20';
 const CORE = ['/games/slothdoku/', '/games/slothdoku/manifest.webmanifest', '/games/slothdoku/icon-192.png', '/games/slothdoku/icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
