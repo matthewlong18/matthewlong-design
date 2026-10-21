@@ -410,11 +410,7 @@
   };
   // Default hero: Rikke — long brown hair, red dress, red sunglasses.
   const P = {name:"Rikke", skin:1, hair:1, hairColor:2, facial:0, outfit:3, outfitColor:3, hat:0, eyes:2, eyeColor:1};
-  try { const saved = JSON.parse(localStorage.getItem("cg-hero") || "{}");
-    for (const k in P) if (k in saved) {
-      if (k === "name") P.name = String(saved.name).slice(0,14);
-      else { const n = LOOK[k].colors ? LOOK[k].colors.length : LOOK[k].opts.length; if (Number.isInteger(saved[k]) && saved[k] >= 0 && saved[k] < n) P[k] = saved[k]; }
-    } } catch(e) {}
+  // Every visit starts as Rikke (the creator no longer restores a saved hero).
 
   // ── CHARACTER ART ── 24×24 sprites in a 16-bit tactics-RPG style: chibi proportions, light from the
   // top-left, three-tone shading and coloured ("sel-out") outlines. Everyone — you, the townspeople,
@@ -1615,7 +1611,7 @@
   };
   $("crGo").onclick=()=>{
     P.name=cleanName($("crName").value);
-    try{ localStorage.setItem("cg-hero", JSON.stringify(P)); }catch(e){}
+    
     refreshPlayer(); Sound.init(); enterTown();
   };
 
