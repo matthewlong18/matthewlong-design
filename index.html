@@ -97,7 +97,10 @@
           <div style="text-align:right"><div style="font:700 32px 'Space Grotesk',sans-serif;line-height:1">CPH</div><div style="font:400 10px 'IBM Plex Mono',monospace;color:#a89b85;letter-spacing:.1em">COPENHAGEN</div></div>
         </div>
         <div style="display:flex;gap:14px;margin-top:16px;align-items:center;font-family:'IBM Plex Mono',monospace">
-          <img src="assets/passport.jpg" alt="Matthew Long" style="width:66px;height:82px;object-fit:cover;object-position:center;border-radius:5px;border:1px solid rgba(243,235,221,.3);flex:none">
+          <div style="position:relative;width:66px;height:82px;flex:none;border-radius:5px;overflow:hidden;border:1px solid rgba(243,235,221,.3)">
+            <img src="assets/passport.jpg" alt="Matthew Long" style="display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.08) contrast(1.06)">
+            <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,#e88a4a 0%,#f2ba82 45%,#7a4a6e 100%);mix-blend-mode:soft-light;opacity:.75;pointer-events:none"></div>
+          </div>
           <div style="flex:1;display:flex;justify-content:space-between">
             <div><div style="font-size:9px;color:#8a7f6c;letter-spacing:.1em">PASSENGER</div><div style="font-size:13px;color:#f3ebdd;margin-top:3px">M. LONG</div></div>
             <div><div style="font-size:9px;color:#8a7f6c;letter-spacing:.1em">CABIN</div><div style="font-size:13px;color:#f3ebdd;margin-top:3px">BUILDER</div></div>
@@ -106,10 +109,13 @@
         </div>
         <!-- currently working from shuffler -->
         <div style="margin-top:18px;background:rgba(243,235,221,.06);border:1px solid rgba(243,235,221,.12);border-radius:7px;padding:12px 14px;display:flex;align-items:center;gap:12px">
-          <div style="font-size:22px;animation:floaty 3s ease-in-out infinite">☕</div>
+          <div onClick="{{ goCafe }}" title="Pull up a chair in the virtual café" role="link" aria-label="Go to the virtual café" style="position:relative;width:46px;height:46px;flex:none;border-radius:5px;overflow:hidden;border:1px solid rgba(243,235,221,.3);cursor:pointer;background:#150d08">
+            <img src="{{ cafeBg }}" alt="" style="display:block;width:100%;height:100%;object-fit:cover;object-position:center bottom">
+            <div style="position:absolute;right:2px;bottom:1px;font:700 11px 'IBM Plex Mono',monospace;color:#f3ebdd;text-shadow:0 1px 3px rgba(0,0,0,.8)">↓</div>
+          </div>
           <div style="flex:1;min-width:0">
             <div style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8a7f6c">CURRENTLY WORKING FROM</div>
-            <div style="font:600 15px 'Space Grotesk',sans-serif;color:#f3ebdd;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ cafe }}</div>
+            <a href="{{ cafeMap }}" target="_blank" rel="noopener" title="Open in Google Maps" style="display:block;font:600 15px 'Space Grotesk',sans-serif;color:#f3ebdd;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none">{{ cafe }} <span style="color:#f2a65a;font-size:13px">↗</span></a>
           </div>
           <div onClick="{{ shuffleCafe }}" title="shuffle" style="width:34px;height:34px;flex:none;display:grid;place-items:center;background:#2b5fa8;border-radius:6px;cursor:pointer;font-size:15px">⤮</div>
         </div>
@@ -750,6 +756,8 @@ class Component extends DCLogic {
       boarded: this.state.boarded,
       boardLabel: this.state.boarded ? '✓ Welcome aboard — scroll down' : 'Board now ✦',
       cafe: this.cafes[this.state.cafeIdx],
+      cafeMap: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(this.cafes[this.state.cafeIdx]),
+      goCafe: () => this.scrollTo('sec-cafe'),
       shuffleCafe: () => this.setState(s => { let n = s.cafeIdx; while (n === s.cafeIdx) n = Math.floor(Math.random() * this.cafes.length); return { cafeIdx: n }; }),
       board: this.board,
 
