@@ -241,10 +241,10 @@
     <div style="margin-top:clamp(30px,4vw,48px);max-width:300px">
 
       <!-- turntable: illustrated walnut plinth, same ink outline as the kissaten -->
-      <div data-reveal class="rv" style="position:relative;background:#6b4428;border:2px solid #1a110a;border-radius:6px;padding:14px;box-shadow:0 26px 40px -20px rgba(0,0,0,.75)">
-        <div aria-hidden="true" style="position:absolute;left:10%;top:22%;width:38%;height:1.5px;border-radius:2px;background:#5a3820"></div>
-        <div aria-hidden="true" style="position:absolute;right:8%;top:58%;width:24%;height:1.5px;border-radius:2px;background:#5a3820"></div>
-        <div aria-hidden="true" style="position:absolute;left:6%;bottom:30%;width:22%;height:1.5px;border-radius:2px;background:#5a3820"></div>
+      <div data-reveal class="rv" style="position:relative;background:rgba(107,68,40,.62);border:2px solid rgba(26,17,10,.7);border-radius:6px;padding:14px;box-shadow:0 26px 40px -24px rgba(0,0,0,.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)">
+        <div aria-hidden="true" style="position:absolute;left:10%;top:22%;width:38%;height:1.5px;border-radius:2px;background:rgba(90,56,32,.6)"></div>
+        <div aria-hidden="true" style="position:absolute;right:8%;top:58%;width:24%;height:1.5px;border-radius:2px;background:rgba(90,56,32,.6)"></div>
+        <div aria-hidden="true" style="position:absolute;left:6%;bottom:30%;width:22%;height:1.5px;border-radius:2px;background:rgba(90,56,32,.6)"></div>
 
         <div style="position:relative;display:flex;align-items:center;gap:8px">
           <div style="width:10px;height:10px;border-radius:50%;background:{{ lampColor }};border:1.5px solid #1a110a;transition:background .3s ease"></div>
@@ -274,7 +274,7 @@
         </div>
 
         <!-- name plate -->
-        <div style="position:relative;margin-top:10px;display:flex;align-items:center;gap:12px;background:#2a1a10;border:1.5px solid #1a110a;border-radius:4px;padding:8px 10px">
+        <div style="position:relative;margin-top:10px;display:flex;align-items:center;gap:12px;background:rgba(42,26,16,.7);border:1.5px solid rgba(26,17,10,.7);border-radius:4px;padding:8px 10px">
           <div style="display:flex;align-items:flex-end;gap:3px;height:18px;width:22px">
             <div style="width:3px;background:#ec6a26;height:6px;animation:{{ barAnim1 }}"></div>
             <div style="width:3px;background:#ec6a26;height:6px;animation:{{ barAnim2 }}"></div>
@@ -285,7 +285,7 @@
             <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;color:#f2a65a">{{ trackLabel }}</div>
             <div style="font:600 15px 'Space Grotesk',sans-serif;color:#f3ebdd;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ trackName }}</div>
           </div>
-          <div onClick="{{ deckBtn }}" style="flex:none;width:36px;height:36px;display:grid;place-items:center;background:#6b4428;border:1.5px solid #1a110a;border-radius:4px;cursor:pointer;font-size:13px;color:#f3ebdd">{{ deckBtnGlyph }}</div>
+          <div onClick="{{ deckBtn }}" style="flex:none;width:36px;height:36px;display:grid;place-items:center;background:rgba(107,68,40,.6);border:1.5px solid rgba(26,17,10,.7);border-radius:4px;cursor:pointer;font-size:13px;color:#f3ebdd">{{ deckBtnGlyph }}</div>
         </div>
       </div>
       <div style="margin-top:12px;font:400 11px 'IBM Plex Mono',monospace;color:#a89b85;text-shadow:0 1px 8px rgba(0,0,0,.6)">Drop the needle. It spins whatever's playing below ↓</div>
