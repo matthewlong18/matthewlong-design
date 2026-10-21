@@ -376,8 +376,9 @@
 </sc-if>
 
 <!-- ===================== SLOTH ESPRESSO TOY ===================== -->
-<div onClick="{{ openToy }}" role="button" aria-label="Ring the bell for a fortune from Brother Bean" style="position:fixed;right:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;background:#ec6a26;border:2px solid #16130d;box-shadow:3px 3px 0 #16130d;box-sizing:border-box;display:grid;place-items:center;cursor:pointer;animation:floaty 3.4s ease-in-out infinite" title="psst — Brother Bean is meditating">
-  <img src="assets/brother-bean.png?v=2" alt="" width="42" height="42" style="display:block;width:42px;height:42px;image-rendering:pixelated;margin-top:2px">
+<div onClick="{{ openToy }}" role="button" aria-label="Ring the bell for a fortune from Brother Bean" style="position:fixed;right:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;background:#2a1a3e;border:2px solid #16130d;box-shadow:3px 3px 0 #16130d;box-sizing:border-box;display:grid;place-items:center;overflow:hidden;cursor:pointer;animation:floaty 3.4s ease-in-out infinite" title="psst — Brother Bean is meditating">
+  <svg aria-hidden="true" viewBox="0 0 52 52" style="position:absolute;inset:0;width:100%;height:100%"><circle cx="11" cy="15" r="5" fill="#ffe2b0"></circle><circle cx="13.4" cy="13.4" r="4.4" fill="#2a1a3e"></circle><circle class="bn-a" cx="42" cy="12" r="1.1" fill="#ffe2b0" style="animation:bnTw 2.8s ease-in-out infinite"></circle><circle class="bn-a" cx="24" cy="7" r=".8" fill="#ffe2b0" style="animation:bnTw 3.4s ease-in-out .9s infinite"></circle><circle class="bn-a" cx="7" cy="28" r=".8" fill="#ffe2b0" style="animation:bnTw 3.1s ease-in-out 1.6s infinite"></circle><circle class="bn-a" cx="45" cy="26" r=".9" fill="#ffe2b0" style="animation:bnTw 3.7s ease-in-out .4s infinite"></circle><circle class="bn-a" cx="30" cy="16" r=".6" fill="#ffe2b0" style="animation:bnTw 2.6s ease-in-out 2.1s infinite"></circle></svg>
+  <img src="assets/brother-bean.png?v=2" alt="" width="42" height="42" style="position:relative;display:block;width:42px;height:42px;image-rendering:pixelated;margin-top:6px">
 </div>
 
 <sc-if value="{{ toyOpen }}" hint-placeholder-val="{{ false }}">
