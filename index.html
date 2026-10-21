@@ -232,30 +232,26 @@
     <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;color:#16130d">What's brewing.</h2>
     <p style="font:400 17px/1.5 'IBM Plex Sans',sans-serif;color:#5c5344;margin:14px 0 0;max-width:520px">Client builds that are live, and the ones still steeping.</p>
 
-    <div style="margin-top:clamp(32px,4vw,52px);display:flex;flex-direction:column;gap:14px">
+    <!-- the work, served as a café menu -->
+    <div style="margin-top:clamp(32px,4vw,52px);max-width:760px;background:#fbf8f3;border:2px solid #16130d;border-radius:6px;box-shadow:6px 6px 0 #16130d;padding:clamp(20px,3.4vw,34px) clamp(18px,3.4vw,36px) clamp(10px,2vw,18px)">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:14px;border-bottom:2px solid #16130d">
+        <div style="font:700 clamp(20px,2.6vw,26px)/1 'Space Grotesk',sans-serif;letter-spacing:-.01em">Today’s menu</div>
+        <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#a8391a">EST. 2026 · CPH</div>
+      </div>
       <sc-for list="{{ projects }}" as="p" hint-placeholder-count="3">
-        <div onClick="{{ p.toggle }}" style="background:{{ p.bg }};border:1px solid {{ p.border }};border-radius:12px;padding:clamp(20px,3vw,30px);cursor:pointer;transition:transform .2s ease,border-color .2s ease" style-hover="transform:translateY(-3px);border-color:#a8391a">
-          <div style="display:flex;align-items:center;gap:16px">
-            <div style="font:500 11px 'IBM Plex Mono',monospace;color:#a8391a;letter-spacing:.1em">{{ p.kind }}</div>
-            <div style="flex:1;height:1px;background:rgba(22,19,13,.14)"></div>
-            <div style="font:500 22px 'Space Grotesk',sans-serif;color:#a8391a;transition:transform .25s ease;transform:{{ p.rot }}">+</div>
+        <div style="padding:clamp(18px,2.4vw,24px) 0;border-bottom:1px dashed rgba(22,19,13,.25)">
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:{{ p.kindColor }}">{{ p.kind }}</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-top:6px">
+            <h3 style="flex:none;font:600 clamp(22px,3vw,30px)/1.1 'Space Grotesk',sans-serif;margin:0;color:#16130d">{{ p.name }}</h3>
+            <span aria-hidden="true" style="flex:1;min-width:24px;border-bottom:2px dotted rgba(22,19,13,.35);transform:translateY(-5px)"></span>
+            <a href="{{ p.href }}" target="_blank" rel="noopener" style="flex:none;font:600 15px 'Space Grotesk',sans-serif;color:#a8391a;text-decoration:none;white-space:nowrap">Taste it ↗</a>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;margin-top:14px">
-            <h3 style="font:600 clamp(24px,3.4vw,36px)/1 'Space Grotesk',sans-serif;margin:0;color:#16130d">{{ p.name }}</h3>
-            <span style="font:400 15px 'IBM Plex Sans',sans-serif;color:#5c5344">{{ p.tagline }}</span>
-          </div>
-          <div style="max-height:{{ p.maxh }};overflow:hidden;transition:max-height .4s ease,opacity .3s ease;opacity:{{ p.op }}">
-            <p style="font:400 16px/1.6 'IBM Plex Sans',sans-serif;color:#3a342a;margin:18px 0 0;max-width:600px">{{ p.body }}</p>
-            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px">
-              <sc-for list="{{ p.stack }}" as="s" hint-placeholder-count="3">
-                <span style="font:500 12px 'IBM Plex Mono',monospace;color:#2b5fa8;background:rgba(43,95,168,.14);padding:5px 11px;border-radius:5px">{{ s }}</span>
-              </sc-for>
-              <span style="flex:1"></span>
-              <a href="{{ p.href }}" target="_blank" rel="noopener" onClick="{{ p.stop }}" style="font:600 14px 'Space Grotesk',sans-serif;color:#a8391a;align-self:center;text-decoration:none;border-bottom:1px solid rgba(168,57,26,.35)">{{ p.link }} →</a>
-            </div>
-          </div>
+          <div style="font:500 15px 'IBM Plex Sans',sans-serif;color:#2a251d;margin-top:6px">{{ p.tagline }}</div>
+          <p style="font:400 15px/1.55 'IBM Plex Sans',sans-serif;color:#5c5344;margin:8px 0 0;max-width:600px">{{ p.body }}</p>
+          <div style="font:400 12px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:10px"><span style="color:#a8391a">Ingredients:</span> {{ p.ing }}</div>
         </div>
       </sc-for>
+      <div style="font:400 12px 'IBM Plex Mono',monospace;color:#6b5f4d;text-align:center;padding:14px 0 4px">Want something off-menu? <span onClick="{{ goContact }}" style="color:#a8391a;cursor:pointer;border-bottom:1px solid rgba(168,57,26,.35)">Ask the barista →</span></div>
     </div>
   </div>
 </section>
@@ -722,13 +718,13 @@ class Component extends DCLogic {
     ];
 
     const projData = [
-      { kind: 'The main thing', name: 'Nomad Café', tagline: 'Turn strangers into regulars',
+      { kind: '★ HOUSE BLEND', name: 'Nomad Café', tagline: 'Turn strangers into regulars',
         body: "AI marketing systems for solo business owners. One offer, one lead magnet, one landing page, built for you in 30 days. I build it, you don't touch it.",
         stack: ['Campaigns','Systems','Automation'], link: 'Visit', href: 'https://www.nomadcafe.co', dark: true },
-      { kind: 'Website', name: 'Re House', tagline: 'Design. Renovate. List.',
+      { kind: 'CLIENT ORDER', name: 'Re House', tagline: 'Design. Renovate. List.',
         body: "The marketing site for Re House, a Toronto pre-sale design and renovation studio. One team handles the design, the renovation and the listing, and the site gets homeowners from curious to booking a free walkthrough.",
         stack: ['Website','Booking flow','Intake form'], link: 'See it', href: 'https://rehouseto.ca' },
-      { kind: 'Website', name: 'McKenzie Studios', tagline: 'AI-focused video production',
+      { kind: 'CLIENT ORDER', name: 'McKenzie Studios', tagline: 'AI-focused video production',
         body: "The home of McKenzie Studios, a multimedia production company making digital content through the lens of AI: weekly shows on the biggest AI trends, and on how AI is changing leadership, business and strategy.",
         stack: ['Website','Video','AI'], link: 'Visit', href: 'https://mckenziestudios.ai' }
     ];
@@ -737,6 +733,8 @@ class Component extends DCLogic {
       const openNow = this.state.open === i;
       return {
         ...pr,
+        ing: pr.stack.join(' · '),
+        kindColor: pr.dark ? '#ec6a26' : '#a8391a',
         bg: pr.dark ? 'rgba(236,106,38,.12)' : 'rgba(255,255,255,.78)',
         border: pr.dark ? 'rgba(236,106,38,.4)' : 'rgba(22,19,13,.12)',
         rot: openNow ? 'rotate(45deg)' : 'rotate(0deg)',
