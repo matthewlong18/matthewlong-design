@@ -31,6 +31,7 @@
   body{margin:0;background:#fbf8f3;-webkit-font-smoothing:antialiased}
   ::selection{background:#ec6a26;color:#16130d}
   @keyframes steamRise{0%{transform:translateY(2px) scaleX(.9);opacity:0}25%{opacity:.6}100%{transform:translateY(-22px) scaleX(1.4);opacity:0}}
+  @keyframes slipIn{from{transform:translateY(-8px);opacity:0}to{transform:none;opacity:1}}
   @keyframes thunk{0%{transform:scale(2.4) rotate(-18deg);opacity:0}60%{transform:scale(.9) rotate(-10deg);opacity:1}100%{transform:scale(1) rotate(-12deg);opacity:1}}
   @keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
   @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
@@ -388,7 +389,7 @@
 
       <div style="min-height:54px;margin-top:16px;text-align:center">
         <sc-if value="{{ fortune }}" hint-placeholder-val="">
-          <div style="background:#fffaf3;border-top:2px dashed #c9b99c;border-bottom:2px dashed #c9b99c;padding:12px 14px 10px;animation:thunk .4s ease-out">
+          <div style="background:#fffaf3;border-top:2px dashed #c9b99c;border-bottom:2px dashed #c9b99c;padding:12px 14px 10px;animation:slipIn .45s ease-out">
             <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#a8391a">YOUR FORTUNE · NO. {{ fortuneNo }}</div>
             <div style="font:600 17px/1.35 'Space Grotesk',sans-serif;color:#16130d;margin-top:8px">{{ fortune }}</div>
             <div style="font:400 11px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:10px">Lucky numbers · {{ luck }}</div>
