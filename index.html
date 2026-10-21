@@ -370,7 +370,7 @@
 
 <!-- ===================== SLOTH ESPRESSO TOY ===================== -->
 <div onClick="{{ openToy }}" role="button" aria-label="Ring the bell for a fortune from Brother Bean" style="position:fixed;right:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;background:#ec6a26;border:2px solid #16130d;box-shadow:3px 3px 0 #16130d;box-sizing:border-box;display:grid;place-items:center;cursor:pointer;animation:floaty 3.4s ease-in-out infinite" title="psst — Brother Bean is meditating">
-  <img src="assets/brother-bean-head.png?v=2" alt="" width="44" height="44" style="display:block;width:44px;height:44px;image-rendering:pixelated">
+  <img src="assets/brother-bean.png?v=2" alt="" width="42" height="42" style="display:block;width:42px;height:42px;image-rendering:pixelated;margin-top:2px">
 </div>
 
 <sc-if value="{{ toyOpen }}" hint-placeholder-val="{{ false }}">
@@ -477,22 +477,56 @@ class Component extends DCLogic {
   ];
 
   fortunes = [
+    'Start before you’re ready. Iterate after.',
+    'Pour slow. Ship anyway.',
+    'The rough version beats the perfect idea in your notes app.',
+    'You don’t need permission. You need a first draft.',
+    'Ready is a feeling. Done is a decision.',
+    'One small thing shipped today beats ten big things planned.',
+    'Bet on yourself. The odds are better than you think.',
+    'The best time to start was last year. The second best is after this coffee.',
+    'Momentum is built one boring day at a time.',
+    'Courage is just curiosity that kept walking.',
+    'You’ve already survived 100% of your bad days. Keep going.',
+    'Make it exist. Then make it good.',
+    'Coaches over courses. Text yours.',
+    'Learning is not the same as doing. Close a tab, open a doc.',
+    'Every regular was once a stranger. Be kind to the next one.',
+    'People don’t buy the system. They buy the feeling after.',
+    'The bottleneck is rarely where you’re looking.',
+    'If it feels like a chore, automate it. If it feels like you, keep it.',
+    'The thing you keep avoiding is probably the thing that matters.',
+    'Slow is smooth. Smooth is fast. Fast is a sloth with a plan.',
+    'Rush the bloom and the cup turns bitter.',
+    'Busy is not a business model.',
+    'The answer is usually one honest conversation away.',
+    'Your story is the strategy. Tell it more often.',
+    'Fewer things, done well, at a pace you can enjoy.',
+    'Enjoy the work. The rest follows.',
+    'Co-op mode beats solo mode.',
+    'Building alone is lonely. Ask someone to build with you this week.',
+    'Reply to that DM. It’s the one.',
+    'Someone out there is stuck on what you just figured out. Share it.',
+    'Your next client is already in your contacts. Say hi.',
+    'Only work with people you’d grab a beer with.',
+    'A good partner is like a good barista. They remember how you take it.',
     'You will refactor on a Friday. Bold.',
-    'A solo founder will call you a wizard. Accept it.',
-    'Today is a good day to delete code.',
     'The deploy will succeed. Probably.',
+    'The wifi will hold. Mostly.',
+    'Today is a good day to delete code.',
+    'A solo founder will call you a wizard. Accept it.',
     'Your next great idea arrives at café #4.',
     'Lift heavy. Ship light.',
     'Canada wins. Eventually. Believe.',
-    'Reply to that DM. It’s the one.',
-    'Start before you’re ready. Iterate after.',
-    'Pour slow. Ship anyway.',
-    'A stranger becomes a regular today.',
-    'Coaches over courses. Text yours.',
-    'Co-op mode beats solo mode.',
-    'Enjoy the work. The rest follows.',
-    'The wifi will hold. Mostly.',
-    'Your best idea is still in the hammock.'
+    'Your inbox is not your boss. Close it.',
+    'The spreadsheet will not love you back.',
+    'That meeting could have been a voice note.',
+    'Somewhere, a hustle bro just woke up at 4am. You slept in. You win.',
+    'Your best idea is still in the hammock.',
+    'Drink the coffee before it gets cold. That’s the whole fortune.',
+    'Brother Bean has seen your browser tabs. He is concerned.',
+    'A nap is a strategy meeting with your subconscious.',
+    'The grounds are cloudy today. That means: take a break.'
   ];
 
   componentDidMount() {

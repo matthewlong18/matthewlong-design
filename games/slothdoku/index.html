@@ -2286,7 +2286,8 @@ function beanSVG(){
   const robe=`<path d="M2 68c2-9 13-14 30-14s28 5 30 14z" fill="#ec6a26"/><path d="M40 54.6c3.6.5 7 1.4 9.6 2.6L17.6 68H7.2z" fill="#a8391a"/><path d="M14 59.6c5-3 11-4.6 18-4.6" stroke="#c4561d" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
   const eyes=`<circle cx="21.5" cy="33" r="3.2" fill="#3b2a1d"/><circle cx="42.5" cy="33" r="3.2" fill="#3b2a1d"/><path d="M18.4 32.6q3.1 2.8 6.2 0M39.4 32.6q3.1 2.8 6.2 0" stroke="#ead8b6" stroke-width="1.7" fill="none" stroke-linecap="round"/>`;
   const calm=`<path d="M27.6 46.4c2.6 1.8 6.2 1.8 8.8 0" stroke="#ead8b6" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M28 46.6c2.4 1.6 5.6 1.6 8 0" stroke="#3b2a1d" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
-  return `<svg viewBox="-4 -8 72 76" aria-hidden="true">${base(BEAN_FUR)}${robe}${ITEM.mala.svg}${eyes}${calm}</svg>`;
+  const beads=[[16.6,56.4],[20.2,59.2],[24.2,61.4],[28.4,62.6],[35.6,62.6],[39.8,61.4],[43.8,59.2],[47.4,56.4]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="2.5" fill="${i%2?'#a8743f':'#6b4226'}" stroke="#3b2a1d" stroke-width=".8"/>`).join('')+`<circle cx="32" cy="64.4" r="2.7" fill="#c0563f" stroke="#3b2a1d" stroke-width=".8"/>`; /* his own mala: drapes over the robe collar */
+  return `<svg viewBox="-4 -8 72 76" aria-hidden="true">${base(BEAN_FUR)}${robe}${beads}${eyes}${calm}</svg>`;
 }
 function beanBell(){try{tone(1046,1.4,'sine',.07);tone(1568,1.1,'sine',.035,.02);tone(784,1.6,'sine',.03,.05)}catch(e){}}
 function beanVisit(){
