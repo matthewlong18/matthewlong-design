@@ -72,8 +72,8 @@
 </div>
 
 <!-- ===================== HERO ===================== -->
-<section id="sec-hero" style="position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:clamp(40px,7vw,80px) clamp(16px,4vw,40px) clamp(50px,7vw,90px)">
-  <div style="display:flex;flex-wrap:wrap;gap:clamp(30px,5vw,60px);align-items:center">
+<section id="sec-hero" style="position:relative;z-index:1;max-width:1080px;margin:0 auto;box-sizing:border-box;min-height:calc(100vh - 56px);min-height:calc(100svh - 56px);display:flex;align-items:center;padding:clamp(40px,7vw,80px) clamp(16px,4vw,40px) clamp(50px,7vw,90px)">
+  <div style="width:100%;display:flex;flex-wrap:wrap;gap:clamp(30px,5vw,60px);align-items:center">
     <div style="flex:1 1 360px">
       <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">Now boarding · seat 1A</div>
       <h1 style="font:700 clamp(52px,11vw,104px)/0.92 'Space Grotesk',sans-serif;letter-spacing:-.03em;margin:18px 0 0">Matthew<br>Long<span style="color:#ec6a26">.</span></h1>
@@ -109,8 +109,8 @@
         </div>
         <!-- currently working from shuffler -->
         <div style="margin-top:18px;background:rgba(243,235,221,.06);border:1px solid rgba(243,235,221,.12);border-radius:7px;padding:12px 14px;display:flex;align-items:center;gap:12px">
-          <div onClick="{{ goCafe }}" title="Pull up a chair in the virtual café" role="link" aria-label="Go to the virtual café" style="position:relative;width:46px;height:46px;flex:none;border-radius:5px;overflow:hidden;border:1px solid rgba(243,235,221,.3);cursor:pointer;background:#150d08">
-            <img src="{{ cafeBg }}" alt="" style="display:block;width:100%;height:100%;object-fit:cover;object-position:center bottom">
+          <div onClick="{{ goCafe }}" title="Pull up a chair in the virtual café" role="link" aria-label="Go to the virtual café" style="position:relative;width:64px;height:64px;flex:none;border-radius:5px;overflow:hidden;border:1px solid rgba(243,235,221,.3);cursor:pointer;background:#150d08">
+            <img src="{{ cafeThumb }}" alt="" style="display:block;width:100%;height:100%;object-fit:cover;object-position:center bottom">
             <div style="position:absolute;right:2px;bottom:1px;font:700 11px 'IBM Plex Mono',monospace;color:#f3ebdd;text-shadow:0 1px 3px rgba(0,0,0,.8)">↓</div>
           </div>
           <div style="flex:1;min-width:0">
@@ -402,7 +402,7 @@
 class Component extends DCLogic {
   state = {
     progress: 0, active: 0,
-    cafeIdx: 0, boarded: false,
+    cafeIdx: 0, cafeArt: -1, boarded: false,
     open: -1,
     toyOpen: false, pulling: false, fortune: '',
     intro: false, introOp: 1, heroP: 0, dragging: false, armDeg: 10, playing: false, track: 0,
@@ -730,7 +730,9 @@ class Component extends DCLogic {
 
     // café background follows the visitor's clock: morning Cusco → golden-hour rooftop → Copenhagen blue hour → late-night Tokyo
     const hr = new Date().getHours();
-    const cafeBg = 'assets/cafe/' + (hr >= 5 && hr < 12 ? 'cusco-morning' : hr < 18 && hr >= 12 ? 'rooftop-golden' : hr >= 18 && hr < 22 ? 'copenhagen-blue' : 'tokyo-night') + '.webp';
+    const CAFE_ART = ['cusco-morning', 'rooftop-golden', 'copenhagen-blue', 'tokyo-night'];
+    const cafeScene = (hr >= 5 && hr < 12 ? 'cusco-morning' : hr < 18 && hr >= 12 ? 'rooftop-golden' : hr >= 18 && hr < 22 ? 'copenhagen-blue' : 'tokyo-night');
+    const cafeBg = 'assets/cafe/' + cafeScene + '.webp';
 
     return {
       cafeBg,
@@ -758,7 +760,8 @@ class Component extends DCLogic {
       cafe: this.cafes[this.state.cafeIdx],
       cafeMap: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(this.cafes[this.state.cafeIdx]),
       goCafe: () => this.scrollTo('sec-cafe'),
-      shuffleCafe: () => this.setState(s => { let n = s.cafeIdx; while (n === s.cafeIdx) n = Math.floor(Math.random() * this.cafes.length); return { cafeIdx: n }; }),
+      shuffleCafe: () => this.setState(s => { let n = s.cafeIdx; while (n === s.cafeIdx) n = Math.floor(Math.random() * this.cafes.length); const a = s.cafeArt < 0 ? CAFE_ART.indexOf(cafeScene) : s.cafeArt; return { cafeIdx: n, cafeArt: (a + 1) % CAFE_ART.length }; }),
+      cafeThumb: 'assets/cafe/' + (this.state.cafeArt < 0 ? cafeScene : CAFE_ART[this.state.cafeArt]) + '.webp',
       board: this.board,
 
       chapters: chapterData.map((c, i) => ({ ...c, chNum: i + 1 })),
