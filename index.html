@@ -31,6 +31,8 @@
   body{margin:0;background:#fbf8f3;-webkit-font-smoothing:antialiased}
   ::selection{background:#ec6a26;color:#16130d}
   @keyframes steamRise{0%{transform:translateY(2px) scaleX(.9);opacity:0}25%{opacity:.6}100%{transform:translateY(-22px) scaleX(1.4);opacity:0}}
+  .tk-win{min-height:110px}
+  @media (min-width:760px){.tk-win{min-height:60px}}
   @keyframes slipIn{from{transform:translateY(-8px);opacity:0}to{transform:none;opacity:1}}
   @keyframes thunk{0%{transform:scale(2.4) rotate(-18deg);opacity:0}60%{transform:scale(.9) rotate(-10deg);opacity:1}100%{transform:scale(1) rotate(-12deg);opacity:1}}
   @keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
@@ -74,8 +76,8 @@
 
 <!-- ===================== HERO ===================== -->
 <section id="sec-hero" style="position:relative;z-index:1;max-width:1080px;margin:0 auto;box-sizing:border-box;min-height:calc(100vh - 56px);min-height:calc(100svh - 56px);display:flex;align-items:center;padding:clamp(28px,4vw,48px) clamp(16px,4vw,40px) clamp(40px,5vw,56px)">
-  <div style="width:100%;display:flex;flex-wrap:wrap;gap:clamp(30px,5vw,60px);align-items:center">
-    <div style="flex:1 1 360px">
+  <div style="width:100%;display:flex;flex-wrap:wrap;gap:clamp(30px,5vw,60px);align-items:stretch">
+    <div style="flex:1 1 360px;display:flex;flex-direction:column;justify-content:center">
       <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">Now boarding · seat 1A</div>
       <h1 style="font:700 clamp(52px,11vw,104px)/0.92 'Space Grotesk',sans-serif;letter-spacing:-.03em;margin:18px 0 0">Matthew<br>Long<span style="color:#ec6a26">.</span></h1>
       <p style="font:400 clamp(18px,2.4vw,22px)/1.45 'IBM Plex Sans',sans-serif;color:#2a251d;margin:26px 0 0;max-width:480px">I help solo business owners turn strangers into regulars with an <span style="background:#2b5fa8;color:#f3ebdd;padding:1px 7px;border-radius:3px">AI system</span> I build for them.</p>
@@ -86,8 +88,8 @@
     </div>
 
     <!-- INTERACTIVE BOARDING PASS: tall, so it stands beside the copy like a real ticket -->
-    <div style="flex:0 1 360px;max-width:360px;width:100%;margin:0 auto">
-      <div style="position:relative;background:#16130d;border-radius:12px;padding:20px 22px 0;box-shadow:0 20px 50px rgba(22,19,13,.25);color:#f3ebdd;overflow:hidden">
+    <div style="flex:0 1 420px;max-width:420px;width:100%;margin:0 auto;position:relative;display:flex;flex-direction:column">
+      <div style="position:relative;flex:1;display:flex;flex-direction:column;background:#16130d;border-radius:12px;padding:20px 22px 0;box-shadow:0 20px 50px rgba(22,19,13,.25);color:#f3ebdd;overflow:hidden">
         <!-- stamp -->
         <sc-if value="{{ boarded }}" hint-placeholder-val="{{ false }}">
           <div style="position:absolute;right:18px;top:120px;z-index:3;border:3px solid #ec6a26;color:#ec6a26;font:700 15px 'Space Grotesk',sans-serif;letter-spacing:.08em;padding:6px 12px;border-radius:6px;transform:rotate(-12deg);animation:thunk .4s ease-out;text-transform:uppercase;background:rgba(22,19,13,.6)">Boarded ✦</div>
@@ -101,7 +103,7 @@
         </div>
 
         <!-- passenger -->
-        <div style="display:flex;gap:16px;margin-top:16px;padding-top:16px;border-top:1px dashed rgba(243,235,221,.25);align-items:stretch;font-family:'IBM Plex Mono',monospace">
+        <div style="display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px dashed rgba(243,235,221,.25);align-items:stretch;font-family:'IBM Plex Mono',monospace">
           <div style="position:relative;width:84px;height:104px;flex:none;border-radius:5px;overflow:hidden;border:1px solid rgba(243,235,221,.3)">
             <img src="assets/passport.jpg" alt="Matthew Long" style="display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.08) contrast(1.06)">
             <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,#e88a4a 0%,#f2ba82 45%,#7a4a6e 100%);mix-blend-mode:soft-light;opacity:.75;pointer-events:none"></div>
@@ -114,10 +116,10 @@
         </div>
 
         <!-- currently working from: a window onto the café -->
-        <div style="margin-top:16px;padding-top:16px;border-top:1px dashed rgba(243,235,221,.25)">
+        <div style="flex:1;display:flex;flex-direction:column;margin-top:12px;padding-top:12px;border-top:1px dashed rgba(243,235,221,.25)">
           <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#8a7f6c">CURRENTLY WORKING FROM</div>
-          <div onClick="{{ goCafe }}" title="Pull up a chair in the virtual café" role="link" aria-label="Go to the virtual café" style="position:relative;margin-top:8px;height:100px;border-radius:6px;overflow:hidden;border:1px solid rgba(243,235,221,.2);cursor:pointer;background:#150d08">
-            <img src="{{ cafeThumb }}" alt="" style="display:block;width:100%;height:100%;object-fit:cover;object-position:center 70%">
+          <div onClick="{{ goCafe }}" title="Pull up a chair in the virtual café" role="link" aria-label="Go to the virtual café" class="tk-win" style="position:relative;flex:1;margin-top:8px;border-radius:6px;overflow:hidden;border:1px solid rgba(243,235,221,.2);cursor:pointer;background:#150d08">
+            <img src="{{ cafeThumb }}" alt="" style="position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:center 70%">
             <div style="position:absolute;left:8px;bottom:7px;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#f3ebdd;background:rgba(22,19,13,.7);padding:3px 7px;border-radius:3px">PULL UP A CHAIR ↓</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
@@ -127,15 +129,15 @@
         </div>
 
         <!-- stub -->
-        <div style="position:relative;margin:16px -22px 0;padding:14px 22px 16px;border-top:2px dashed rgba(243,235,221,.3);background:#1d1912">
-          <div onClick="{{ board }}" style="text-align:center;background:#ec6a26;color:#16130d;font:600 14px 'Space Grotesk',sans-serif;padding:13px;border-radius:6px;cursor:pointer">{{ boardLabel }}</div>
-          <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
-            <div aria-hidden="true" style="flex:1;height:24px;background:repeating-linear-gradient(90deg,#f3ebdd 0 2px,transparent 2px 4px,#f3ebdd 4px 5px,transparent 5px 8px,#f3ebdd 8px 11px,transparent 11px 13px);opacity:.55"></div>
-            <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#a89b85;text-align:right;line-height:1.4">GATE 01<br>SEAT 1A</div>
+        <div style="position:relative;margin:14px -22px 0;padding:14px 22px;border-top:2px dashed rgba(243,235,221,.3);background:#1d1912;display:flex;align-items:center;gap:14px">
+          <div onClick="{{ board }}" style="flex:1;text-align:center;background:#ec6a26;color:#16130d;font:600 14px 'Space Grotesk',sans-serif;padding:13px;border-radius:6px;cursor:pointer">{{ boardLabel }}</div>
+          <div aria-hidden="true" style="flex:none;width:64px">
+            <div style="height:24px;background:repeating-linear-gradient(90deg,#f3ebdd 0 2px,transparent 2px 4px,#f3ebdd 4px 5px,transparent 5px 8px,#f3ebdd 8px 11px,transparent 11px 13px);opacity:.55"></div>
+            <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.06em;color:#a89b85;margin-top:4px;text-align:center">SEAT 1A</div>
           </div>
         </div>
       </div>
-      <div style="font:400 11px 'IBM Plex Mono',monospace;color:#9a8d78;text-align:center;margin-top:10px">↑ shuffle the café, then board to start the journey</div>
+      <div style="position:absolute;left:0;right:0;top:100%;font:400 11px 'IBM Plex Mono',monospace;color:#9a8d78;text-align:center;margin-top:10px">↑ shuffle the café, then board to start the journey</div>
     </div>
   </div>
 </section>
