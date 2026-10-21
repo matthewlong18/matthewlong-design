@@ -233,25 +233,25 @@
     <p style="font:400 17px/1.5 'IBM Plex Sans',sans-serif;color:#5c5344;margin:14px 0 0;max-width:520px">Client builds that are live, and the ones still steeping.</p>
 
     <!-- the work, served as a café menu -->
-    <div style="margin-top:clamp(32px,4vw,52px);max-width:760px;background:#fbf8f3;border:2px solid #16130d;border-radius:6px;box-shadow:6px 6px 0 #16130d;padding:clamp(20px,3.4vw,34px) clamp(18px,3.4vw,36px) clamp(10px,2vw,18px)">
+    <div style="margin-top:clamp(32px,4vw,52px);background:#fbf8f3;border:2px solid #16130d;border-radius:6px;box-shadow:6px 6px 0 #16130d;padding:clamp(22px,3.6vw,44px) clamp(18px,4vw,52px) clamp(12px,2vw,22px)">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:14px;border-bottom:2px solid #16130d">
-        <div style="font:700 clamp(20px,2.6vw,26px)/1 'Space Grotesk',sans-serif;letter-spacing:-.01em">Today’s menu</div>
+        <div style="font:700 clamp(22px,3vw,32px)/1 'Space Grotesk',sans-serif;letter-spacing:-.01em">Today’s menu</div>
         <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#a8391a">EST. 2026 · CPH</div>
       </div>
       <sc-for list="{{ projects }}" as="p" hint-placeholder-count="3">
-        <div style="padding:clamp(18px,2.4vw,24px) 0;border-bottom:1px dashed rgba(22,19,13,.25);display:flex;gap:clamp(14px,3vw,26px);align-items:flex-start">
+        <div style="padding:clamp(22px,3vw,36px) 0;border-bottom:1px dashed rgba(22,19,13,.25);display:flex;gap:clamp(16px,4vw,44px);align-items:center">
           <div style="flex:1;min-width:0">
           <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:{{ p.kindColor }}">{{ p.kind }}</div>
           <div style="display:flex;align-items:baseline;gap:10px;margin-top:6px">
-            <h3 style="flex:none;font:600 clamp(22px,3vw,30px)/1.1 'Space Grotesk',sans-serif;margin:0;color:#16130d">{{ p.name }}</h3>
+            <h3 style="flex:none;font:600 clamp(24px,3.6vw,40px)/1.05 'Space Grotesk',sans-serif;margin:0;color:#16130d">{{ p.name }}</h3>
             <span aria-hidden="true" style="flex:1;min-width:24px;border-bottom:2px dotted rgba(22,19,13,.35);transform:translateY(-5px)"></span>
-            <a href="{{ p.href }}" target="_blank" rel="noopener" style="flex:none;font:600 15px 'Space Grotesk',sans-serif;color:#a8391a;text-decoration:none;white-space:nowrap">Taste it ↗</a>
+            <a href="{{ p.href }}" target="_blank" rel="noopener" style="flex:none;font:600 15px 'Space Grotesk',sans-serif;color:#a8391a;text-decoration:none;white-space:nowrap">See it live ↗</a>
           </div>
-          <div style="font:500 15px 'IBM Plex Sans',sans-serif;color:#2a251d;margin-top:6px">{{ p.tagline }}</div>
-          <p style="font:400 15px/1.55 'IBM Plex Sans',sans-serif;color:#5c5344;margin:8px 0 0;max-width:600px">{{ p.body }}</p>
+          <div style="font:500 clamp(16px,1.8vw,19px) 'IBM Plex Sans',sans-serif;color:#2a251d;margin-top:8px">{{ p.tagline }}</div>
+          <p style="font:400 16px/1.6 'IBM Plex Sans',sans-serif;color:#5c5344;margin:10px 0 0;max-width:620px">{{ p.body }}</p>
           <div style="font:400 12px 'IBM Plex Mono',monospace;color:#6b5f4d;margin-top:10px"><span style="color:#a8391a">Ingredients:</span> {{ p.ing }}</div>
           </div>
-          <a href="{{ p.href }}" target="_blank" rel="noopener" aria-label="Open {{ p.name }}" style="flex:none;display:block;width:clamp(78px,14vw,108px);aspect-ratio:4/5;border:2px solid #16130d;border-radius:6px;box-shadow:3px 3px 0 #16130d;overflow:hidden;background:#16130d;margin-top:4px">
+          <a href="{{ p.href }}" target="_blank" rel="noopener" aria-label="Open {{ p.name }}" style="flex:none;display:block;width:clamp(92px,22vw,220px);aspect-ratio:4/5;border:2px solid #16130d;border-radius:6px;box-shadow:4px 4px 0 #16130d;overflow:hidden;background:#16130d">
             <img src="{{ p.shot }}" alt="Homepage of {{ p.name }}" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top">
           </a>
         </div>
