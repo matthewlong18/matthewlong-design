@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Matthew Long | AI marketing systems for solo business owners</title>
-<meta name="description" content="I help solo business owners stop losing leads with an AI marketing system, built in two weeks. Toronto to Copenhagen, by way of everywhere.">
+<meta name="description" content="I help solo business owners turn strangers into regulars with an AI system I build for them. Toronto to Copenhagen, by way of everywhere.">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Matthew Long">
 <meta property="og:title" content="Matthew Long | AI marketing systems for solo business owners">
-<meta property="og:description" content="I help solo business owners stop losing leads with an AI marketing system, built in two weeks.">
+<meta property="og:description" content="I help solo business owners turn strangers into regulars with an AI system I build for them.">
 <meta property="og:url" content="https://matthewlong.design/">
 <meta property="og:image" content="https://matthewlong.design/assets/matthew.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -77,7 +77,7 @@
     <div style="flex:1 1 360px">
       <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">Now boarding · seat 1A</div>
       <h1 style="font:700 clamp(52px,11vw,104px)/0.92 'Space Grotesk',sans-serif;letter-spacing:-.03em;margin:18px 0 0">Matthew<br>Long<span style="color:#ec6a26">.</span></h1>
-      <p style="font:400 clamp(18px,2.4vw,22px)/1.45 'IBM Plex Sans',sans-serif;color:#2a251d;margin:26px 0 0;max-width:480px">I help solo business owners stop losing leads with an <span style="background:#2b5fa8;color:#f3ebdd;padding:1px 7px;border-radius:3px">AI marketing system</span>, built in two weeks.</p>
+      <p style="font:400 clamp(18px,2.4vw,22px)/1.45 'IBM Plex Sans',sans-serif;color:#2a251d;margin:26px 0 0;max-width:480px">I help solo business owners turn strangers into regulars with an <span style="background:#2b5fa8;color:#f3ebdd;padding:1px 7px;border-radius:3px">AI system</span> I build for them.</p>
       <p style="font:400 16px/1.5 'IBM Plex Sans',sans-serif;color:#6b5f4d;margin:16px 0 0;max-width:440px">Toronto → Copenhagen, by way of everywhere. Usually answering from a café you've never heard of.</p>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
         <div onClick="{{ goJourney }}" style="background:#16130d;color:#f3ebdd;font:600 15px 'Space Grotesk',sans-serif;padding:14px 26px;border-radius:5px;cursor:pointer">Start the journey ↓</div>
@@ -129,7 +129,7 @@
     <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;max-width:640px">I took the Long way.</h2>
 
     <div style="margin-top:clamp(32px,5vw,52px);display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(24px,3vw,40px)">
-      <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="6">
+      <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="9">
         <div id="chapter-{{ $index }}" data-reveal class="rv">
           <div style="display:flex;align-items:center;gap:10px">
             <span style="width:10px;height:10px;border-radius:50%;background:#ec6a26;flex:none"></span>
@@ -304,9 +304,9 @@
   <div style="max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,40px);text-align:center">
     <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#a8391a">Final stop · CPH</div>
     <h2 style="font:700 clamp(38px,7vw,80px)/0.98 'Space Grotesk',sans-serif;letter-spacing:-.03em;margin:16px auto 0;max-width:780px;color:#16130d">Let's grab a (virtual) coffee.</h2>
-    <p style="font:400 clamp(17px,2.2vw,20px)/1.5 'IBM Plex Sans',sans-serif;color:#4a4236;margin:20px auto 0;max-width:480px">Building alone is lonely. Book a Session: we find the one thing leaking leads, and I hand you the fix. $249 CAD, credited toward the build.</p>
+    <p style="font:400 clamp(17px,2.2vw,20px)/1.5 'IBM Plex Sans',sans-serif;color:#4a4236;margin:20px auto 0;max-width:480px">Building alone is lonely. Book a free strategy session: we find the one thing keeping strangers from becoming regulars, and I show you the fix.</p>
     <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:36px">
-      <a href="https://calendly.com/matt-nomadcafe" target="_blank" rel="noopener" style="text-decoration:none;background:#ec6a26;color:#16130d;font:600 16px 'Space Grotesk',sans-serif;padding:16px 32px;border-radius:6px">Book a Session →</a>
+      <a href="mailto:matt@nomadcafe.co?subject=Strategy%20Session%20Request" style="text-decoration:none;background:#ec6a26;color:#16130d;font:600 16px 'Space Grotesk',sans-serif;padding:16px 32px;border-radius:6px">Book a free session →</a>
       <a href="mailto:matt@nomadcafe.co" style="text-decoration:none;border:1.5px solid rgba(22,19,13,.35);color:#16130d;font:600 16px 'Space Grotesk',sans-serif;padding:16px 28px;border-radius:6px">Email me</a>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:clamp(16px,3vw,28px);justify-content:center;margin-top:44px;font:500 14px 'Space Grotesk',sans-serif">
@@ -607,24 +607,30 @@ class Component extends DCLogic {
     const dim = '#5c5344', lit = '#a8391a';
 
     const chapterData = [
-      { code: 'YYZ', years: "'14–'18", place: 'Toronto, Canada',
-        body: "Construction sites, then ad budgets at a big telecom. On my way out I shipped an automation my boss didn't want, because he'd rather have more headcount. Then I took the buyout." },
+      { code: 'YYZ', years: 'The early years', place: 'Toronto job sites',
+        body: "Fifteen-plus years in construction, ending up as site supervisor at Long Contracting. It taught me to show up early, build things properly, and finish the job." },
+      { code: 'YYZ', years: "'14–'18", place: 'A big telecom',
+        body: "Ad budgets at a big telecom. On my way out I shipped an automation my boss didn't want, because he'd rather have more headcount. My first taste of systems beating busywork." },
+      { code: 'LIM', years: "'18", place: 'Peru',
+        body: "My first trip to Peru lit the fuse. The buyout offer landed right after I got home, so I took it and bought the next ticket." },
       { code: 'SE-ASIA', years: "'18", place: 'Asia & the Pacific',
-        body: "Peru lit the fuse, so I bought the ticket. Travelling solo through Asia woke something up: new ways of seeing the world, and a lot of finding out who I actually am." },
+        body: "Travelling solo through Asia woke something up: new ways of seeing the world, and a lot of finding out who I actually am." },
       { code: 'COL · EU', years: "'19", place: 'Colombia & Europe',
         body: "Somewhere along the way, travel turned into a checklist. One more country, one more stamp. By the end I wanted something more than the next stamp in my passport." },
-      { code: 'YYZ → CPH', years: "'20–'25", place: 'Toronto, then Copenhagen',
-        body: "Back in the city when COVID hit. Five years of small projects just to get by, long distance, then the move to Copenhagen in '25. And a growing pile of courses I kept telling myself I'd use once I was ready." },
+      { code: 'YYZ', years: "'20–'24", place: 'Back in Toronto',
+        body: "Back in the city when COVID hit. Small projects just to get by, a long-distance relationship, and a growing pile of courses I kept telling myself I'd use once I was ready." },
+      { code: 'CPH', years: "'25", place: 'Copenhagen, take one',
+        body: "The move to Copenhagen on a working holiday. New city, same habit: learning everything, launching nothing." },
       { code: 'CPH → YYZ', years: "Jan '26", place: 'The metro platform',
         body: "Heading home to Canada after my working holiday, I couldn't afford the metro ticket to my own flight. That was the bottom." },
       { code: 'CPH', years: "'26–now", place: 'Copenhagen, for real',
-        body: "So I bet on myself. Coaches instead of courses, and I started before I was ready. Now I'm launching: building systems for solo business owners, slowly, with a good cup, and never alone." }
+        body: "So I bet on myself. Coaches instead of courses, and I started before I was ready. Now I run Nomad Café, building systems for solo business owners, slowly, with a good cup, and never alone." }
     ];
 
     const projData = [
-      { kind: 'The main thing', name: 'Nomad Café', tagline: 'AI marketing systems, built in two weeks',
-        body: "AI marketing systems for solo business owners. One bottleneck, one system, two weeks, about two hours of your time. I build it, you don't touch it.",
-        stack: ['Websites','Systems','Automation'], link: 'Visit', href: 'https://www.nomadcafe.co', dark: true },
+      { kind: 'The main thing', name: 'Nomad Café', tagline: 'Turn strangers into regulars',
+        body: "AI marketing systems for solo business owners. One offer, one lead magnet, one landing page, built for you in 30 days. I build it, you don't touch it.",
+        stack: ['Campaigns','Systems','Automation'], link: 'Visit', href: 'https://www.nomadcafe.co', dark: true },
       { kind: 'Website', name: 'Re House', tagline: 'Design. Renovate. List.',
         body: "The marketing site for Re House, a Toronto pre-sale design and renovation studio. One team handles the design, the renovation and the listing, and the site gets homeowners from curious to booking a free walkthrough.",
         stack: ['Website','Booking flow','Intake form'], link: 'See it', href: 'https://rehouseto.ca' },
@@ -665,7 +671,7 @@ class Component extends DCLogic {
       { name: 'The Steppe Session', line: 'A luxury retreat for established founders on the Mongolian steppe.', stage: 'simmer', heat: 'cold' },
       { name: 'Bottleneck Quiz Funnel', line: "A five-question quiz: what's the bottleneck in your business?", stage: 'prep', heat: 'warm' },
       { name: 'Copenhagen Content Meetup', line: 'Founders walk the city and shoot B-roll together.', stage: 'prep', heat: 'warm' },
-      { name: 'The Co-Pilot', line: 'A monthly ops retainer for Nomad Café clients.', stage: 'prep', heat: 'warm' },
+      { name: 'Co-op Mode', line: 'I build your system, then stay on to run it with you. Like a co-founder without the equity.', stage: 'plated', heat: 'hot' },
       { name: 'Website Editor Agent', line: 'Clients edit their own site by chatting with Claude.', stage: 'prep', heat: 'warm' },
       { name: 'Community Architect', line: 'A small, managed member directory that makes reaching out easy.', stage: 'prep', heat: 'warm' },
       { name: 'Side Hustle COO', line: 'Run the side business for creators with an audience and no time.', stage: 'prep', heat: 'warm' },
