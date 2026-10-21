@@ -370,7 +370,7 @@
 
 <!-- ===================== SLOTH ESPRESSO TOY ===================== -->
 <div onClick="{{ openToy }}" role="button" aria-label="Ring the bell for a fortune from Brother Bean" style="position:fixed;right:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;background:#ec6a26;border:2px solid #16130d;box-shadow:3px 3px 0 #16130d;box-sizing:border-box;display:grid;place-items:center;cursor:pointer;animation:floaty 3.4s ease-in-out infinite" title="psst — Brother Bean is meditating">
-  <img src="assets/brother-bean-head.png" alt="" width="44" height="44" style="display:block;width:44px;height:44px;image-rendering:pixelated">
+  <img src="assets/brother-bean-head.png?v=2" alt="" width="44" height="44" style="display:block;width:44px;height:44px;image-rendering:pixelated">
 </div>
 
 <sc-if value="{{ toyOpen }}" hint-placeholder-val="{{ false }}">
@@ -393,7 +393,7 @@
             <path d="M228 62 C244 56 250 40 248 30 C236 34 230 48 228 62Z M228 44 C212 38 206 22 208 12 C220 16 227 30 228 44Z" stroke="#5f7a4e" stroke-width="1.6"></path>
           </g>
           <g style="animation:{{ swingAnim }}">
-            <image href="assets/brother-bean.png" x="98" y="64" width="64" height="64" style="image-rendering:pixelated"></image>
+            <image href="assets/brother-bean.png?v=2" x="98" y="56" width="70" height="70" style="image-rendering:pixelated"></image>
             <text x="166" y="72" font-size="12" fill="#f2a65a" font-family="IBM Plex Mono, monospace">{{ zzz }}</text>
           </g>
         </svg>

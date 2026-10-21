@@ -2283,7 +2283,7 @@ document.getElementById('help').onclick=()=>openHelp(false);
    rings his bell and gives Mocha his mala. He only visits once. ?bean=1 calls him anyway. */
 const BEAN_FUR='#8a7a68'; /* an older, greyer sloth than Mocha */
 function beanSVG(){
-  const robe=`<path d="M2 68c2-9 13-14 30-14s28 5 30 14z" fill="#a8391a"/><path d="M38 54.6c5 .8 9 2.4 12 4.6L44 68h-8.4z" fill="#ec6a26"/><path d="M14 59.6c5-3 11-4.6 18-4.6" stroke="#7d2a13" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+  const robe=`<path d="M2 68c2-9 13-14 30-14s28 5 30 14z" fill="#ec6a26"/><path d="M40 54.6c3.6.5 7 1.4 9.6 2.6L17.6 68H7.2z" fill="#a8391a"/><path d="M14 59.6c5-3 11-4.6 18-4.6" stroke="#c4561d" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
   const eyes=`<circle cx="21.5" cy="33" r="3.2" fill="#3b2a1d"/><circle cx="42.5" cy="33" r="3.2" fill="#3b2a1d"/><path d="M18.4 32.6q3.1 2.8 6.2 0M39.4 32.6q3.1 2.8 6.2 0" stroke="#ead8b6" stroke-width="1.7" fill="none" stroke-linecap="round"/>`;
   const calm=`<path d="M27.6 46.4c2.6 1.8 6.2 1.8 8.8 0" stroke="#ead8b6" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M28 46.6c2.4 1.6 5.6 1.6 8 0" stroke="#3b2a1d" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
   return `<svg viewBox="-4 -8 72 76" aria-hidden="true">${base(BEAN_FUR)}${robe}${ITEM.mala.svg}${eyes}${calm}</svg>`;
