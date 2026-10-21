@@ -238,47 +238,57 @@
     <h2 style="font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:12px 0 0;color:#f3ebdd;max-width:640px;text-shadow:0 2px 24px rgba(0,0,0,.5)">What I'm listening to.</h2>
     <p style="font:400 17px/1.5 'IBM Plex Sans',sans-serif;color:#d8c9b0;margin:14px 0 0;max-width:480px;text-shadow:0 1px 12px rgba(0,0,0,.6)">Pull up a chair. Drag the tonearm onto the record and the real playlist starts spinning.</p>
 
-    <div style="margin-top:clamp(30px,4vw,48px);max-width:560px">
+    <div style="margin-top:clamp(30px,4vw,48px);max-width:300px">
 
-      <!-- turntable -->
-      <div data-reveal class="rv" style="background:rgba(30,21,14,.88);border:1px solid rgba(243,235,221,.16);border-radius:14px;padding:clamp(18px,3vw,26px);display:flex;flex-direction:column;box-shadow:0 30px 60px -24px rgba(0,0,0,.75),0 0 90px rgba(242,166,90,.10);backdrop-filter:blur(3px)">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:8px;height:8px;border-radius:50%;background:{{ lampColor }};transition:background .3s ease"></div>
-          <div style="font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#8a7f6c">{{ deckState }}</div>
+      <!-- turntable: illustrated walnut plinth, same ink outline as the kissaten -->
+      <div data-reveal class="rv" style="position:relative;background:#6b4428;border:2px solid #1a110a;border-radius:6px;padding:14px;box-shadow:0 26px 40px -20px rgba(0,0,0,.75)">
+        <div aria-hidden="true" style="position:absolute;left:10%;top:22%;width:38%;height:1.5px;border-radius:2px;background:#5a3820"></div>
+        <div aria-hidden="true" style="position:absolute;right:8%;top:58%;width:24%;height:1.5px;border-radius:2px;background:#5a3820"></div>
+        <div aria-hidden="true" style="position:absolute;left:6%;bottom:30%;width:22%;height:1.5px;border-radius:2px;background:#5a3820"></div>
+
+        <div style="position:relative;display:flex;align-items:center;gap:8px">
+          <div style="width:10px;height:10px;border-radius:50%;background:{{ lampColor }};border:1.5px solid #1a110a;transition:background .3s ease"></div>
+          <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;color:#f3ebdd">{{ deckState }}</div>
         </div>
 
-        <div ref="{{ deckRef }}" onMouseMove="{{ armMove }}" onMouseUp="{{ armUp }}" onMouseLeave="{{ armUp }}" onTouchMove="{{ armMove }}" onTouchEnd="{{ armUp }}" style="position:relative;margin-top:16px;aspect-ratio:1/1;max-width:320px;width:100%;align-self:center;touch-action:none">
+        <div ref="{{ deckRef }}" onMouseMove="{{ armMove }}" onMouseUp="{{ armUp }}" onMouseLeave="{{ armUp }}" onTouchMove="{{ armMove }}" onTouchEnd="{{ armUp }}" style="position:relative;margin-top:10px;aspect-ratio:1/1;max-width:270px;width:100%;margin-left:auto;margin-right:auto;touch-action:none">
           <!-- platter -->
-          <div style="position:absolute;left:0;top:0;width:82%;height:82%;border-radius:50%;background:#15120c;border:1px solid rgba(243,235,221,.14);display:grid;place-items:center">
-            <div style="width:94%;height:94%;border-radius:50%;background:repeating-radial-gradient(circle,#211c14 0 1px,#15120c 1px 4px);display:grid;place-items:center;animation:{{ spinAnim }}">
-              <div style="width:34%;height:34%;border-radius:50%;background:#ec6a26;display:grid;place-items:center">
-                <div style="width:12%;height:12%;border-radius:50%;background:#15120c"></div>
+          <div style="position:absolute;left:0;top:0;width:82%;height:82%;border-radius:50%;background:#15120c;border:2px solid #1a110a;box-sizing:border-box;display:grid;place-items:center">
+            <div style="position:relative;width:94%;height:94%;border-radius:50%;background:repeating-radial-gradient(circle,#2a231a 0 1px,#15120c 1px 7px);display:grid;place-items:center;animation:{{ spinAnim }}">
+              <div style="position:relative;width:36%;height:36%;border-radius:50%;background:#ec6a26;border:1.5px solid #1a110a;box-sizing:border-box;display:grid;place-items:center">
+                <div style="width:58%;height:58%;border-radius:50%;background:#f2a65a;display:grid;place-items:center">
+                  <div style="width:22%;height:22%;border-radius:50%;background:#15120c"></div>
+                </div>
+                <div style="position:absolute;left:50%;top:8%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:#f3ebdd"></div>
               </div>
             </div>
           </div>
           <!-- tonearm -->
-          <div onMouseDown="{{ armDown }}" onTouchStart="{{ armDown }}" style="position:absolute;right:10%;top:11%;width:9%;height:9%;border-radius:50%;background:#3a332a;border:1px solid rgba(243,235,221,.18);cursor:grab;z-index:4"></div>
-          <div onMouseDown="{{ armDown }}" onTouchStart="{{ armDown }}" style="position:absolute;right:14.5%;top:15.5%;width:8px;height:46%;transform-origin:top center;transform:rotate({{ armDeg }});transition:{{ armTrans }};cursor:grab;z-index:3">
-            <div style="position:absolute;inset:0;border-radius:6px;background:linear-gradient(#cdc2ad,#8a7f6c)"></div>
-            <div style="position:absolute;left:-6px;bottom:-8px;width:20px;height:16px;border-radius:3px;background:#ec6a26"></div>
+          <div onMouseDown="{{ armDown }}" onTouchStart="{{ armDown }}" style="position:absolute;right:9%;top:10%;width:11%;height:11%;border-radius:50%;background:#f3ebdd;border:2px solid #1a110a;box-sizing:border-box;cursor:grab;z-index:4"></div>
+          <div onMouseDown="{{ armDown }}" onTouchStart="{{ armDown }}" style="position:absolute;right:calc(14.5% - 5px);top:15.5%;width:10px;height:46%;transform-origin:top center;transform:rotate({{ armDeg }});transition:{{ armTrans }};cursor:grab;z-index:3">
+            <div style="position:absolute;inset:0;border-radius:6px;background:#f3ebdd;border:2px solid #1a110a;box-sizing:border-box"></div>
+            <div style="position:absolute;left:-6px;bottom:-10px;width:22px;height:18px;border-radius:3px;background:#ec6a26;border:1.5px solid #1a110a;box-sizing:border-box"></div>
           </div>
+          <!-- start knob -->
+          <div aria-hidden="true" style="position:absolute;right:6%;bottom:4%;width:9%;height:9%;border-radius:50%;background:#f2a65a;border:1.5px solid #1a110a;box-sizing:border-box"></div>
         </div>
 
-        <div style="margin-top:18px;display:flex;align-items:center;gap:14px;min-height:52px">
-          <div style="display:flex;align-items:flex-end;gap:3px;height:20px;width:26px">
-            <div style="width:4px;background:#ec6a26;height:6px;animation:{{ barAnim1 }}"></div>
-            <div style="width:4px;background:#ec6a26;height:6px;animation:{{ barAnim2 }}"></div>
-            <div style="width:4px;background:#ec6a26;height:6px;animation:{{ barAnim3 }}"></div>
-            <div style="width:4px;background:#ec6a26;height:6px;animation:{{ barAnim4 }}"></div>
+        <!-- name plate -->
+        <div style="position:relative;margin-top:10px;display:flex;align-items:center;gap:12px;background:#2a1a10;border:1.5px solid #1a110a;border-radius:4px;padding:8px 10px">
+          <div style="display:flex;align-items:flex-end;gap:3px;height:18px;width:22px">
+            <div style="width:3px;background:#ec6a26;height:6px;animation:{{ barAnim1 }}"></div>
+            <div style="width:3px;background:#ec6a26;height:6px;animation:{{ barAnim2 }}"></div>
+            <div style="width:3px;background:#ec6a26;height:6px;animation:{{ barAnim3 }}"></div>
+            <div style="width:3px;background:#ec6a26;height:6px;animation:{{ barAnim4 }}"></div>
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#8a7f6c">{{ trackLabel }}</div>
-            <div style="font:600 16px 'Space Grotesk',sans-serif;color:#f3ebdd;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ trackName }}</div>
+            <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;color:#f2a65a">{{ trackLabel }}</div>
+            <div style="font:600 15px 'Space Grotesk',sans-serif;color:#f3ebdd;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ trackName }}</div>
           </div>
-          <div onClick="{{ deckBtn }}" style="flex:none;width:36px;height:36px;display:grid;place-items:center;border:1px solid rgba(243,235,221,.22);border-radius:8px;cursor:pointer;font-size:13px;color:#f3ebdd">{{ deckBtnGlyph }}</div>
+          <div onClick="{{ deckBtn }}" style="flex:none;width:36px;height:36px;display:grid;place-items:center;background:#6b4428;border:1.5px solid #1a110a;border-radius:4px;cursor:pointer;font-size:13px;color:#f3ebdd">{{ deckBtnGlyph }}</div>
         </div>
-        <div style="font:400 11px 'IBM Plex Mono',monospace;color:#a89b85">Drop the needle. It spins whatever's playing below ↓</div>
       </div>
+      <div style="margin-top:12px;font:400 11px 'IBM Plex Mono',monospace;color:#a89b85;text-shadow:0 1px 8px rgba(0,0,0,.6)">Drop the needle. It spins whatever's playing below ↓</div>
     </div>
 
     <!-- café playlist (Spotify) -->
