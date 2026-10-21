@@ -2278,50 +2278,35 @@ function openHelp(first){
 }
 document.getElementById('help').onclick=()=>openHelp(false);
 
-/* ================= Brother Bean: the secret fortune monk =================
-   Sit still for a minute (no taps, no keys) and he wanders in, rings his bell and reads
-   the day's fortune in the coffee grounds. Once a day. The first visit gives Mocha his mala.
-   Add ?bean=1 to the URL to call him straight away. */
-const BEAN_IMG='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAB7klEQVR4nO2ZPUgDMRiGX39wEjfpILropCAIDoIKgl10aFdBUPAHXG4RB+ng4FAcxKWL4A84CK510KVCQQS3gqCTBUEcxE1cHKQO7WfJV3LJXVrby90zXXpJ7vq8ueTSAhHNpc20g8mhWMmk/d3zu9E9tJs0bgU6vTbgxpMTg6b3IPTnNZHAJ6D9bcl8HYy7kr0vAtBPwv4EZOZXUtt1vZHT9J5Q1k0i8Al4noXIfDKx7love3kklHXr8yRUhC8Bjl/TuvVVhDcBMskNcsN+6+sS+AQatg4MTy8K5afbc9f6oV0HjN+FTFdkv+aJ8CRAqPYDlMjW2qbw+f7xAQC5cSLaD+hiujMzNU8EPgHfe+Lr3VkAwFUmXz5RfHFtFx/rFsoDvR0AgHlnBgAwt3NTAqJnQA6ZdyrmCDL4lwSDm88VvlzbZT5+AETrQBWZeTLlsLFMRnXN8354/9a/C0lnIZX5qpnKepDJA6g13zU1Xj4olM9z87wful71ujHX2cneBDiqMSkb84mlb63+ZUmoCHwCNTZVY5+ja0qGbr+yEWBPAjLzusRPDoWy6teH3OqGr+vwJKIE/ht7EyBM/3VsNPbOQiPLFy1tnvN4tmDJM9AfT5UAoKdvtNn34onPtwcANiRAB5REUHjNpe14Bn4BaTnq3W2RZ4YAAAAASUVORK5CYII=';
-const BEAN_FORTUNES=[
-  'The grounds say: the square you keep skipping is the one that matters.',
-  'Rush the bloom and the cup turns bitter. Rush the puzzle, same thing.',
-  'Today a corner will look empty. It is not. Look again.',
-  'Someone will thank you for something you forgot you did.',
-  'The answer is already on the board. You just have not sat with it long enough.',
-  'A slow morning will save you a fast mistake.',
-  'Every X you place is one less worry. Keep crossing things out.',
-  'Your next good idea is waiting at the bottom of the cup. Finish your coffee.',
-  'Two sloths can never touch. People can. Call someone today.',
-  'You are allowed to stop halfway and stretch. The board will wait.',
-  'The grounds are cloudy today. That means: take a nap.',
-  'A stranger becomes a regular. Be kind to whoever orders next.',
-  'Start before you are ready. Then pour slow.',
-  'What looks like a mistake is a lesson with bad timing.'
-];
-function beanFortune(){return BEAN_FORTUNES[hashStr('bean-'+todayKey())%BEAN_FORTUNES.length]}
+/* ================= Brother Bean: the secret monk =================
+   Sit still for a minute (no taps, no keys, no dialog or scene open) and he wanders in,
+   rings his bell and gives Mocha his mala. He only visits once. ?bean=1 calls him anyway. */
+const BEAN_FUR='#8a7a68'; /* an older, greyer sloth than Mocha */
+function beanSVG(){
+  const robe=`<path d="M2 68c2-9 13-14 30-14s28 5 30 14z" fill="#a8391a"/><path d="M38 54.6c5 .8 9 2.4 12 4.6L44 68h-8.4z" fill="#ec6a26"/><path d="M14 59.6c5-3 11-4.6 18-4.6" stroke="#7d2a13" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+  const eyes=`<circle cx="21.5" cy="33" r="3.2" fill="#3b2a1d"/><circle cx="42.5" cy="33" r="3.2" fill="#3b2a1d"/><path d="M18.4 32.6q3.1 2.8 6.2 0M39.4 32.6q3.1 2.8 6.2 0" stroke="#ead8b6" stroke-width="1.7" fill="none" stroke-linecap="round"/>`;
+  const calm=`<path d="M27.6 46.4c2.6 1.8 6.2 1.8 8.8 0" stroke="#ead8b6" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M28 46.6c2.4 1.6 5.6 1.6 8 0" stroke="#3b2a1d" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+  return `<svg viewBox="-4 -8 72 76" aria-hidden="true">${base(BEAN_FUR)}${robe}${ITEM.mala.svg}${eyes}${calm}</svg>`;
+}
 function beanBell(){try{tone(1046,1.4,'sine',.07);tone(1568,1.1,'sine',.035,.02);tone(784,1.6,'sine',.03,.05)}catch(e){}}
 function beanVisit(){
   if(document.getElementById('beanhost'))return;
   const first=!(SAVE.bean&&SAVE.bean.met);
-  SAVE.bean={met:true,last:todayKey(),visits:((SAVE.bean&&SAVE.bean.visits)||0)+1};save();
+  SAVE.bean={met:true,on:(SAVE.bean&&SAVE.bean.on)||todayKey()};save();
   const host=document.createElement('div');host.id='beanhost';document.body.appendChild(host);
   const lines=first?[
     '*ding*… Do not get up. You have been sitting very still. I like that.',
-    'I am Brother Bean. I read fortunes in coffee grounds. I never charge, but I will not say no to a drip.',
-    'Today\'s grounds say: '+beanFortune().replace(/^The grounds say: /,''),
+    'I am Brother Bean. I wander from café to café, and I only stop for people who are not in a hurry.',
     'Here. Mocha should have this. One bead, one breath. Pour slow, little one.'
   ]:[
-    '*ding*… Still here? Good. The puzzle will wait.',
-    'Today\'s grounds say: '+beanFortune().replace(/^The grounds say: /,''),
-    'Pour slow, little one.'
+    '*ding*… You again. Good. Pour slow, little one.'
   ];
   let i=0;
   const draw=()=>{
     const last=i===lines.length-1;
     host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="beanTitle"><div class="helpcard" style="align-items:center;text-align:center">
       <div style="font:700 12px var(--f-body);letter-spacing:.14em;text-transform:uppercase;opacity:.7">A quiet visitor</div>
-      <img src="${BEAN_IMG}" alt="Brother Bean, a sloth monk in a rust robe, meditating on a blue cushion" width="132" height="132" style="image-rendering:pixelated;animation:beanFloat 4.8s ease-in-out infinite">
+      <div style="width:140px;height:140px;animation:beanFloat 4.8s ease-in-out infinite" role="img" aria-label="Brother Bean, an old sloth monk with his eyes closed, in a rust robe and wooden prayer beads">${beanSVG()}</div>
       <h2 id="beanTitle" style="margin:0">Brother Bean</h2>
       <p style="margin:0;font-size:16.5px;line-height:1.45;min-height:3em">${lines[i]}</p>
       ${last&&first?`<div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700"><span style="width:56px;height:56px;display:inline-block">${slothSVG(null,'mala')}</span>New: Brother Bean's mala</div>`:''}
@@ -2332,7 +2317,7 @@ function beanVisit(){
     host.querySelector('#beanGo').focus();
   };
   const close=()=>{host.remove();
-    if(first){const fresh=checkUnlocks();if(!fresh.some(it=>it.id==='mala')&&!SAVE.unlocked.includes('mala'))SAVE.unlocked.push('mala');
+    if(first){checkUnlocks();if(!SAVE.unlocked.includes('mala'))SAVE.unlocked.push('mala');
       SAVE.equip.neck='mala';save();refreshSloths();toast("Mocha is wearing Brother Bean's mala")}
     beanIdle=Date.now()};
   beanBell();draw();
@@ -2341,9 +2326,9 @@ let beanIdle=Date.now();
 ['pointerdown','keydown','touchstart','wheel'].forEach(ev=>addEventListener(ev,()=>{beanIdle=Date.now()},{passive:true,capture:true}));
 document.addEventListener('visibilitychange',()=>{beanIdle=Date.now()});
 setInterval(()=>{
+  if(SAVE.bean&&SAVE.bean.met)return;
   if(document.hidden||Date.now()-beanIdle<60000)return;
   if(sceneOn||!SAVE.seenIntro||document.querySelector('[aria-modal="true"]:not([hidden])'))return;
-  if(SAVE.bean&&SAVE.bean.last===todayKey())return;
   beanVisit();
 },5000);
 try{if(new URLSearchParams(location.search).get('bean')==='1'){const w=setInterval(()=>{if(sceneOn||document.querySelector('[aria-modal="true"]:not([hidden])'))return;clearInterval(w);beanVisit()},600)}}catch(e){}

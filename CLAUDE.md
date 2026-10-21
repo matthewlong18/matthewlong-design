@@ -25,7 +25,7 @@ Matthew's personal portfolio. Matthew is a beginner: explain changes simply, kee
 - It installs like an app (PWA): `manifest.webmanifest`, icons, and `sw.js` (offline cache, network-first for the page). On iPhone a one-time "Add to Home Screen" hint shows at the bottom.
 - To ship a new version of the game, replace `index.html` but keep everything from the first `<!doctype` down to the main `</style>`'s `</head><body>` and the install block at the end. Then bump `VERSION` in `sw.js`.
 - The Nomad Café house ad links with `utm_source=slothdoku`.
-- Secret character: **Brother Bean**, a fortune-telling monk sloth (search `Brother Bean` in the game). He visits once a day if the player sits still for 60 seconds with no dialog or scene open, reads a daily fortune (`BEAN_FORTUNES`), and on the first visit gives Mocha the secret `mala` neck item. `?bean=1` calls him straight away. His sprite is embedded as `BEAN_IMG`; the same art is `assets/brother-bean.png` (full body) and `assets/brother-bean-head.png` (the site's floating icon).
+- Secret character: **Brother Bean**, an old monk sloth drawn in the game's own style (`beanSVG()`: Mocha's face with grey-brown fur, closed eyes, a rust robe and the mala). He visits once, ever, if the player sits still for 60 seconds with no dialog or scene open, and gives Mocha the secret `mala` neck item. `?bean=1` calls him anyway. Fortunes live only in the website's easter egg (`assets/brother-bean.png`, `assets/brother-bean-head.png`), not in the game.
 
 ## Workflow
 1. Make the change.
