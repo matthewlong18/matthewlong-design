@@ -28,7 +28,7 @@
 <style>
 /* Layout: café table — mascot header with speech bubble, mode tabs, a big board on a tray (cutscenes play on the same tray), a scatter of jigsaw pieces, toolbar, then a paper slip for the tip jar. One warm light look on purpose (Nomad Café brand). */
 :root{
-  --bg:#efe9da; --tray:#fbf8f0; --ink:#1f3a2c; --muted:#5d6f61; --forest:#2f5d44; --sage:#a9bfa4; --line:#1f3a2c;
+  --bg:#efe9da; --tray:#fbf8f0; --paper:#f4eee0; --ink:#1f3a2c; --muted:#5d6f61; --forest:#2f5d44; --sage:#a9bfa4; --line:#1f3a2c;
   --heart:#c0563f; --gold:#c9962f; --gold-dk:#8a6416;
   --r0:#c9dcc0; --r1:#e9d6a9; --r2:#d9c3dd; --r3:#bfd7df; --r4:#ecc3b4; --r5:#d6dba0; --r6:#d2cab5; --r7:#a9cbb0; --r8:#f0cfd8; --r9:#c7cbe6; --fog:#e2dccd;
   --f-display:"Fraunces", Georgia, "Times New Roman", serif;
@@ -314,6 +314,24 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-s
 .pp .foot{display:flex;flex-direction:column;gap:8px;align-items:stretch}
 .pp .go{border:0;border-radius:12px;padding:13px;font:800 15px var(--f-body);background:var(--forest);color:var(--tray);cursor:pointer}
 .pp .small{font-size:12px;color:var(--muted);text-align:center}
+/* country gift + coffee chat CTA (only on a fresh stamp, never in the passport book) */
+.pp .gift{display:flex;align-items:center;gap:12px}
+.pp .gift .ic{width:60px;height:60px;flex:none;background:var(--paper);border-radius:10px;display:grid;place-items:center;overflow:hidden}
+.pp .gift .ic svg{width:100%;height:100%;display:block}
+.pp .gbar{display:flex;align-items:center;gap:8px;margin-top:2px}
+.pp .gbar .dots{display:flex;gap:3px;flex:1}
+.pp .gbar .dots i{flex:1;height:6px;border-radius:3px;background:#e6dcc7}
+.pp .gbar .dots i.on{background:var(--forest)}
+.pp .gbar span{font-size:11.5px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pp .cta{background:#e4e3cf;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;animation:tileIn .45s ease-out 1.15s both}
+.pp .cta .eyebrow{color:var(--forest)}
+.pp .cta h3{font-family:var(--f-display);font-weight:800;font-size:21px;line-height:1.2;margin:0;text-wrap:balance}
+.pp .cta p{margin:0;font-size:14px;line-height:1.5;color:var(--ink)}
+.pp .cta p em{font-family:var(--f-display);font-weight:700;color:var(--forest)}
+.pp .cta a.book{display:block;text-align:center;border-radius:12px;padding:13px;font:800 15px var(--f-body);background:var(--forest);color:var(--tray);text-decoration:none}
+.pp .cta a.book:focus-visible,.pp .go:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.pp .cta .fine{font-size:12.5px;line-height:1.45;color:var(--muted);text-align:center}
+.pp .go.next{background:transparent;color:var(--ink);border:2px solid var(--ink)}
 @keyframes ppfade{from{opacity:0}}
 @keyframes pprise{from{transform:translateY(30px) scale(.95);opacity:0}}
 @keyframes slam{0%{transform:scale(2.4) rotate(-30deg);opacity:0}60%{transform:scale(.92) rotate(-6deg);opacity:1}100%{transform:scale(1) rotate(-8deg)}}
@@ -1457,6 +1475,16 @@ function coworkVig(c){return `<svg viewBox="0 0 160 62" preserveAspectRatio="xMi
 function passportPop(country,stampNo,viewOnly){
   return new Promise(res=>{
   const n=NOTES[country.id],acc=country.stamp.ring;
+  /* fresh stamp only: this country's gift, the souvenir count, and the coffee chat ask */
+  const giftId=(GEAR[country.id]||[])[0],gift=giftId&&ITEM[giftId];
+  const ci=COUNTRIES.indexOf(country),nextC=COUNTRIES[ci+1];
+  const giftTile=!viewOnly&&gift?`<div class="tile wide" style="animation-delay:.82s"><div class="gift"><div class="ic">${slothSVG(null,gift.id)}</div><div><div class="lab"><i></i>Gift from ${country.name}</div><div class="nm">${gift.name}</div><div class="wh">Added to your Napsack</div></div></div>
+          <div class="gbar"><div class="dots" role="img" aria-label="${stampNo} of ${COUNTRIES.length} countries">${COUNTRIES.map((_,i)=>`<i class="${i<stampNo?'on':''}"></i>`).join('')}</div><span>${stampNo} / ${COUNTRIES.length}</span></div></div>`:'';
+  const bookUrl=`https://www.nomadcafe.co/?utm_source=slothdoku&utm_medium=game&utm_campaign=world_tour&utm_content=${country.id}#book`;
+  const cta=viewOnly?'':`<div class="cta"><div class="eyebrow">From the maker of Slothdoku</div><h3>Stuck on something in your business?</h3>
+        <p>I help solo business owners turn strangers into <em>regulars</em> with a custom AI system, built in 30 days.</p>
+        <a class="book" id="ppBook" href="${bookUrl}" target="_blank" rel="noopener">Grab a (virtual) coffee →</a>
+        <div class="fine">Bring your dreams and your headaches. Either we team up, or you walk away with a clearer plan.</div></div>`;
   let host=document.getElementById('pphost');if(!host){host=document.createElement('div');host.id='pphost';document.body.appendChild(host)}
   host.innerHTML=`<div class="ppov" role="dialog" aria-modal="true" aria-labelledby="ppTitle"><div class="pp" style="--accent:${acc}">
     <div class="scene"><div class="bgart"><svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${country.bg}</svg></div>
@@ -1467,15 +1495,17 @@ function passportPop(country,stampNo,viewOnly){
       <div class="grid">
         <div class="tile wide" style="animation-delay:.75s"><div class="lab"><i></i>3 words in ${n.lang}</div>
           <div class="words">${n.words.map(([w,m])=>`<div class="word"><b>${w}</b><span>${m}</span></div>`).join('')}</div></div>
-        <div class="tile wide wis" style="animation-delay:.82s"><div class="lab"><i></i>Ancient wisdom</div>${WISDOM[country.id].say?`<div class="orig">${WISDOM[country.id].say}</div>`:''}<div class="nm">“${WISDOM[country.id].en}”</div><div class="wh">${WISDOM[country.id].from}. ${WISDOM[country.id].why}</div></div>
+        ${viewOnly?`<div class="tile wide wis" style="animation-delay:.82s"><div class="lab"><i></i>Ancient wisdom</div>${WISDOM[country.id].say?`<div class="orig">${WISDOM[country.id].say}</div>`:''}<div class="nm">“${WISDOM[country.id].en}”</div><div class="wh">${WISDOM[country.id].from}. ${WISDOM[country.id].why}</div></div>`:giftTile}
         <div class="tile" style="animation-delay:.9s"><div class="vig">${coffeeVig(acc)}</div><div class="lab"><i></i>Best coffee</div><div class="nm">${n.coffee[0]}</div><div class="wh">${n.coffee[1]}</div></div>
         <div class="tile" style="animation-delay:1.05s"><div class="vig">${coworkVig(acc)}</div><div class="lab"><i></i>Co-working</div><div class="nm">${n.cowork[0]}</div><div class="wh">${n.cowork[1]}</div></div>
       </div>
-      <div class="foot"><button class="go" type="button" id="ppGo">${viewOnly?"Close":"Continue the trip"}</button>${viewOnly?"":`<div class="small">Saved to your passport in your Napsack</div>`}</div>
+      ${cta}
+      <div class="foot"><button class="go${viewOnly?'':' next'}" type="button" id="ppGo">${viewOnly?"Close":nextC?`Next stop: ${nextC.name} →`:"Continue the trip"}</button></div>
     </div></div></div>`;
   const go=document.getElementById('ppGo');setTimeout(()=>go.focus(),60);
   if(!viewOnly){sfx.buy();setTimeout(()=>burst(70),450)}
   go.onclick=()=>{host.innerHTML='';res()};
+  const bk=document.getElementById('ppBook');if(bk)bk.onclick=()=>{try{window.posthog&&posthog.capture('coffee_cta_click',{country:country.id,stamp:stampNo})}catch(e){}};
   host.querySelector('.ppov').onclick=e=>{if(e.target.classList.contains('ppov')&&viewOnly){host.innerHTML='';res()}};
   });
 }
