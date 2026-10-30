@@ -364,6 +364,13 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .where .dots{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle;flex-wrap:wrap}
 .where .dots i{width:8px;height:8px;border-radius:50%;background:var(--sage);display:inline-block;opacity:.6}
 .where .dots i.on{background:var(--forest);opacity:1}
+.trip .pill+.pill{margin-left:6px}
+.lvlgrid{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.lvlgrid button{min-width:42px;height:38px;border-radius:10px;border:2px solid var(--ink);background:var(--tray);font:800 14px var(--f-body);color:var(--ink);cursor:pointer;position:relative}
+.lvlgrid button[aria-current="true"]{background:var(--forest);color:var(--tray);border-color:var(--forest)}
+.lvlgrid button[disabled]{opacity:.35;border-style:dashed;cursor:default}
+.lvlgrid button .st{position:absolute;left:0;right:0;bottom:-1px;font-size:8px;color:var(--gold-dk);letter-spacing:-1px}
+.lvlstop{margin:0;font:800 15px var(--f-display);color:var(--ink)}.lvlstop small{font:600 12px var(--f-body);color:var(--muted);margin-left:6px}
 .pill{border:2px solid var(--ink);background:transparent;border-radius:999px;padding:6px 12px;font:700 13px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap;flex:none}
 .pill.done{border-color:var(--sage);color:var(--muted)}
 .pill:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
@@ -494,7 +501,7 @@ document.head.appendChild(s)})();
   </div>
   <div class="closet" id="closet" hidden></div>
   <div id="game">
-    <div class="trip" id="trip"><div class="where" id="where"></div><button class="pill" id="dailyBtn" type="button">Today's puzzle</button></div>
+    <div class="trip" id="trip"><div class="where" id="where"></div><button class="pill" id="levelsBtn" type="button" aria-label="Choose a level">Levels</button><button class="pill" id="dailyBtn" type="button">Today's puzzle</button></div>
     <div class="bar">
       <div class="lvl" id="lvl">Level 1</div>
       <div class="stats"><span class="coins" id="coins" title="Coins"><span class="coin"></span><span id="coinN">0</span></span><span class="combo" id="combo" hidden></span><div class="hearts" id="hearts"></div><div class="time" id="time">0:00</div></div>
@@ -1340,7 +1347,10 @@ function legAt(c){
   const t=c-TOUR_AT,i=Math.floor(t/TOUR_LEN)%COUNTRIES.length,round=0;
   return{kind:'tour',i,leg:COUNTRIES[i],k:t%TOUR_LEN,len:TOUR_LEN,round,bg:CHAPTERS.length+i,key:'t'+i+'r'+round};
 }
-const curLeg=()=>legAt(stats().cleared);
+/* level select: REPLAY is a past level being replayed (null = playing at your frontier) */
+let REPLAY=null;
+const playLv=()=>REPLAY||SAVE.level;
+const curLeg=()=>legAt(playLv()-1);
 function legTitle(L){return L.kind==='free'?['Free play · new stops coming as Matthew travels','Café Basecamp']:L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[`World Tour · stop ${L.i+1} of ${COUNTRIES.length}${L.round?' · encore':''}`,L.leg.name]}
 function chapterIndex(){return legAt(Math.min(stats().cleared,TOUR_AT-1)).i}
 const dailyDone=()=>!!SAVE.daily['d:'+todayKey()];
@@ -1531,7 +1541,7 @@ function sceneFor(L,part){
   return{bg:L.bg,cust:b.all?null:(b.c||L.leg.cust),crowd:b.all?STORY_CAST:null,lines:part==='in'?b.i:[b.x]};
 }
 let arriving=false;
-function introScene(){const L=curLeg(),sc=sceneFor(L,'in');if(L.k===0||!SAVE.seenIntro)sc.title=legTitle(L);if((arriving||SAVE.level===1)&&L.k===0)sc.lines=[['m',L.leg.tease],...sc.lines];arriving=false;return sc}
+function introScene(){const L=curLeg(),sc=sceneFor(L,'in');if(L.k===0||!SAVE.seenIntro)sc.title=legTitle(L);if((arriving||playLv()===1)&&L.k===0)sc.lines=[['m',L.leg.tease],...sc.lines];arriving=false;return sc}
 
 /* ================= game state ================= */
 const boardEl=document.getElementById('board'),slip=document.getElementById('slip'),brew=document.getElementById('brew'),piecesEl=document.getElementById('pieces');
@@ -1539,7 +1549,7 @@ let mode='journey',P,cells,hearts,history,done,t0,elapsed,timer,hintsLeft,usedHi
 let rush=null;
 let phase='sloths'; /* 'build' | 'sloths' */
 let revealed=new Set(),wrongs=new Set(),guessLock=0,lastTouch=0;
-const dz=()=>{const st=mode==='daily'?DAILY_STAGE:stageAt(stats().cleared);return Object.assign({name:stageName(st)},st)};
+const dz=()=>{const st=mode==='daily'?DAILY_STAGE:stageAt(playLv()-1);return Object.assign({name:stageName(st)},st)};
 const autoxOn=()=>dz().autox&&SAVE.autox;
 const isRev=reg=>phase==='sloths'||revealed.has(reg);
 
@@ -1626,7 +1636,7 @@ function start(){
   setTimeout(async()=>{
     if(token!==startToken)return;
     const d=dz(),L=curLeg();
-    P=mode==='daily'?makePuzzle(hashStr(todayKey()),d.n,d):makePuzzle(SAVE.level+500000,d.n,d);
+    P=mode==='daily'?makePuzzle(hashStr(todayKey()),d.n,d):makePuzzle(playLv()+500000,d.n,d);
     cells=Array.from({length:P.n},()=>Array(P.n).fill(0));
     hearts=3;history=[];done=false;usedHints=0;hintsLeft=d.hints;combo=0;mistakes=0;revealed=new Set();phase='sloths';
     elapsed=0;t0=null;
@@ -1639,6 +1649,30 @@ function start(){
     if(phase==='build'){say('idle','Build the floor first. Drag each piece into place.');document.getElementById('trip').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'})}
   },30);
 }
+/* level select: replay any level you've reached; your real progress never moves backwards */
+function openLevels(){
+  let host=document.getElementById('lvlhost');if(!host){host=document.createElement('div');host.id='lvlhost';document.body.appendChild(host)}
+  const top=SAVE.level,cur=playLv();
+  const stops=gearStops().concat(TOUR_END<top?[{key:'free',name:'Free play',label:'After the tour',start:TOUR_END,len:Math.max(1,top-TOUR_END)}]:[]);
+  const rows=stops.filter(g=>g.start<top).map(g=>{
+    const lv=Array.from({length:g.len},(_,i)=>g.start+i+1);
+    return `<p class="lvlstop">${g.name}<small>${g.label}</small></p><div class="lvlgrid">${lv.map(n=>{const st=SAVE.stars['j:'+n]||0;
+      return `<button type="button" data-lv="${n}" ${n>top?'disabled':''} aria-current="${n===cur}" aria-label="Level ${n}${st?`, ${st} stars`:''}">${n}${st?`<span class="st">${'★'.repeat(st)}</span>`:''}</button>`}).join('')}</div>`}).join('');
+  host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="lvlTitle"><div class="helpcard">
+    <h2 id="lvlTitle" style="margin:0">Levels</h2>
+    <p class="fine" style="margin:0">Replay any level you've reached. Tips still count. Stamps and gifts stay where you earned them.</p>
+    <div style="max-height:60vh;overflow-y:auto">${rows}</div>
+    <div class="row"><button class="btn go" type="button" id="lvlLatest">Play my latest level (${top})</button><button class="btn" type="button" id="lvlClose">Close</button></div></div></div>`;
+  const close=()=>{host.innerHTML=''};
+  const go=n=>{close();REPLAY=n>=top?null:n;if(mode!=='journey')setMode('journey');else start()};
+  host.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>go(+b.dataset.lv));
+  document.getElementById('lvlLatest').onclick=()=>go(top);
+  document.getElementById('lvlClose').onclick=close;
+  host.querySelector('.helpov').onclick=e=>{if(e.target.classList.contains('helpov'))close()};
+  host.querySelector('.helpov').onkeydown=e=>{if(e.key==='Escape')close()};
+  const curBtn=host.querySelector('[aria-current="true"]');if(curBtn)setTimeout(()=>curBtn.scrollIntoView({block:'center'}),30);
+}
+document.getElementById('levelsBtn').onclick=openLevels;
 /* swap the page backdrop when the trip moves somewhere new */
 let sceneryBg=-1;
 function setScenery(idx){
@@ -1715,7 +1749,7 @@ function render(pop){
   const d=dz(),lv=document.getElementById('lvl');
   const dl=mode!=='daily'&&SAVE.diff&&SAVE.diff!=='normal'?' · '+DIFFS[SAVE.diff].name+' mode':'';
   const step=phase==='build'?`Build · ${revealed.size}/${n} pieces`:`${n}×${n} · ${d.name}${dl}`;
-  lv.innerHTML=mode==='daily'?`Today<small>${step}</small>`:`Level ${SAVE.level}<small>${step}</small>`;
+  lv.innerHTML=mode==='daily'?`Today<small>${step}</small>`:`Level ${playLv()}${REPLAY?' · replay':''}<small>${step}</small>`;
   const h=document.getElementById('hearts');
   if(phase!=='sloths')h.hidden=true;
   else if(d.check&&mode!=='rush'){h.hidden=false;h.innerHTML=[0,1,2].map(i=>`<span class="${i<hearts?'':'gone'}">❦</span>`).join('');h.setAttribute('aria-label',`${hearts} leaves left`)}
@@ -1868,6 +1902,16 @@ function win(){
   const k=starsFor(),tips=tipsFor(k),total=tips.reduce((a,l)=>a+l[1],0);
   addCoins(total);
   if(mode==='daily'){SAVE.daily['d:'+todayKey()]={ms:elapsed,stars:k};save();setTimeout(()=>tipJar({k,tips,total,daily:true,got:checkUnlocks()}),900);return}
+  if(REPLAY){
+    const Lv=REPLAY,key='j:'+Lv,L0=legAt(Lv-1);
+    SAVE.stars[key]=Math.max(SAVE.stars[key]||0,k);if(!SAVE.best[key]||elapsed<SAVE.best[key])SAVE.best[key]=elapsed;save();
+    REPLAY=Lv+1>=SAVE.level?null:Lv+1;
+    setTimeout(async()=>{
+      if(SAVE.scenes&&L0.kind!=='free')await playScene(sceneFor(L0,'out'));
+      tipJar({k,tips,total,Lv,got:[],replay:true});
+    },1100);
+    return;
+  }
   const c0=stats().cleared,L0=legAt(c0),st0=stageAt(c0),Lv=SAVE.level,key='j:'+Lv;
   SAVE.stars[key]=Math.max(SAVE.stars[key]||0,k);if(!SAVE.best[key]||elapsed<SAVE.best[key])SAVE.best[key]=elapsed;
   SAVE.level=Lv+1;
@@ -1904,7 +1948,7 @@ function win(){
     tipJar({k,tips,total,Lv,got,newLeg,notes,stamp,after,arrived,furNew});
   },1100);
 }
-function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after,arrived=[],furNew=[]}){
+function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after,arrived=[],furNew=[],replay=false}){
   const L0done=legAt(daily?0:Lv-1);
   slip.innerHTML=`<div class="stars">${starHTML(k)}</div>
     <h2>${daily?"Today's puzzle, solved":`Level ${Lv} cleared in ${fmt(elapsed)}`}</h2>
@@ -1915,7 +1959,7 @@ function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after,arrived=[
     ${unlockHTML(got||[])}${arrived.length||furNew.length?`<p><b>New in the shop</b></p><div class="unlocks">${arrived.map(it=>`<span class="unlock">${slothSVG(null,it.id)}${it.name}</span>`).join('')}${furNew.map(f=>`<span class="unlock">${slothSVG(null,null,f.color)}${f.name} fur</span>`).join('')}</div>`:''}
     ${triviaHTML(daily?null:L0done)}
     ${notes.length?`<div class="notes"><p><b>What changes next level</b></p>${notes.map(n=>`<p>${n}</p>`).join('')}</div>`:''}
-    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':`<button class="btn go" type="button" id="next">${after?(newLeg.kind==='free'?'Finish the World Tour ✦':newLeg.kind==='tour'?'Continue the trip ✈':'Continue the story ▸'):'Next level'}</button>`}<button class="btn" type="button" id="share">Copy result</button></div>
+    <div class="row">${daily?'<button class="btn go" type="button" id="back">Back to the trip</button>':`<button class="btn go" type="button" id="next">${replay?(REPLAY?'Next level (replay)':'Back to my latest level ▸'):after?(newLeg.kind==='free'?'Finish the World Tour ✦':newLeg.kind==='tour'?'Continue the trip ✈':'Continue the story ▸'):'Next level'}</button>`}<button class="btn" type="button" id="share">Copy result</button></div>
     ${(daily||Lv%3===0)?ad():''}`;
   slip.hidden=false;
   const rows=[...slip.querySelectorAll('.tally div')],totN=document.getElementById('totN');
@@ -2107,7 +2151,7 @@ const OPEN_DEF={shop:true,fur:false,gear:false,pass:true,wis:false,reg:false,sto
 function fold(key,title,note,body){const o=(SAVE.open||{})[key];const open=o==null?OPEN_DEF[key]:o;
   return `<details class="fold" data-fold="${key}"${open?' open':''}><summary><span>${title}</span><span class="chev" aria-hidden="true">▾</span></summary>${note?`<p class="secnote">${note}</p>`:''}${body}</details>`}
 function renderCloset(){
-  const s=stats(),L=curLeg(),[eb,lt]=legTitle(L),pct=Math.round(100*L.k/L.len);
+  const s=stats(),L=legAt(s.cleared),[eb,lt]=legTitle(L),pct=Math.round(100*L.k/L.len);
   const eqNames=SLOT_ORDER.map(sl=>SAVE.equip[sl]).filter(Boolean).map(id=>ITEM[id].name);
   const fur=FURS.find(f=>f.id===SAVE.fur)||FURS[0];
   let h=`<div class="preview"><div class="big">${slothSVG(SAVE.equip)}</div><div style="min-width:0">
