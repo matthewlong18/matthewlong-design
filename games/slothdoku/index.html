@@ -370,6 +370,16 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .lvlgrid button[aria-current="true"]{background:var(--forest);color:var(--tray);border-color:var(--forest)}
 .lvlgrid button[disabled]{opacity:.35;border-style:dashed;cursor:default}
 .lvlgrid button .st{position:absolute;left:0;right:0;bottom:-1px;font-size:8px;color:var(--gold-dk);letter-spacing:-1px}
+.rsec{margin:0 0 14px}.rsec.locked{font:800 15px var(--f-display);color:var(--muted);margin:0 0 12px;opacity:.7}.rsec small{font:600 12px var(--f-body);color:var(--muted);margin-left:8px}
+.rsechd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}.rsechd p{margin:0;font:800 16px var(--f-display);color:var(--ink)}
+.rstop{border-top:1px solid var(--line);padding:7px 2px}.rstop summary{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-size:14.5px;list-style:none}.rstop summary::-webkit-details-marker{display:none}.rst{font:700 12px var(--f-body);color:var(--gold-dk);white-space:nowrap}.rbtn{width:100%;margin:8px 0}.rstop .lvlgrid{margin-bottom:6px}
+.tboard{display:grid;width:100%;max-width:330px;aspect-ratio:1;margin:0 auto;border:2px solid var(--ink);border-radius:10px;overflow:hidden;touch-action:none;background:var(--tray)}
+.tteach{display:flex;gap:12px;align-items:flex-start}.tteach b{font:800 13px var(--f-body);letter-spacing:.02em}.tteach p{margin:2px 0 0;font-size:14.5px;line-height:1.4;min-height:5.6em}
+.tface{position:relative;flex:0 0 64px;width:64px;height:64px}.tface svg{width:100%;height:100%}.tface.hood svg{filter:brightness(.17) saturate(0)}.tface.hood span{position:absolute;inset:0;display:grid;place-items:center;font:800 20px var(--f-display);color:#e9b949}.tface.big{flex-basis:130px;width:130px;height:130px}
+.tlist{display:flex;flex-direction:column;gap:6px}.tlist .btn{display:flex;justify-content:space-between;width:100%;text-align:left}.thead{display:flex;justify-content:space-between;align-items:center;gap:8px}.tkey{text-align:center}
+.cell.ttarget{box-shadow:inset 0 0 0 4px #e8742f;animation:tpulse 1.1s ease-in-out infinite;z-index:2}.tboard.hasglow .cell:not(.tglow){filter:saturate(.3) brightness(.97)}.cell.thold::after{content:'hold';display:grid;place-items:center;font:800 13px var(--f-body);color:#1f3a2c}
+@keyframes tpulse{50%{box-shadow:inset 0 0 0 7px #e8742f}}
+@media (prefers-reduced-motion:reduce){.cell.ttarget{animation:none}}
 .lvlstop{margin:0;font:800 15px var(--f-display);color:var(--ink)}.lvlstop small{font:600 12px var(--f-body);color:var(--muted);margin-left:6px}
 .pill{border:2px solid var(--ink);background:transparent;border-radius:999px;padding:6px 12px;font:700 13px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap;flex:none}
 .pill.done{border-color:var(--sage);color:var(--muted)}
@@ -501,7 +511,7 @@ document.head.appendChild(s)})();
   </div>
   <div class="closet" id="closet" hidden></div>
   <div id="game">
-    <div class="trip" id="trip"><div class="where" id="where"></div><button class="pill" id="levelsBtn" type="button" aria-label="Choose a level">Levels</button><button class="pill" id="dailyBtn" type="button">Today's puzzle</button></div>
+    <div class="trip" id="trip"><div class="where" id="where"></div><button class="pill" id="levelsBtn" type="button" aria-label="Replay part of the game">Replay</button><button class="pill" id="dailyBtn" type="button">Today's puzzle</button></div>
     <div class="bar">
       <div class="lvl" id="lvl">Level 1</div>
       <div class="stats"><span class="coins" id="coins" title="Coins"><span class="coin"></span><span id="coinN">0</span></span><span class="combo" id="combo" hidden></span><div class="hearts" id="hearts"></div><div class="time" id="time">0:00</div></div>
@@ -739,7 +749,7 @@ const BG=[
 ];
 
 /* ================= world tour: after the story, a new country every 4 levels ================= */
-const TOUR_AT=50,TOUR_LEN=4;
+const TOUR_AT=50,TOUR_LEN=5;
 Object.assign(CUST,{
   doug:{name:'Doug',fur:'#7a5a3e',eq:{head:'redtoque',hand:'cup'}},
   carmen:{name:'Carmen',fur:'#6b4a33',eq:{neck:'poncho'}},
@@ -786,6 +796,7 @@ const COUNTRIES=[
    {i:[['c',"Hey there, you made it! Grab a double-double and a blanket, eh."],['m',"Two creams, two sugars? Bold start."]],x:['c',"Up here we say sorry first and ask questions later. Welcome to the lake, bud."]},
    {i:[['c',"I rent canoes, but folks only book on sunny weekends. Weekdays I just sit on the dock."],['m',"Every single weekday?"]],x:['c',"Monday to Thursday it's me and the loons. Lovely, but the loons don't pay."]},
    {i:[['m',"Sell the sunrise. A weekday dawn paddle, hot coffee in the boat, small group. Quiet days need a reason to exist."]],x:['c',"Tuesday sunrise sold out in two days. The loons sang. I cried a little."]},
+   {i:[['c',"Sunrise paddlers keep asking if they can bring friends next time."],['m',"Sell a gift voucher. Let happy people do your selling."]],x:['c',"Twelve vouchers gone at the hardware store. Grandmothers love them."]},
    {i:[['c',"Take Buddy. He's been chewing my dock for years. He's ready to travel."],['m',"He can be café security."]],x:['c',"Peru next. Carmen grows coffee way up in the clouds."]}
   ]},
  {id:'peru',name:"Peru",cust:'carmen',tease:"Thin air, terraces and coca tea. ¡Hola, Perú!",
@@ -795,6 +806,7 @@ const COUNTRIES=[
    {i:[['c',"¡Llegaste! First, coca tea. The air up here is thin, so we take everything slowly."],['m',"Finally, a country that gets me."]],x:['c',"Sip, breathe, sip. That's the whole Andes plan."]},
    {i:[['c',"Tourists love my beans. They buy one bag, fly home, and I never hear from them again."],['m',"Do they ever try to order more?"]],x:['c',"They email me in five languages and I lose half of them. My inbox is a llama stampede."]},
    {i:[['m',"Slip a little card in every bag with a QR code. One scan and they reorder from home."]],x:['c',"Three orders from Germany this week. Germany! My beans are going global."]},
+   {i:[['c',"Germany wants ten bags a month now, and I keep running out."],['m',"Take orders for the next harvest today, paid up front."]],x:['c',"Half the harvest sold before we picked a bean. I can finally breathe up here. Barely, but still."]},
    {i:[['c',"Take this baby alpaca. She's softer than a cloud."],['m',"She's riding in my hood the whole way."]],x:['c',"Japan next. Yuki brews coffee slower than you nap."]}
   ]},
  {id:'japan',name:"Japan",cust:'yuki',tease:"Jazz, siphons and very slow coffee. Konnichiwa, Japan.",
@@ -804,6 +816,7 @@ const COUNTRIES=[
    {i:[['c',"Irasshaimase. Welcome to my kissaten. Jazz, siphon coffee, quiet voices."],['m',"Quiet voices is my native language."]],x:['c',"Eight minutes for one coffee. You didn't even blink. Rare for a tourist."]},
    {i:[['c',"It's hanami season. Everyone is under the cherry blossoms. My café is empty."],['m',"Every day?"]],x:['c',"Two weeks a year. They should be my best two weeks."]},
    {i:[['m',"Then go where they are. Fill flasks and sell coffee by the busiest tree."]],x:['c',"Sold out in an hour. Blossoms and coffee. A perfect hanami."]},
+   {i:[['c',"The blossoms are nearly gone. Will my flask customers forget me?"],['m',"Give each one a small card with your address and a free siphon coffee."]],x:['c',"They came. Quietly. In a very tidy line."]},
    {i:[['c',"Take this hachimaki. We tie one on when there's hard work ahead."],['m',"Hard work, done slowly. Deal."]],x:['c',"Thailand next. Nok makes the best cha yen in Chiang Mai."]}
   ]},
  {id:'thailand',name:"Thailand",cust:'nok',tease:"Orange tea and golden temples. Sawasdee, Thailand.",
@@ -813,6 +826,7 @@ const COUNTRIES=[
    {i:[['c',"Sawasdee ka! Cha yen? Orange, sweet and very cold."],['m',"It's so orange. I love it."]],x:['c',"Hot day, cold tea, no rush. Mai pen rai."]},
    {i:[['c',"Most of my orders come through delivery apps now. They take thirty percent of every cup."],['m',"Thirty percent? From a coffee cart?"]],x:['c',"Busy every day and somehow still broke."]},
    {i:[['m',"Keep the apps for new people. Give your regulars a stamp card and let them order direct on LINE."]],x:['c',"Half my regulars order direct now. I kept the thirty percent!"]},
+   {i:[['c',"Now all my LINE orders arrive at eight, all at once."],['m',"Ask for orders by seven-thirty, then pour one big batch."]],x:['c',"No more morning panic. Mai pen rai, for real this time."]},
    {i:[['c',"Take this jasmine garland. For luck on the road."],['m',"It smells like a sunny morning."]],x:['c',"Laos next. Noy's guesthouse sits right on the Mekong."]}
   ]},
  {id:'laos',name:"Laos",cust:'noy',tease:"Saffron robes at dawn and a slow, wide river. Sabaidee, Laos.",
@@ -822,6 +836,7 @@ const COUNTRIES=[
    {i:[['c',"Sabaidee! Set your alarm. At dawn the monks walk past my door to collect sticky rice."],['m',"Dawn? On purpose?"]],x:['c',"The whole street goes quiet. Even the roosters behave. Baw pen nyang, you'll love it."]},
    {i:[['c',"Every guest wants to see the alms round, but some crowd the monks with flash cameras. The monks deserve better, and I'm embarrassed."],['m',"Does anyone tell them how it works?"]],x:['c',"Nobody. They mean well. They just don't know."]},
    {i:[['m',"Tell them the night before. A little card on every pillow: watch from a distance, no flash, dress modestly, only give if it means something to you. Then serve coffee after."]],x:['c',"This morning my guests watched in a quiet row. Then they sat over coffee and talked about it for an hour."]},
+   {i:[['c',"My guests ask how they can help the village. I never know what to say."],['m',"Put a short list by the door: the weavers, the school, the morning market."]],x:['c',"The weaver sold out of scarves. Guests leave happier, and so does she."]},
    {i:[['c',"Take a tip khao, a little sticky rice basket. We use them for alms every morning."],['m',"It'll sit by the window at Basecamp. Quiet mornings only."]],x:['c',"Vietnam next. Linh will make you egg coffee."]}
   ]},
  {id:'vietnam',name:"Vietnam",cust:'linh',tease:"Scooters, lanterns and egg coffee. Xin chào, Vietnam.",
@@ -831,6 +846,7 @@ const COUNTRIES=[
    {i:[['c',"Xin chào! Egg coffee? It's like tiramisu you can drink."],['m',"Say no more."]],x:['c',"Most people say wow. You said nothing. You were drinking."]},
    {i:[['c',"Everyone photographs my egg coffee. Hundreds of photos. Nobody tags my café."],['m',"So nobody can find you?"]],x:['c',"Famous coffee, secret café. Not the plan."]},
    {i:[['m',"Put your café's name on the saucer. Every photo becomes a free ad."]],x:['c',"Tagged forty times this week. People walk in holding their phones!"]},
+   {i:[['c',"Now I have a queue, and a copycat three doors down."],['m',"Let them copy the coffee. Nobody can copy your story, so paint it on the wall."]],x:['c',"People read the wall while they wait. They stopped minding the queue."]},
    {i:[['c',"Take this nón lá. Shade for the road."],['m',"I'll nap under it."]],x:['c',"Cambodia next. Bopha drives the friendliest tuk-tuk in Siem Reap."]}
   ]},
  {id:'cambodia',name:"Cambodia",cust:'bopha',tease:"Temples at sunrise. Chom reap suor, Cambodia.",
@@ -840,6 +856,7 @@ const COUNTRIES=[
    {i:[['c',"Chom reap suor! Hop in. Angkor Wat at sunrise is worth the 4am alarm."],['m',"4am. For you, I'll try."]],x:['m',"Okay. That sunrise was worth it."]},
    {i:[['c',"Fifty drivers wait at the same gate, all shouting 'tuk-tuk!' Nobody can tell us apart."],['m',"So tourists just pick whoever's closest?"]],x:['c',"Closest or loudest. I'm neither."]},
    {i:[['m',"Ask every happy rider for a review. Keep a little card in the tuk-tuk with your name on it."]],x:['c',"Now people ask for me by name. 'Bopha, the one with all the stars!'"]},
+   {i:[['c',"Now I'm booked solid, and I turn away fares every day."],['m',"Send the extras to a driver you trust, and split it fairly."]],x:['c',"My cousin has a card too. Two tuk-tuks. That is a fleet."]},
    {i:[['c',"Take this tiny tuk-tuk. So you never forget your best driver."],['m',"It's going on the café counter. Beep beep."]],x:['c',"Singapore next. Uncle Lim has poured kopi for forty years."]}
   ]},
  {id:'singapore',name:"Singapore",cust:'lim',tease:"Kopi, kaya toast and a tissue on every seat. Hello, Singapore.",
@@ -849,6 +866,7 @@ const COUNTRIES=[
    {i:[['c',"Kopi-O or kopi-C? Decide fast, queue behind you."],['m',"Kopi-C, please. Slowly."]],x:['c',"Can. Chope your seat with a tissue packet first."]},
    {i:[['c',"Lunch rush, office people only got thirty minutes. My queue too long, they go to the chain café."],['m',"How long is the wait?"]],x:['c',"Twelve minutes. Too long for them, lah."]},
    {i:[['m',"Make three fixed sets. Kopi and kaya toast, kopi and eggs, kopi and both. No thinking, faster orders."]],x:['c',"Queue now five minutes. Office people all back. Shiok!"]},
+   {i:[['c',"Sets so fast now, my regulars say no more time to chat."],['m',"Keep one stool by the counter. After the rush, that one is for talking."]],x:['c',"Two o'clock, stool full. Forty years, they still tell me same stories. Shiok."]},
    {i:[['c',"Kopi to go, in a string bag. Proper Singapore style."],['m',"Coffee with a handle. Genius."]],x:['c',"Australia next. Shazza runs a dive boat out of Cairns. Pack your swimmers."]}
   ]},
  {id:'australia',name:"Australia",cust:'shazza',tease:"Reef, sunshine and a flat white on deck. G'day, Australia.",
@@ -858,6 +876,7 @@ const COUNTRIES=[
    {i:[['c',"G'day! Flat white first, then fins on. The reef's waiting, mate."],['m',"Can sloths even scuba?"]],x:['c',"You float and you don't rush. That's half of diving sorted."]},
    {i:[['c',"Divers book one trip, love it, fly home, and I never see them again. Every week I'm hunting brand-new customers."],['m',"Do you stay in touch with them?"]],x:['c',"Nah. They post a turtle selfie and that's the end of it."]},
    {i:[['m',"Send every diver their underwater photos the next day, with a little 'next dive' discount. Let the memory do the selling."]],x:['c',"Photos went out Monday. Six rebookings by Friday. Stoked!"]},
+   {i:[['c',"Rebookings all want Saturdays. Wednesdays are still dead."],['m',"Make Wednesday a small-group dive at a better price."]],x:['c',"Wednesday's full of retirees now. They spot more turtles than anyone."]},
    {i:[['c',"Take this snorkel mask. Every reef rat needs one."],['m',"I'm wearing it on the plane."]],x:['c',"New Zealand next. Tell Aroha we invented the flat white."]}
   ]},
  {id:'newzealand',name:"New Zealand",cust:'aroha',tease:"Lakes, mountains and a coffee van. Kia ora, Aotearoa.",
@@ -867,6 +886,7 @@ const COUNTRIES=[
    {i:[['c',"Kia ora! Welcome to Wānaka. I sell coffee out the back of my campervan, right by the lake."],['m',"A café on wheels? That's my dream."]],x:['c',"Best view in the country, and I park wherever the sunrise is."]},
    {i:[['c',"I move spots every few days, and my regulars can never find me."],['m',"So they just... miss out?"]],x:['c',"They text me 'where are you today?' all morning. I can't brew and reply at the same time."]},
    {i:[['m',"Post your spot in one place every morning. A pinned map, plus a little board on the van saying where you'll be tomorrow."]],x:['c',"The queue was waiting before I'd even parked. Sweet as!"]},
+   {i:[['c',"My van broke down, and forty people turned up at an empty car park."],['m',"Add one line to the map: no van today, and why."]],x:['c',"Now they send me a mechanic and a scone. Kiwis, eh."]},
    {i:[['c',"Take this tiny campervan. Every nomad needs one."],['m',"Café Basecamp, on wheels."]],x:['c',"Colombia next. Doña Luz grows coffee in the valley of giant palms."]}
   ]},
  {id:'colombia',name:"Colombia",cust:'luz',tease:"Wax palms, tinto and hammocks. ¡Hola, Colombia!",
@@ -876,6 +896,7 @@ const COUNTRIES=[
    {i:[['c',"¡Llegaste, mi cielo! A tinto? Small, black and strong, like me."],['m',"Perfect. And are those hammocks?"]],x:['c',"Everything here grows slowly. Coffee, palms and friendships."]},
    {i:[['c',"I grow some of the best beans in this valley, but the big buyers pay me almost nothing."],['m',"Who drinks your coffee?"]],x:['c',"People far away who will never know my name."]},
    {i:[['m',"Sell direct. Farm tours in the morning, then bags with your name on them for every visitor."]],x:['c',"The tourists cried on the tour, then bought three bags each. My coffee has my name on it now."]},
+   {i:[['c',"My tour guests write from home asking for more beans. I don't know how to ship."],['m',"Start a little subscription. One bag a month, paid ahead, and a partner to post it."]],x:['c',"Forty subscribers. I know all their names, and they know mine."]},
    {i:[['c',"It's Carnival season! Take this mask, mi cielo. Dance a little before you go."],['m',"One dance. Then Europe."]],x:['c',"Europe next, mi cielo. Start in London. Nigel will put the kettle on."]}
   ]},
  {id:'uk',name:"UK",cust:'nigel',tease:"Drizzle, a kettle on, and warm scones. Hello, UK.",
@@ -885,6 +906,7 @@ const COUNTRIES=[
    {i:[['c',"Alright? Kettle's on. Now, milk first or tea first? Choose carefully."],['m',"Tea first. I like to live dangerously."]],x:['c',"Brave. Mind the drizzle, it's only been going since Tuesday."]},
    {i:[['c',"My cream tea is £3.50. Everyone says it's too cheap, but I'm terrified to charge more."],['m',"What do you think would happen?"]],x:['c',"They'd leave, wouldn't they? Then it's just me and forty scones."]},
    {i:[['m',"Add a middle option and a premium 'proper cream tea' with clotted cream. Most people pick the middle."]],x:['c',"Nearly everyone took the middle one. A few went proper. Takings are up and not one person left."]},
+   {i:[['c',"Now my regulars want scones on Sundays. I've always closed on Sundays."],['m',"Try one month, pre-orders only. See who really means it."]],x:['c',"Thirty boxes. Turns out they meant it. Sundays stay, drizzle permitting."]},
    {i:[['c',"Here, take my flat cap. Kept me dry through thirty years of drizzle."],['m',"It's very dapper. I may never take it off."]],x:['c',"Amsterdam next, love. Daan's café is full of bikes, and messages."]}
   ]},
  {id:'netherlands',name:"Netherlands",cust:'daan',tease:"Bikes, canals and stroopwafels. Hallo, Amsterdam.",
@@ -894,6 +916,7 @@ const COUNTRIES=[
    {i:[['c',"Hallo! Park your bike anywhere. Well, not there. Or there."],['m',"I walked. Slowly. Very slowly."]],x:['c',"Put a stroopwafel on your cup so the steam makes it gooey. Gezellig, ja?"]},
    {i:[['c',"Every booking comes by DM. Instagram, WhatsApp, Facebook, even notes through the door."],['m',"How do you keep track?"]],x:['c',"I don't. Last Saturday I booked the same table for three birthdays."]},
    {i:[['m',"Put one booking link in your bio. Then set an auto-reply on every app that points there. One calendar, no chaos."]],x:['c',"Every booking lands in one calendar now. No double tables, and I even answered my mum on time."]},
+   {i:[['c',"One calendar is lovely, but people still don't turn up."],['m',"Take a small deposit for big tables, and text a reminder the day before."]],x:['c',"No-shows nearly gone. Even the birthday people came, all three of them."]},
    {i:[['c',"Take a stroopwafel for the road. The good kind, from the market, still warm."],['m',"I'll save it for later. Okay, I ate it. Is there another?"]],x:['c',"Swiss Alps next. Heidi runs a hut way up high. Bring good shoes."]}
   ]},
  {id:'switzerland',name:"Switzerland",cust:'heidi',tease:"Cowbells, clean air and a very long way up. Grüezi, Schweiz.",
@@ -903,6 +926,7 @@ const COUNTRIES=[
    {i:[['c',"Grüezi! You climbed all this way? Sit. Have some rösti before you fall over."],['m',"I'm a sloth. That climb took me three days."]],x:['c',"Up here that counts as fast. The cows think you're doing great."]},
    {i:[['c',"Hundreds of hikers pass every day, and they walk straight past my hut. They don't even look up."],['m',"Can they see the hut from the trail?"]],x:['c',"Not really. It's behind the big rock. The cows know where it is, but cows don't buy coffee."]},
    {i:[['m',"Meet them on the trail. A big sign at the fork and a free cube of cheese. One taste, then point uphill."]],x:['c',"One cube and they follow like ducklings. Thirty hikers stopped on Saturday. Thirty!"]},
+   {i:[['c',"Now the hikers want to take cheese home, and a wheel doesn't fit in a backpack."],['m',"Vacuum-pack small wedges with the hut's name on each."]],x:['c',"The bell rings all day. The cows are suspicious of our new fame."]},
    {i:[['c',"This cowbell was Bella's, my best milker. Ring it when the coffee's ready."],['m',"A café bell! Customers will come running."]],x:['c',"Prague next. Pavel's café is full of tourists, but his neighbours never come in."]}
   ]},
  {id:'czechia',name:"Czechia",cust:'pavel',tease:"Spires, trams and a river full of swans. Ahoj, Prague.",
@@ -912,6 +936,7 @@ const COUNTRIES=[
    {i:[['c',"Ahoj! Coffee or beer? It's nine in the morning, so coffee. Probably."],['m',"Coffee, please. A sloth with beer at breakfast means a very long nap."]],x:['c',"A hundred spires and one tiny sloth. Welcome to Prague, friend."]},
    {i:[['c',"Tourists come all day. Locals walk right past. My own neighbour buys coffee across the river."],['m',"Why do you think that is?"]],x:['c',"They think my place is only for tourists. English menu, souvenir mugs, a queue. Maybe they're right."]},
    {i:[['m',"Open a locals-only hour before the tour groups arrive. Quiet room, a regulars' price, Czech on the chalkboard."]],x:['c',"Seven to eight is all neighbours now. My neighbour came back, and he brought half the tram depot."]},
+   {i:[['c',"Tourists knock on the glass during the locals' hour. I feel terrible."],['m',"Put out a friendly sign: back at eight, and here's the best bakery while you wait."]],x:['c',"The bakery sends them back at eight. We are friends now. We don't talk about it."]},
    {i:[['c',"Take this little marionette. My grandfather carved puppets for the theatre."],['m',"He's holding a tiny coffee cup. We're going to get along."]],x:['c',"Germany next. Klaus is buried in paperwork. Bring him a pen."]}
   ]},
  {id:'germany',name:"Germany",cust:'klaus',tease:"Pretzels, punctual trams and coffee with cake. Hallo, Berlin.",
@@ -921,6 +946,7 @@ const COUNTRIES=[
    {i:[['c',"Guten Tag! It is three o'clock. Kaffee und Kuchen. Sit."],['m',"Coffee and cake as a daily appointment? I fully support this."]],x:['c',"The cake is not optional. It is on the schedule."]},
    {i:[['c',"My bakery is fine. My paperwork is not. Invoices, receipts, tax letters, all in one box."],['m',"How big is the box?"]],x:['c',"It was a shoebox. Now it is a moving box. Soon, a second moving box."]},
    {i:[['m',"One admin hour every Friday, coffee in hand. Plus invoice templates, so each one takes two minutes."]],x:['c',"Friday at ten, I do the box. Invoices go out on time. I finished early and had extra Kuchen."]},
+   {i:[['c',"The box is empty. I do not trust this."],['m',"Good. Now look at the numbers. Which cake actually makes you money?"]],x:['c',"The plain one. All this time. The fancy one was a very expensive hobby."]},
    {i:[['c',"Take this Lebkuchen heart from the Christmas market. Wear it with pride."],['m',"It has icing swirls. I'll pretend they say 'admin hero'."]],x:['c',"Croatia next. Luka has a boat. Bring something for seasickness, just in case."]}
   ]},
  {id:'croatia',name:"Croatia",cust:'luka',tease:"Stone streets and blue water. Bok, Croatia.",
@@ -930,6 +956,7 @@ const COUNTRIES=[
    {i:[['c',"Bok! Welcome to Split. A coffee on the waterfront takes two hours here. Minimum."],['m',"Two hours for one coffee? I've found my people."]],x:['c',"We call it fjaka. Doing nothing, beautifully. Now come and see my boat."]},
    {i:[['c',"I run island boat trips. When the sea gets choppy, people get seasick and leave angry reviews."],['m',"Do they know it can get bumpy before they book?"]],x:['c',"No. They expect a swimming pool. The Adriatic doesn't care what they expect."]},
    {i:[['m',"Tell them up front. A clear weather policy, ginger sweets on board, free rebooking if it's rough."]],x:['c',"Same waves this week, but the reviews say 'honest captain, great trip.' Even from the green ones!"]},
+   {i:[['c',"Honest reviews brought more bookings. In August I turn people away."],['m',"Raise August a little, and keep May and September at today's price."]],x:['c',"September's full, and the sea is warmer anyway. Nobody is green. Almost nobody."]},
    {i:[['c',"Take this kravata, a Croatian cravat. The necktie started here, you know."],['m',"I'll wear it to look serious when I'm not."]],x:['c',"Montenegro is next, just down the coast. Marko is a lovely guy. Too lovely, maybe."]}
   ]},
  {id:'montenegro',name:"Montenegro",cust:'marko',tease:"Mountains drop straight into the sea. Zdravo, Montenegro.",
@@ -939,6 +966,7 @@ const COUNTRIES=[
    {i:[['c',"Dobro došli! Welcome to Kotor. Mind the cats, they run this town."],['m',"A town run by cats? Sounds well managed."]],x:['c',"Polako, polako. Slowly. Sit, have a coffee and look at the mountains."]},
    {i:[['c',"I give a discount to anyone who asks. Friends, cousins, the cats. I'm losing money."],['m',"How many people ask?"]],x:['c',"All of them. Word got around. Now even the tourists say they're my cousin."]},
    {i:[['m',"Pick one clear, friendly policy. Ten percent off after five visits, written on the wall. Same for everyone."]],x:['c',"Now I just point at the sign and smile. No awkward talks, and I made a profit this month!"]},
+   {i:[['c',"My real cousin is offended by the sign."],['m',"Free coffee on his birthday. One day, one cousin, no discounts."]],x:['c',"He says it's the nicest thing I've ever done. Then he asked about his brother's birthday."]},
    {i:[['c',"Take my kapa, a Montenegrin cap. Red on top, gold stitching. Wear it proudly."],['m',"I will. And I'll pay full price for my coffee."]],x:['c',"Poland next. Go see Gosia. Her pierogi are so good, people sigh when she closes."]}
   ]},
  {id:'poland',name:"Poland",cust:'gosia',tease:"Pierogi steam and a trumpet from the tower. Cześć, Polska.",
@@ -948,6 +976,7 @@ const COUNTRIES=[
    {i:[['c',"Cześć! Sit, sit. Everyone who walks in looks hungry. It's the smell."],['m',"Is that dill? I'm staying forever."]],x:['c',"Potato and cheese, cabbage, blueberry for dessert. Here we don't choose. We have all three."]},
    {i:[['c',"People love my pierogi, but at 8pm I close and they knock on the glass like sad puppies."],['m',"And then they go home with nothing?"]],x:['c',"Nothing! They eat toast. Toast, Mocha. And the next day I hear all about it."]},
    {i:[['m',"Freeze them. Bags of twelve in a freezer by the door, tips on the label. Your pierogi work late, you don't."]],x:['c',"Forty bags the first week. A student took six for exams. My pierogi have a night shift now."]},
+   {i:[['c',"The frozen bags sell out, and now people ask what else I can make."],['m',"One surprise flavour a month. Let your customers vote on the next one."]],x:['c',"Apple and cinnamon won by a landslide. Democracy tastes good."]},
    {i:[['c',"This is Baltic amber from my babcia. It brings luck on long roads."],['m',"I'll wear it every day. Pierogi power."]],x:['c',"Hungary next. Zsófi works every single day. Please, make her sit down."]}
   ]},
  {id:'hungary',name:"Hungary",cust:'zsofi',tease:"Thermal baths and paprika. Szia, Budapest.",
@@ -957,6 +986,7 @@ const COUNTRIES=[
    {i:[['c',"Szia! Welcome to Budapest. Have some lángos. Fried dough, sour cream, cheese."],['m',"Best thing I've ever eaten before noon."]],x:['c',"Later, the thermal baths. Hot water, old domes, and people playing chess in the pool."]},
    {i:[['c',"I run a little bakery. Seven days a week, every week. I'm so tired I salted the strudel."],['m',"When did you last take a day off?"]],x:['c',"Two years ago. I think it was a Tuesday. I slept through it."]},
    {i:[['m',"Find your slowest day and close it. Put up a sign. Rest is part of the job, not a break from it."]],x:['c',"I closed Mondays. My regulars just come on Tuesday now, and the strudel is sweet again."]},
+   {i:[['c',"So what do I do on Mondays? I honestly don't know how."],['m',"Start small. A thermal bath, a book, and no talking about the bakery."]],x:['c',"I floated for three hours. An old man beat me at chess. Best day in two years."]},
    {i:[['c',"Take this bűvös kocka, a magic cube. A Hungarian invented it. Puzzle it out on your day off."],['m',"A puzzle for a sloth on holiday. Perfect."]],x:['c',"Vienna next. Franz runs a coffee house so old, even the chairs have opinions."]}
   ]},
  {id:'austria',name:"Austria",cust:'franz',tease:"Velvet booths and a glass of water on the side. Servus, Österreich.",
@@ -966,6 +996,7 @@ const COUNTRIES=[
    {i:[['c',"Servus! Take any booth. Coffee comes with water, the newspaper is free, and nobody rushes you."],['m',"A café where lingering is the rule? I might cry."]],x:['c',"Stay all afternoon. Order a Melange and a slice of Sachertorte. It's the law. Almost."]},
    {i:[['c',"My nephew says I must post on Instagram every day. Every day! When do I make the strudel?"],['m',"How often do you post now?"]],x:['c',"Once, in March. A blurry photo of a cake. Four likes. One was me."]},
    {i:[['m',"One quiet morning, shoot the whole week. Write captions, schedule them all, then back to the strudel."]],x:['c',"One Monday, seven posts. Now tourists walk in pointing at their phones. My strudel is famous."]},
+   {i:[['c',"Tourists sit for hours over one coffee. I love them, but I need the tables."],['m',"Keep the rule. Just bring a little afternoon menu at three: second coffee, cake."]],x:['c',"They stay and they order twice. The chairs are pleased."]},
    {i:[['c',"Take my Tyrolean hat. The feather is for luck in the mountains."],['m',"Very dashing. Do sloths yodel?"]],x:['c',"Practise on the train. Nonna Rosa has an espresso bar in Rome. Mind her rules."]}
   ]},
  {id:'italy',name:"Italy",cust:'rosa',tease:"Espresso at the bar, standing up. Ciao, Italia.",
@@ -975,6 +1006,7 @@ const COUNTRIES=[
    {i:[['c',"You want a cappuccino after 11am? Tsk."],['m',"An espresso, please. Standing at the bar."]],x:['c',"Good. You learn fast. Fifty-two years I run this bar. Same cups. Same regulars."]},
    {i:[['c',"My grandson says tourists can't find me. No website, no phone. I never needed them before!"],['m',"So how do new people find you?"]],x:['c',"They don't! They find the place across the piazza with a photo of every dish. Ugly. Busy."]},
    {i:[['m',"One free map listing. Your hours, a few photos, the pin in the right spot. That's where tourists look."]],x:['c',"A family from Oslo found me today. On the map! Two espressos each, standing up. You'd make a good Italian."]},
+   {i:[['c',"The map people leave reviews now. One says I am rude."],['m',"Reply once, kindly. Then own it: strict rules, perfect espresso."]],x:['c',"Now they come to be scolded. I scold. They tip."]},
    {i:[['c',"Take my Vespa goggles. I don't ride anymore, but they've seen all seven hills of Rome."],['m',"I'll ride slowly. Very slowly."]],x:['c',"Go north to Paris. Amélie bakes the best croissants in France. Get there early."]}
   ]},
  {id:'france',name:"France",cust:'amelie',tease:"Butter in the air at six in the morning. Bonjour, la France.",
@@ -984,6 +1016,7 @@ const COUNTRIES=[
    {i:[['c',"Bonjour! Smell that? Butter, sugar and a little bit of magic. Mostly butter."],['m',"I could live inside this smell."]],x:['c',"Everyone says that. Then they ask for a croissant, and I have to say the terrible thing."]},
    {i:[['c',"By 9am the croissants are gone. People arrive at 9:15 and I say sorry, sorry, sorry."],['m',"How many do you turn away?"]],x:['c',"Thirty, maybe forty a day. Some leave sad. One man cried. It was very French."]},
    {i:[['m',"Take pre-orders the night before. Pay ahead, you bake to the number, and their croissant waits for them."]],x:['c',"I bake the exact amount now. Nobody cries, nothing goes to waste, and I sleep until 4:30. Luxury!"]},
+   {i:[['c',"A table for one? But you ordered two coffees."],['m',"Did I? Force of habit. Freja always had the other one."]],x:['c',"Write her a postcard. I have stamps. I am French, I know that look."]},
    {i:[['c',"Take this baguette, still warm. Carry it under your arm like a real Parisian."],['m',"It smells amazing. It may not survive the train."]],x:['c',"Off to Spain! Paco runs a café there. Just don't call him during siesta."]}
   ]},
  {id:'spain',name:"Spain",cust:'paco',tease:"Orange trees and late dinners. Hola, España.",
@@ -993,15 +1026,17 @@ const COUNTRIES=[
    {i:[['c',"¡Hola! You made it before lunch. Lunch here is at three, dinner at ten."],['m',"So breakfast is... whenever?"]],x:['c',"Exactly. Have a tostada with tomato and olive oil. Then we talk, slowly."]},
    {i:[['c',"I teach flamenco. From two to five I close for siesta, and the messages pile up."],['m',"And by five, they've booked somewhere else?"]],x:['c',"Every day. My phone buzzes, I snore, and the bookings dance off to the studio next door."]},
    {i:[['m',"Set a siesta auto-reply. Say when you're back and add your booking link, so they book while you nap."]],x:['c',"Twelve bookings came in during siesta today. I didn't wake up once. ¡Olé!"]},
+   {c:'freja',i:[['c',"Your postcard said 'wish you were here'. So. I rode the last bit from Seville."],['m',"Freja? You cycled to Spain because of a postcard?"]],x:['c',"It was a very good postcard. Now, is anyone awake in this town?"]},
    {i:[['c',"Take my abanico, my flamenco fan. For hot days, and for fanning yourself when bookings roll in."],['m',"Very elegant. I'll fan the espresso machine too."]],x:['c',"Portugal is next door. Inês will feed you custard tarts until you can't move."]}
   ]},
  {id:'portugal',name:"Portugal",cust:'ines',tease:"Hills, trams and custard tarts. Hello, Lisbon.",
   stamp:{ring:"#2f5f9e",motif:`<rect x="10" y="30" width="80" height="50" rx="8" fill="#e9b949"/><rect x="18" y="40" width="18" height="16" fill="#bfd7df"/><rect x="41" y="40" width="18" height="16" fill="#bfd7df"/><rect x="64" y="40" width="18" height="16" fill="#bfd7df"/><path d="M50 30V10M35 10h30" stroke="#1f3a2c" stroke-width="4"/><circle cx="28" cy="84" r="7" fill="#1f3a2c"/><circle cx="72" cy="84" r="7" fill="#1f3a2c"/>`},
   bg:`<rect width="300" height="300" fill="#f3e6cf"/><path d="M0 150Q150 70 300 130V300H0z" fill="#e2c9a0"/><rect x="10" y="110" width="56" height="90" fill="#f0cfd8"/><path d="M10 110h56l-6-12h-44z" fill="#c0563f"/><rect x="18" y="122" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="42" y="122" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="18" y="148" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="42" y="148" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="18" y="174" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="42" y="174" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="70" y="95" width="56" height="105" fill="#fbf8f0"/><path d="M70 95h56l-6-12h-44z" fill="#c0563f"/><rect x="78" y="107" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="102" y="107" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="78" y="133" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="102" y="133" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="78" y="159" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="102" y="159" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="130" y="88" width="56" height="112" fill="#e9d6a9"/><path d="M130 88h56l-6-12h-44z" fill="#c0563f"/><rect x="138" y="100" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="162" y="100" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="138" y="126" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="162" y="126" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="138" y="152" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="162" y="152" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="190" y="96" width="56" height="104" fill="#bfd7df"/><path d="M190 96h56l-6-12h-44z" fill="#c0563f"/><rect x="198" y="108" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="222" y="108" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="198" y="134" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="222" y="134" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="198" y="160" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="222" y="160" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="250" y="108" width="56" height="92" fill="#fbf8f0"/><path d="M250 108h56l-6-12h-44z" fill="#c0563f"/><rect x="258" y="120" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="282" y="120" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="258" y="146" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="282" y="146" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="258" y="172" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect x="282" y="172" width="16" height="16" fill="#2f5f9e" opacity=".75"/><rect y="200" width="300" height="100" fill="#d2cab5"/><path d="M0 262h300M0 270h300" stroke="#5d6f61" stroke-width="3"/><path d="M0 172h300" stroke="#1f3a2c" stroke-width="1.5"/><rect x="40" y="186" width="170" height="70" rx="12" fill="#e9b949"/><rect x="40" y="226" width="170" height="8" fill="#c0563f"/><rect x="52" y="196" width="28" height="24" rx="3" fill="#bfd7df"/><rect x="90" y="196" width="28" height="24" rx="3" fill="#bfd7df"/><rect x="128" y="196" width="28" height="24" rx="3" fill="#bfd7df"/><rect x="166" y="196" width="28" height="24" rx="3" fill="#bfd7df"/><path d="M125 186v-14" stroke="#1f3a2c" stroke-width="3"/>`,
   beats:[
-   {i:[['c',"Bem-vindo! You're the sloth with the pop-up café? Sit, the tarts are still warm."],['m',"Just a tiny one. Coffee, naps, no rushing."]],x:['c',"In Lisbon we call that a good day. Mind the hills, they're steeper than they look."]},
+   {i:[['c',"Olá! You're the sloth with the pop-up café? Sit, the tarts are still warm."],['m',"Just a tiny one. Coffee, naps, no rushing."]],x:['c',"In Lisbon we call that a good day. Mind the hills, they're steeper than they look."]},
    {i:[['c',"Tourists ask me for directions a hundred times a day. I sell tiles, but mostly I point."],['m',"How many of them buy something?"]],x:['c',"Almost none. They say obrigado, then they walk off to catch the tram."]},
    {i:[['m',"Draw one good map of the area, hang it in your window, and put your shop right in the middle of it."]],x:['c',"They stop to read the map, see the tiles, and come in. I sold more today than all last week!"]},
+   {c:'freja',i:[['c',"There's fado tonight, down in Alfama. You don't have to come."],['m',"I was going to nap. But I could come. For a bit."]],x:['c',"You stayed awake for the whole thing. For you, that's basically a love song."]},
    {i:[['c',"Take this tram conductor cap. My grandfather drove Tram 28 for thirty years."],['m',"I'll wear it every time I make a delivery."]],x:['c',"Iceland next. Sigga will sort you out with something hot."]}
   ]},
  {id:'iceland',name:"Iceland",cust:'sigga',tease:"Cold air, hot springs. Hæ, Iceland.",
@@ -1011,6 +1046,7 @@ const COUNTRIES=[
    {i:[['c',"Hæ! Coffee is serious business here. We drink it all day, even at midnight in June."],['m',"Midnight sun and endless coffee. Finally, my people."]],x:['c',"Sit in the hot pot with the regulars. That's where all the gossip happens."]},
    {i:[['c',"Summer, my hot-spring café is packed with tourists. Winter, it's me and the wind."],['m',"What about the locals?"]],x:['c',"They pop in sometimes. But in January I can hear a snowflake land."]},
    {i:[['m',"Sell locals a winter pass in autumn, paid up front. Ten soaks and ten coffees, a bit cheaper than walk-ins."]],x:['c',"Eighty passes sold in October. Cash in the bank, and my regulars come every week. Even the puffins are jealous."]},
+   {c:'freja',i:[['c',"The storm's closed the road. So that's one hot pot, two sloths, all night."],['m',"I can think of worse ways to be stuck."]],x:['c',"You said that out loud. Slowly, but you said it."]},
    {i:[['c',"Take this lopapeysa. My amma knitted it. It keeps out every kind of weather."],['m',"So warm. I could nap in this for a whole winter."]],x:['c',"Mexico next. Long flight, warm welcome. Lupe has the café de olla on."]}
   ]},
  {id:'mexico',name:'Mexico',cust:'lupe',tease:'Cinnamon in the air. Hola, México.',
@@ -1020,6 +1056,7 @@ const COUNTRIES=[
    {i:[['c',"¡Hola! Café de olla? Cinnamon, piloncillo, clay pot."],['m',"Yes. Twice. Slowly."]],x:['c',"I like you already."]},
    {i:[['c',"The new stall next door sells café de olla for half my price."],['m',"Are your regulars leaving?"]],x:['c',"Two so far. One of them is my cousin."]},
    {i:[['m',"Don't drop your price. Sell what they can't copy: your grandmother's recipe, your name on the cup."]],x:['c',"Sold out by ten, at full price. People pay more for a story. Who knew?"]},
+   {i:[['c',"Who's the one in the wool scarf, melting on my patio?"],['m',"That's Freja. She's here for the coffee. Just the coffee."]],x:['c',"Nobody flies this far for coffee, corazón. Drink up."]},
    {i:[['c',"Take this mug from my grandmother's shelf. Clay keeps the cinnamon in."],['m',"Café de olla goes on the Basecamp menu."]],x:['c',"Riga next. Līga sells honey at the old market. She could use a clever idea."]}
   ]},
  {id:'latvia',name:"Latvia",cust:'liga',tease:"Rye bread, honey and zeppelin hangars. Sveiki, Riga.",
@@ -1029,6 +1066,7 @@ const COUNTRIES=[
    {i:[['c',"Sveiki! Welcome to the Central Market. These halls once held zeppelins. Now they hold my honey."],['m',"That's an upgrade."]],x:['c',"Try rye bread with honey. My grandmother's recipe. Don't tell the stall next door."]},
    {i:[['c',"Speaking of them. They sell honey at half my price, and the tourists follow the cheap sign."],['m',"Will you drop your price too?"]],x:['c',"If I go any lower, my bees will go on strike."]},
    {i:[['m',"Don't race them down. Make a gift box: honey, rye bread, caraway cheese, wrapped in your pattern. Only yours."]],x:['c',"Sold out by noon. A man from Lyon bought six and asked if I ship. I do now."]},
+   {c:'freja',i:[['c',"It's midsummer. You're meant to jump the bonfire with someone, for luck."],['m',"Sloths don't jump."]],x:['c',"Then we walk round it. Slowly. Holding on, so nobody trips."]},
    {i:[['c',"Take my Jāņi wreath. Oak leaves for strength, flowers for luck."],['m',"I'll wear it on slow mornings."]],x:['c',"Jonas in Lithuania is next. He's looking for good staff, and you're good people."]}
   ]},
  {id:'lithuania',name:"Lithuania",cust:'jonas',tease:"Amber, basketball and pink soup. Labas, Vilnius.",
@@ -1038,6 +1076,7 @@ const COUNTRIES=[
    {i:[['c',"Labas! Sit, sit. Have some šaltibarščiai. Yes, it's pink. Yes, it's cold. Trust me."],['m',"Pink soup. This trip keeps getting better."]],x:['c',"Cepelinai for lunch. They're named after zeppelins. One bite and you'll see why."]},
    {i:[['c',"My café is full every day, but I can't find good staff. I'm washing cups at midnight."],['m',"Have you tried job ads?"]],x:['c',"Three ads. One reply. He asked if the job was mostly naps. Honestly, fair question."]},
    {i:[['m',"Ask your regulars. They love this place. Send a friend you end up hiring, get a free month of coffee."]],x:['c',"Two regulars sent their cousins. Both brilliant. One makes better latte art than me. Rude."]},
+   {c:'freja',i:[['c',"So. About the bonfire."],['m',"Yes. The bonfire. Very warm. Good bonfire."]],x:['c',"Good talk. Excellent. Eat your pink soup."]},
    {i:[['c',"Take this mini basketball. In Lithuania, basketball is basically our second religion."],['m',"I'll practise my free throws. Very, very slowly."]],x:['c',"Havana next. Big jump. Yoli keeps a café going on very little."]}
   ]},
  {id:'cuba',name:"Cuba",cust:'yoli',tease:"Old Chevys and a very small coffee. ¡Oye, Cuba!",
@@ -1047,6 +1086,7 @@ const COUNTRIES=[
    {i:[['c',"¡Oye! Cafecito? Tiny, sweet and very strong. Sit. The street comes to you here."],['m',"Is that a '57 Chevy?"]],x:['c',"Older than both of us, and it still runs. That's Havana."]},
    {i:[['c',"The power goes out most afternoons, and my whole café runs on one old machine."],['m',"What happens when it goes?"]],x:['c',"No coffee, no customers. Everyone goes home and waits."]},
    {i:[['m',"Plan for it. Keep a charcoal stove and a stovetop pot, then make blackout hour your candlelit special."]],x:['c',"Now people come for the blackout. Candles, cafecito and one very loud domino game."]},
+   {c:'freja',i:[['c',"Blackout hour. Nobody can see you dance, you know."],['m',"I don't dance. I sway. Very slowly."]],x:['c',"Then sway. The power came back an hour ago, and neither of us noticed."]},
    {i:[['c',"Take this tiny Chevy. My uncle keeps the big one running on spare parts and prayer."],['m',"It's going on the counter, next to the tuk-tuk."]],x:['c',"Stockholm next. Astrid knows fika better than anyone. Go hungry."]}
   ]},
  {id:'sweden',name:"Sweden",cust:'astrid',tease:"Cinnamon buns and proper coffee breaks. Hej, Stockholm.",
@@ -1056,6 +1096,7 @@ const COUNTRIES=[
    {i:[['c',"Hej! Just in time for fika. Coffee, a cinnamon bun, and nobody talks about work."],['m',"A break that's basically required? I may move here."]],x:['c',"We even have a Cinnamon Bun Day. October 4th. Put it in your calendar."]},
    {i:[['c',"People love my café, then forget me for months. Then they pop in and say, oh, I forgot you existed!"],['m',"Ouch."]],x:['c',"Ouch indeed. I remember every one of their orders!"]},
    {i:[['m',"Start a fika club. Collect emails at the till and send one note a month with a members-only treat."]],x:['c',"Two hundred members. Each month's bun sells out the day the email goes out. They remember me now."]},
+   {c:'freja',i:[['c',"My apprentice called. The shop needs me back. Come home with me?"],['m',"There's one more stop. I'll be right behind you, I promise."]],x:['c',"There's always one more stop, Mocha. Fika's on me. I'm on the morning train."]},
    {i:[['c',"Take this little Dala horse. Painted by hand, it's stood on my counter for years."],['m',"It can stand on mine now."]],x:['c',"Helsinki next. Aino runs a sauna café by the sea. She won't ask for help, so offer it."]}
   ]},
  {id:'finland',name:"Finland",cust:'aino',tease:"Saunas, sea air and serious coffee. Moi, Helsinki.",
@@ -1065,6 +1106,7 @@ const COUNTRIES=[
    {i:[['c',"Moi. Coffee? Finns drink more of it than anyone. This is my fourth cup. It is 9am."],['m',"I respect that deeply."]],x:['c',"After coffee, sauna. Then the sea. Then more coffee. This is the system."]},
    {i:[['c',"I run the sauna, the café, the towels and the bookings. All me. I don't ask for help."],['m',"Is that sisu?"]],x:['c',"Sisu. Also maybe stubborn. The bakery next door keeps asking to team up. I keep saying no."]},
    {i:[['m',"Say yes. A sauna ticket gets a bun next door, a bun gets money off a sauna. Share customers, not work."]],x:['c',"Their regulars are my regulars now. And I get a free cinnamon bun every morning. Fine. You were right."]},
+   {i:[['c',"Three hours in my sauna and not one word. Who is she?"],['m',"Someone who asked me to come home. I said there's one more stop."]],x:['c',"You told me to say yes to the bakery. Who are you saying no to?"]},
    {i:[['c',"Take this kuksa. Carved from birch. Your coffee will taste like a forest."],['m',"A cup made from a tree. Very cozy."]],x:['c',"Last stop: home. Mette has been keeping your café warm in Copenhagen. She wants to ask you something."]}
   ]},
  {id:'denmark',name:"Denmark",cust:'mette',tease:"Bikes, harbour swims and a very familiar door. Hej, Copenhagen.",
@@ -1074,11 +1116,20 @@ const COUNTRIES=[
    {i:[['c',"Hej, Mocha! Welcome home. I kept Café Basecamp warm for you. Cinnamon snails are in the oven."],['m',"Home. I didn't know how much I'd missed this table."]],x:['c',"Sit. Candles on, blanket on. A little hygge first. The world can wait an hour."]},
    {i:[['c',"Can I tell you something? I want to start a coffee bike by the lakes. But I'm not ready."],['m',"What would make you ready?"]],x:['c',"A better bike. A course. A logo. More savings. Maybe next spring. Maybe the one after."]},
    {i:[['m',"Can I tell you a secret? I wasn't ready either. Basecamp began as one table and a borrowed grinder."],['m',"Start this Saturday. Small and wobbly is fine. You get ready by doing it."]],x:['c',"I opened by the lakes. Burnt the first batch, fixed it, sold forty cups. Mocha, I'm really doing it."]},
-   {i:[['c',"Here's your key to Basecamp. You left it with me before the trip. It belongs with you."],['m',"Thank you for keeping it safe. For keeping all of it safe."]],x:['c',"Your hammock is waiting, Mocha. Go rest. You earned it."]}
+   {c:'freja',i:[['c',"Mocha. You're dripping on my bike shop."],['m',"Freja. I've been not ready for about a year. I'd like to stop."]],x:['c',"Took you long enough. Slowly, though. I like slowly."]},
+   {i:[['c',"Here's your key to Basecamp. You left it with me before the trip. It belongs with you."],['m',"Thank you for keeping it safe. For keeping all of it safe."]],x:['c',"Your hammock is waiting, Mocha. It fits two, I checked. Go rest."]}
   ]}
 ];
 const PARKED_COUNTRIES=[];
 COUNTRIES.forEach(c=>BG.push(c.bg));
+/* the trip is split into sections: the story, then three legs of travel */
+const SECTIONS=[
+ {id:'tour',name:'World Tour',first:'canada',last:'colombia',next:'On to the Eurotrip ✈',line:'Eleven stops, eleven small shops, and every one had a leak you could fix in a week.'},
+ {id:'euro',name:'Eurotrip',first:'uk',last:'france',next:'Keep going ✈',line:'Twelve countries by train. Same lesson everywhere: simple systems beat more hustle.'},
+ {id:'pour',name:'The Slow Pour',first:'spain',last:'denmark'}
+];
+const secIdx=(s,id)=>COUNTRIES.findIndex(c=>c.id===s[id]);
+const sectionOf=i=>SECTIONS.find(s=>i>=secIdx(s,'first')&&i<=secIdx(s,'last'));
 /* square postage stamps: perforated edge, framed picture, country band, and a postmark once collected */
 const STAMP_VAL={canada:'92¢',peru:'S/ 6,50',japan:'¥110',thailand:'฿15',laos:'₭8000',vietnam:'4000₫',cambodia:'៛2000',singapore:'90¢',australia:'$1.50',newzealand:'$3',colombia:'$500',uk:"£1.70",iceland:"260 kr",netherlands:"1,14 €",germany:"0,95 €",czechia:"33 Kč",poland:"4,50 zł",austria:"1,05 €",switzerland:"1.20 CHF",italy:"1,30 €",france:"1,39 €",spain:"1,50 €",portugal:"0,95 €",croatia:"1,20 €",montenegro:"1,00 €",hungary:"450 Ft",lithuania:"1,30 €",latvia:"1,50 €",finland:"2,50 €",sweden:"22 kr",denmark:"36 kr.",mexico:"$15",cuba:"5 CUP"};
 let stampUid=0;
@@ -1183,7 +1234,7 @@ function shopArrivals(c0,c1){return ITEMS.filter(i=>i.price!=null&&SHOP_AT[i.id]
 function gearStops(){
   const out=[];
   CHAPTERS.forEach((ch,i)=>{const a=ch.at,b=i+1<CHAPTERS.length?CHAPTERS[i+1].at:TOUR_AT;out.push({key:'s'+i,name:ch.title,label:`Chapter ${i+1}`,start:a,len:b-a})});
-  COUNTRIES.forEach((c,i)=>out.push({key:c.id,name:c.name,label:'World Tour',start:TOUR_AT+i*TOUR_LEN,len:TOUR_LEN}));
+  COUNTRIES.forEach((c,i)=>out.push({key:c.id,name:c.name,label:sectionOf(i).name,start:TOUR_AT+i*TOUR_LEN,len:TOUR_LEN}));
   return out.map(g=>{const items=GEAR[g.key]||[];return Object.assign(g,{items,at:items.length>1?[g.start+Math.ceil(g.len/2),g.start+g.len]:[g.start+g.len]})});
 }
 const GEAR_AT={};gearStops().forEach(g=>g.items.forEach((id,k)=>GEAR_AT[id]={at:g.at[k],stop:g,half:g.items.length>1&&k===0}));
@@ -1206,199 +1257,232 @@ const NOTES={
   facts:[["The name LEGO comes from Danish words meaning…",["Play well","Build well","Play together","Little bricks"],"The company started in Billund in 1932."],
    ["Legend says the Danish flag fell from the sky during a 1219 battle in what is now…",["Estonia","Sweden","Norway","Germany"],"King Valdemar II was losing, then the flag appeared and the tide turned."],
    ["Denmark's highest natural point is only about…",["170 m","50 m","400 m","900 m"],"Møllehøj is so low that the country's tallest structures easily beat it."],
-   ["The Øresund Bridge links Copenhagen to…",["Malmö","Gothenburg","Helsingborg","Aarhus"],"It opened in 2000, and you can take the train across."]]},
+   ["The Øresund Bridge links Copenhagen to…",["Malmö","Gothenburg","Helsingborg","Aarhus"],"It opened in 2000, and you can take the train across."],
+   ["The Little Mermaid statue comes from a story by…",["Hans Christian Andersen","The Brothers Grimm","Astrid Lindgren","Roald Dahl"],"The bronze statue has sat on her rock since 1913."]]},
  sweden:{lang:"Swedish",words:[["Hej", "hi"], ["Tack", "thank you"], ["Fika", "a coffee break with something sweet, and good company"]],
   coffee:["Drop Coffee", "Stockholm · pioneering roaster and café on Södermalm"],cowork:["Epicenter", "Stockholm · innovation house on Mäster Samuelsgatan"],
   facts:[["Sweden celebrates Cinnamon Bun Day on…",["4 October","12 March","21 June","1 December"],"Bakeries sell millions of buns that day."],
    ["Allemansrätten, the right of public access, lets people in Sweden…",["Camp on private land","Hunt on public land","Park anywhere free","Build a small cabin"],"You can roam freely, as long as you don't disturb or destroy."],
    ["Who invented dynamite?",["Alfred Nobel","Anders Celsius","Carl Linnaeus","Lars Ericsson"],"His fortune funds the Nobel Prizes."],
-   ["Stockholm's Vasa warship sank on its first voyage in which century?",["The 1600s","The 1400s","The 1800s","The 1900s"],"It went down in 1628, was raised in 1961, and is now a museum."]]},
+   ["Stockholm's Vasa warship sank on its first voyage in which century?",["The 1600s","The 1400s","The 1800s","The 1900s"],"It went down in 1628, was raised in 1961, and is now a museum."],
+   ["Stockholm is built on about how many islands?",["14","3","30","100"],"Over 50 bridges connect them."]]},
  finland:{lang:"Finnish",words:[["Moi", "hi"], ["Kiitos", "thank you"], ["Sisu", "quiet grit, keeping going when it's hard"]],
   coffee:["Kaffa Roastery", "Helsinki · roastery café in Punavuori"],cowork:["Maria 01", "Helsinki · startup campus in the city's first hospital"],
   facts:[["Finland has roughly how many saunas?",["3 million","300,000","800,000","30 million"],"That's more than one for every two people in the country."],
    ["Finland's land of a thousand lakes actually has about…",["188,000","18,000","88,000","388,000"],"That counts every lake over 5 ares, about the size of a tennis court or two."],
    ["Which world championship is held in Sonkajärvi?",["Wife carrying","Swamp soccer","Phone throwing","Air guitar"],"Finland hosts all four, in different towns. The wife-carrying prize includes her weight in beer."],
-   ["Santa Claus's official hometown in Finland is…",["Rovaniemi","Oulu","Tampere","Turku"],"It sits right on the Arctic Circle, and you can post letters from his office."]]},
+   ["Which Finnish city bills itself as Santa's official hometown?",["Rovaniemi","Oulu","Tampere","Turku"],"Santa Claus Village sits right on the Arctic Circle, a few km north of the city."],
+   ["Before Helsinki, Finland's capital was…",["Turku","Tampere","Oulu","Lahti"],"It moved in 1812, closer to Russia."]]},
  latvia:{lang:"Latvian",words:[["Sveiki", "hello"], ["Paldies", "thank you"], ["Jāņi", "the midsummer festival, with wreaths, bonfires and caraway cheese"]],
   coffee:["Rocket Bean", "Riga · Latvian specialty roaster with cafés across the city"],cowork:["Teikums", "Riga · coworking and event space in the Teika district"],
   facts:[["Central Riga is especially famous for buildings in which style?",["Art Nouveau","Baroque","Brutalist","Gothic Revival"],"About a third of the buildings in the centre are Art Nouveau."],
    ["Latvia regained its independence from the USSR in…",["1991","1981","1989","1995"],"The Baltic Way, a human chain across three countries, came two years earlier."],
    ["Roughly how much of Latvia is covered by forest?",["About half","About a tenth","About a quarter","About three quarters"],"Mushroom and berry picking are national hobbies."],
-   ["Riga Black Balsam is a famous…",["Herbal liqueur","Smoked cheese","Rye beer","Honey wine"],"It's dark, bitter and made with dozens of herbs. Often added to coffee."]]},
+   ["Riga Black Balsam is a famous…",["Herbal liqueur","Smoked cheese","Rye beer","Honey wine"],"It's dark, bitter and made with dozens of herbs. Often added to coffee."],
+   ["Before the euro, Latvia's currency was the…",["Lats","Litas","Kroon","Złoty"],"Litas was Lithuanian and kroon was Estonian."]]},
  lithuania:{lang:"Lithuanian",words:[["Labas", "hello"], ["Ačiū", "thank you"], ["Šaltibarščiai", "cold pink beetroot soup, a summer favourite"]],
   coffee:["Elska Coffee", "Vilnius · specialty café with two spots in the city"],cowork:["Vilnius Tech Park", "Vilnius · big startup hub in Antakalnis"],
   facts:[["Cepelinai, Lithuania's big dumplings, are made mainly from…",["Potato","Rye","Cabbage","Beetroot"],"They're named after Zeppelin airships because of their shape."],
    ["Užupis, in Vilnius, is famous for…",["Its playful self-declared republic","Its Soviet-era ski jump","Its medieval gold mine","Its floating river market"],"It has its own constitution on a wall, with lines like 'everyone has the right to be happy'."],
    ["Which city was Lithuania's temporary capital between the two World Wars?",["Kaunas","Klaipėda","Šiauliai","Trakai"],"Vilnius, the official capital, was held by Poland at the time."],
-   ["Lithuanian's closest living relative is…",["Latvian","Polish","Estonian","Russian"],"They're the last two living Baltic languages. Estonian isn't related at all."]]},
+   ["Lithuanian's closest living relative is…",["Latvian","Polish","Estonian","Russian"],"They're the last two living Baltic languages. Estonian isn't related at all."],
+   ["Trakai Castle is built on…",["An island","A cliff","A sand dune","A marsh"],"It sits in Lake Galvė, reached by a wooden footbridge."]]},
  hungary:{lang:"Hungarian",words:[["Szia", "hi and bye"], ["Köszönöm", "thank you"], ["Egészségedre", "cheers, literally 'to your health'"]],
   coffee:["Espresso Embassy", "Budapest · ranked among Europe's best coffee shops in 2026"],cowork:["KAPTÁR", "Budapest · one of the city's first coworking spaces"],
   facts:[["The ballpoint pen was invented by journalist…",["László Bíró","Ernő Rubik","Ferenc Puskás","Franz Liszt"],"In many countries a ballpoint is still called a biro."],
    ["Budapest was formed by uniting three cities in…",["1873","1918","1701","1956"],"They were Buda, Óbuda and Pest."],
    ["The Hungarian language is related to…",["Finnish and Estonian","Slovak and Czech","Romanian and Italian","Turkish and Azeri"],"They're all Uralic languages, very different from their neighbours."],
-   ["Central Europe's largest lake is…",["Balaton","Bled","Neusiedl","Ohrid"],"Hungarians call it their sea, since the country has no coast."]]},
+   ["Central Europe's largest lake is…",["Balaton","Bled","Neusiedl","Ohrid"],"Hungarians call it their sea, since the country has no coast."],
+   ["Hungary's currency is the…",["Forint","Kuna","Złoty","Koruna"],"It replaced the pengő in 1946 after record-breaking inflation."]]},
  montenegro:{lang:"Montenegrin",words:[["Zdravo", "hello"], ["Hvala", "thank you"], ["Polako", "slowly, take it easy"]],
   coffee:["Cave Coffee", "Kotor · specialty coffee just outside the old town walls"],cowork:["AdriaHub", "Budva · coworking on the coast"],
   facts:[["Before the euro, Montenegro used which foreign currency?",["German mark","Italian lira","Swiss franc","Austrian schilling"],"It adopted the mark in 1999, then moved to the euro on its own in 2002."],
    ["The capital of Montenegro is…",["Podgorica","Cetinje","Budva","Kotor"],"Cetinje was the old royal capital and still has a special status."],
    ["Montenegro became an independent country in…",["2006","1992","1999","2011"],"It voted for independence in a referendum that May."],
-   ["At its deepest, the Tara River Canyon is around…",["1,300 m","300 m","700 m","2,500 m"],"That makes it one of the deepest canyons in Europe."]]},
+   ["At its deepest, the Tara River Canyon is around…",["1,300 m","300 m","700 m","2,500 m"],"That makes it one of the deepest canyons in Europe."],
+   ["About how many steps climb to the fortress above Kotor?",["1,350","350","3,000","150"],"The climb takes about an hour. Faster if you aren't a sloth."]]},
  croatia:{lang:"Croatian",words:[["Bok", "hi and bye"], ["Hvala", "thank you"], ["Fjaka", "a Dalmatian state of sweet, sleepy idleness"]],
   coffee:["D16 Coffee", "Split · specialty coffee in the old town"],cowork:["Re.Split Coworking", "Split · thoughtfully designed space for remote workers"],
   facts:[["Roughly how many of Croatia's islands are lived on all year?",["About 50","About 5","About 200","About 500"],"There are over a thousand islands, islets and reefs in total."],
    ["Before adopting the euro in 2023, Croatia's currency was the…",["Kuna","Dinar","Lira","Forint"],"Kuna means marten, after the fur once used as money."],
    ["Which national park is famous for its sixteen terraced lakes?",["Plitvice","Krka","Kornati","Brijuni"],"They step down into each other through waterfalls."],
-   ["Dubrovnik stood in for which city in Game of Thrones?",["King's Landing","Meereen","Braavos","Qarth"],"Its city walls and stone streets made the perfect royal capital."]]},
+   ["Dubrovnik stood in for which city in Game of Thrones?",["King's Landing","Meereen","Braavos","Qarth"],"Its city walls and stone streets made the perfect royal capital."],
+   ["Nikola Tesla was born in 1856 in the village of…",["Smiljan","Karlovac","Zadar","Osijek"],"It's in the Lika region, and his birthplace is now a museum."]]},
  spain:{lang:"Spanish",words:[["Hola", "hello"], ["Gracias", "thank you"], ["Sobremesa", "lingering at the table, chatting after a meal"]],
   coffee:["Virgin Coffee", "Seville · small specialty coffee bar"],cowork:["WorkINCompany", "Seville · historic centre, on Calle Rioja"],
   facts:[["Paella comes from the region around…",["Valencia","Madrid","Seville","Bilbao"],"Farmers first cooked it in the rice fields, in a wide, shallow pan."],
    ["The Basque language is related to…",["No known language","Catalan","Portuguese","Hungarian"],"It's a true outlier and predates the arrival of Latin in the region."],
    ["Building work on the Sagrada Família began in…",["1882","1925","1790","1955"],"Antoni Gaudí took over a year later, and it's still going."],
-   ["La Tomatina, the giant tomato fight, happens every August in…",["Buñol","Seville","Toledo","Ibiza"],"Thousands throw squashed tomatoes in this small town near Valencia."]]},
+   ["La Tomatina, the giant tomato fight, happens every August in…",["Buñol","Seville","Toledo","Ibiza"],"Thousands throw squashed tomatoes in this small town near Valencia."],
+   ["Who painted Guernica?",["Pablo Picasso","Salvador Dalí","Francisco Goya","Joan Miró"],"It hangs in the Reina Sofía museum in Madrid."]]},
  france:{lang:"French",words:[["Bonjour", "hello"], ["Merci", "thank you"], ["Flâner", "to wander the streets with no plan at all"]],
   coffee:["Coutume Café", "Paris · 7th arrondissement, an early name in the city's specialty coffee scene"],cowork:["Morning", "Paris · a network of coworking spaces across the city"],
   facts:[["In France, a shop can only call itself a boulangerie if it…",["Bakes its bread on site","Opens before 7am daily","Uses only French flour","Is family owned"],"A 1998 law says the bread must be kneaded, shaped and baked on the premises."],
    ["The Eiffel Tower was built for…",["The 1889 World's Fair","The 1900 World's Fair","The 1924 Olympics","The 1878 World's Fair"],"It was meant to be temporary. Radio antennas helped save it."],
    ["The first Tour de France was held in…",["1903","1923","1947","1889"],"A sports newspaper created it to sell more copies."],
-   ["Who painted the Water Lilies series at Giverny?",["Claude Monet","Pierre-Auguste Renoir","Édouard Manet","Paul Cézanne"],"He had the pond built in his garden and painted it for about 30 years."]]},
+   ["Who painted the Water Lilies series at Giverny?",["Claude Monet","Pierre-Auguste Renoir","Édouard Manet","Paul Cézanne"],"He had the pond built in his garden and painted it for about 30 years."],
+   ["Western Europe's highest mountain, on the French-Italian border, is…",["Mont Blanc","The Matterhorn","The Eiger","Mont Ventoux"],"It's about 4,800 m tall, and its height changes a little with the snow."]]},
  switzerland:{lang:"Swiss German",words:[["Grüezi", "hello"], ["Merci vilmal", "thanks a lot"], ["Znüni", "the mid-morning snack, around nine o'clock"]],
   coffee:["Miró Manufactura de Café", "Zürich · roastery, café and shop in one"],cowork:["Impact Hub Zürich Viadukt", "Zürich · tucked under the old railway arches"],
   facts:[["Romansh is spoken mainly in which canton?",["Graubünden","Ticino","Valais","Bern"],"It's one of four national languages, with only tens of thousands of speakers."],
    ["Velcro was invented in 1941 by Swiss engineer…",["George de Mestral","Henri Nestlé","Albert Hofmann","Jean Tinguely"],"He looked at burrs stuck to his dog under a microscope and copied their hooks."],
    ["Milk chocolate was invented in Switzerland in 1875 by…",["Daniel Peter","Rodolphe Lindt","Philippe Suchard","Henri Nestlé"],"He used condensed milk, made possible by his neighbour Nestlé's process. The two later became partners."],
-   ["The first website went live at CERN, near Geneva, in…",["1991","1981","1996","1986"],"Tim Berners-Lee built it, and it explained what the web was."]]},
+   ["The first website went live at CERN, near Geneva, in…",["1991","1981","1996","1986"],"Tim Berners-Lee built it, and it explained what the web was."],
+   ["Switzerland's flag is square. Which other national flag is too?",["Vatican City","Monaco","Nepal","Japan"],"They're the only two. Nepal's isn't even a rectangle."]]},
  austria:{lang:"German (Austrian)",words:[["Servus", "hi and bye"], ["Danke", "thank you"], ["Jause", "a snack break with bread, cheese and cold cuts"]],
   coffee:["Kaffeefabrik", "Vienna · a tiny specialty bar that roasts its own beans"],cowork:["Impact Hub Vienna", "Vienna · Neubau, a home for social entrepreneurs"],
   facts:[["Mozart was born in…",["Salzburg","Vienna","Graz","Innsbruck"],"He was born there in 1756, and you can visit the house today."],
    ["Sachertorte is a chocolate cake with a thin layer of…",["Apricot jam","Raspberry jam","Marzipan","Caramel"],"It's usually served with unsweetened whipped cream."],
    ["The croissant is said to descend from an Austrian pastry called the…",["Kipferl","Krapfen","Strudel","Knödel"],"Viennese bakers in Paris helped make crescent pastries popular in France."],
-   ["The Blue Danube waltz was composed by…",["Johann Strauss II","Franz Schubert","Joseph Haydn","Gustav Mahler"],"It premiered in Vienna in 1867."]]},
+   ["The Blue Danube waltz was composed by…",["Johann Strauss II","Franz Schubert","Joseph Haydn","Gustav Mahler"],"It premiered in Vienna in 1867."],
+   ["Vienna's Schönbrunn Zoo, opened in 1752, is the world's…",["Oldest zoo still running","Largest zoo in Europe","Highest zoo in Europe","First zoo with pandas"],"It started as an imperial menagerie in the palace gardens."]]},
  poland:{lang:"Polish",words:[["Cześć", "hi and bye"], ["Dziękuję", "thank you"], ["Smacznego", "enjoy your meal, said before anyone eats"]],
   coffee:["Karma Coffee Roastery", "Kraków · roasts its own beans, a short walk from the old town"],cowork:["Cluster Stare Podgórze", "Kraków · in a restored 1892 building in Podgórze"],
   facts:[["Astronomer Nicolaus Copernicus was born in…",["Toruń","Gdańsk","Kraków","Łódź"],"Toruń is also famous for its gingerbread, piernik."],
    ["Near Kraków, the Wieliczka mine has chapels carved out of…",["Salt","Amber","Coal","Marble"],"Even the chandeliers in its Chapel of St. Kinga are made of salt crystals."],
    ["Composer Frédéric Chopin was born in…",["Żelazowa Wola","Kraków","Gdańsk","Warsaw"],"It's a tiny village west of Warsaw. His heart is buried in Warsaw."],
-   ["Marie Curie's second Nobel Prize, in 1911, was for…",["Chemistry","Physics","Medicine","Peace"],"Her first, shared in 1903, was for physics."]]},
+   ["Marie Curie's second Nobel Prize, in 1911, was for…",["Chemistry","Physics","Medicine","Peace"],"Her first, shared in 1903, was for physics."],
+   ["Białowieża Forest is home to Europe's largest herd of wild…",["Bison","Elk","Wolves","Horses"],"European bison were saved from extinction and released back into the forest."]]},
  czechia:{lang:"Czech",words:[["Ahoj", "hi (and bye)"], ["Děkuji", "thank you"], ["Pohoda", "easygoing, all-is-well contentment"]],
   coffee:["EMA Espresso Bar", "Prague · bright espresso bar on Na Florenci"],cowork:["Impact Hub Praha", "Prague · the first Czech coworking, near Anděl"],
   facts:[["The word robot was introduced in the play R.U.R. by…",["Karel Čapek","Franz Kafka","Milan Kundera","Jaroslav Hašek"],"His brother Josef suggested the word, which comes from robota, meaning forced labour."],
    ["The sugar cube was invented in 1843 in the town of…",["Dačice","Brno","Plzeň","Karlovy Vary"],"The story goes a factory boss made them after his wife cut her finger on a sugar loaf."],
    ["Prague's astronomical clock was first installed in…",["1410","1310","1510","1610"],"It's the oldest astronomical clock still working."],
-   ["Pilsner beer was first brewed in…",["1842","1742","1902","1642"],"A Bavarian brewer made the first batch in Plzeň, and it's now copied everywhere."]]},
+   ["Pilsner beer was first brewed in…",["1842","1742","1902","1642"],"A Bavarian brewer made the first batch in Plzeň, and it's now copied everywhere."],
+   ["Czechoslovakia split into two countries in…",["1993","1968","1989","2004"],"It was so calm it's known as the Velvet Divorce."]]},
  germany:{lang:"German",words:[["Hallo", "hello"], ["Danke", "thank you"], ["Feierabend", "the happy moment the workday ends"]],
   coffee:["The Barn", "Berlin · specialty roaster with cafés across the city"],cowork:["St. Oberholz", "Berlin · coworking café at Rosenthaler Platz"],
   facts:[["The paper coffee filter was invented in 1908 by…",["Melitta Bentz","Marga Faulstich","Clara Immerwahr","Bertha Benz"],"Tired of gritty coffee, she tried blotting paper from her son's school notebook."],
    ["Which city is most famous for its Lebkuchen?",["Nuremberg","Cologne","Leipzig","Hamburg"],"Nuremberg's spice trade made it the gingerbread capital."],
    ["Germany is made up of how many federal states?",["16","12","14","20"],"Berlin, Hamburg and Bremen are states as well as cities."],
-   ["The Berlin Wall went up in…",["1961","1949","1955","1968"],"It stood for 28 years until November 1989."]]},
+   ["The Berlin Wall went up in…",["1961","1949","1955","1968"],"It stood for 28 years until November 1989."],
+   ["Gutenberg built his famous printing press in…",["Mainz","Cologne","Leipzig","Frankfurt"],"His Bible came out in the 1450s."]]},
  netherlands:{lang:"Dutch",words:[["Hallo", "hello"], ["Dank je wel", "thank you"], ["Gezellig", "cozy, friendly, a warm good time together"]],
   coffee:["Lot Sixty One Coffee Roasters", "Amsterdam · roastery café on Kinkerstraat"],cowork:["B. Amsterdam", "Amsterdam · huge startup campus near Sloterdijk"],
   facts:[["Stroopwafels were first made in the city of…",["Gouda","Rotterdam","Utrecht","The Hague"],"Bakers there were making them by the 1800s. Yes, the cheese town."],
    ["About how much of the Netherlands lies below sea level?",["A quarter","A tenth","Half","Three quarters"],"Dikes, dunes and pumps keep roughly 26% of the country dry."],
    ["Dutch tulip mania, the famous price bubble, peaked in the…",["1630s","1530s","1730s","1830s"],"Single bulbs reportedly sold for more than a house before the crash in 1637."],
-   ["Who painted Girl with a Pearl Earring?",["Johannes Vermeer","Rembrandt van Rijn","Frans Hals","Jan Steen"],"It hangs in the Mauritshuis in The Hague."]]},
+   ["Who painted Girl with a Pearl Earring?",["Johannes Vermeer","Rembrandt van Rijn","Frans Hals","Jan Steen"],"It hangs in the Mauritshuis in The Hague."],
+   ["Amsterdam's old buildings stand on…",["Wooden piles","Stone blocks","Steel frames","Sand dunes"],"Millions of wooden poles were driven through the soft ground."]]},
  uk:{lang:"British English",words:[["Alright?", "hello, how are you"], ["Cheers", "thanks (and often goodbye)"], ["Cuppa", "a cup of tea, the cure for most things"]],
   coffee:["Prufrock Coffee", "London · Leather Lane, a pioneer of the city's specialty scene"],cowork:["The Trampery", "London · purpose-led workspaces across the city"],
   facts:[["The English-speaking world's oldest university is…",["Oxford","Cambridge","St Andrews","Durham"],"Teaching at Oxford dates back to at least 1096."],
    ["The UK's longest river is the…",["Severn","Thames","Trent","Clyde"],"It beats the Thames by about 8 km."],
    ["The world's first adhesive postage stamp, from 1840, is the…",["Penny Black","Red Cent","Blue Mauritius","Inverted Jenny"],"It carried a young Queen Victoria's head."],
-   ["Queen Catherine of Braganza made tea fashionable at the English court. She came from…",["Portugal","Spain","France","Netherlands"],"She married Charles II in 1662 and brought the habit with her."]]},
+   ["Queen Catherine of Braganza made tea fashionable at the English court. She came from…",["Portugal","Spain","France","Netherlands"],"She married Charles II in 1662 and brought the habit with her."],
+   ["Big Ben is actually the name of…",["The bell","The tower","The clock face","The architect"],"The tower is the Elizabeth Tower. Big Ben is the great bell inside it."]]},
  peru:{lang:"Quechua & Spanish",words:[["Rimaykullayki", "hello (Quechua)"], ["Sulpayki", "thank you (Quechua)"], ["Munay", "love (Quechua)"]],
   coffee:["Three Monkeys Coffee", "Cusco · San Blas, started life as a coffee cart"],cowork:["Genba Coworking Cusco", "Cusco · on the Plazoleta de San Blas"],
   facts:[["The Inca kept records using knotted cords called…",["Quipu","Tumi","Ayni","Chullo"],"The knots stored numbers, and possibly more. A tumi is a knife, and a chullo is a hat."],
    ["The giant Nazca Lines are drawn into…",["A coastal desert","A cloud forest","A high glacier","A salt flat"],"It barely ever rains there, which is why the lines have lasted about 2,000 years."],
    ["Who captured the Inca emperor Atahualpa in 1532?",["Francisco Pizarro","Hernán Cortés","Diego de Almagro","Vasco Núñez de Balboa"],"He held Atahualpa for a room full of gold, then executed him anyway."],
-   ["Who brought Machu Picchu to world attention in 1911?",["Hiram Bingham","Thor Heyerdahl","Percy Fawcett","Alexander von Humboldt"],"Locals already knew it was there. A Yale academic made it famous abroad."]]},
+   ["Who brought Machu Picchu to world attention in 1911?",["Hiram Bingham","Thor Heyerdahl","Percy Fawcett","Alexander von Humboldt"],"Locals already knew it was there. A Yale academic made it famous abroad."],
+   ["Peru's highest peak is…",["Huascarán","Ampato","Coropuna","Alpamayo"],"It rises about 6,768 m in the Cordillera Blanca."]]},
  thailand:{lang:"Thai",words:[["Sawasdee", "hello"], ["Khob khun", "thank you"], ["Sanuk", "fun. Thais like life to have some"]],
   coffee:["Ristr8to", "Chiang Mai · Nimman, run by a world latte-art champion"],cowork:["Punspace Tha Phae Gate", "Chiang Mai · Old City, one of the first co-working spots in town"],
   facts:[["Siam officially became Thailand in which decade?",["The 1930s","The 1890s","The 1950s","The 1970s"],"The name changed in 1939."],
    ["Which old Siamese capital was destroyed by a Burmese army in 1767?",["Ayutthaya","Sukhothai","Chiang Rai","Lopburi"],"Its ruins are now a UNESCO World Heritage Site north of Bangkok."],
    ["Bangkok sits on which river?",["Chao Phraya","Mekong","Ping","Salween"],"The Mekong runs along Thailand's northeast border, nowhere near Bangkok."],
-   ["The Thai script is traditionally credited to which king?",["Ramkhamhaeng","Bhumibol","Chulalongkorn","Mongkut"],"He ruled Sukhothai and tradition dates the script to 1283."]]},
+   ["The Thai script is traditionally credited to which king?",["Ramkhamhaeng","Bhumibol","Chulalongkorn","Mongkut"],"He ruled Sukhothai and tradition dates the script to 1283."],
+   ["Phuket's west coast faces which sea?",["Andaman Sea","Gulf of Thailand","South China Sea","Java Sea"],"Bangkok and Koh Samui are on the Gulf side."]]},
  laos:{lang:"Lao",words:[["Sabaidee", "hello"], ["Khop jai", "thank you"], ["Tak bat", "the morning alms round, when monks collect sticky rice"]],
   coffee:["Saffron Coffee", "Luang Prabang · on the Mekong, buys from highland Lao farmers"],cowork:["The Desk Co-Working", "Luang Prabang · Old Town"],
   facts:[["The capital of Laos is…",["Vientiane","Luang Prabang","Pakse","Savannakhet"],"Luang Prabang was the royal capital. Vientiane has been the seat of government since the French era."],
    ["The huge jars on Laos's Plain of Jars are mostly made of…",["Stone","Clay","Bronze","Teak"],"Most are carved sandstone, and nobody is fully sure what they were for."],
    ["The old Lao kingdom of Lan Xang has a name that means…",["Million Elephants","Thousand Rivers","Golden Mountains","Hundred Temples"],"It was one of the biggest kingdoms in Southeast Asia from the 1300s."],
-   ["Laos was once a protectorate of which European country?",["France","Britain","Portugal","Netherlands"],"It was part of French Indochina until 1953."]]},
+   ["Laos was once a protectorate of which European country?",["France","Britain","Portugal","Netherlands"],"It was part of French Indochina until 1953."],
+   ["The currency of Laos is the…",["Kip","Riel","Dong","Baht"],"Riel is Cambodian, dong is Vietnamese and baht is Thai."]]},
  cambodia:{lang:"Khmer",words:[["Chom reap suor", "hello (polite)"], ["Arkun", "thank you"], ["Chhnang", "delicious"]],
   coffee:["The Bean Embassy", "Siem Reap · garden roastery near Wat Damnak"],cowork:["Footprint Cafes Hub", "Siem Reap · social-enterprise café with free co-working upstairs"],
   facts:[["Angkor Wat was first dedicated to which Hindu god?",["Vishnu","Shiva","Brahma","Ganesha"],"It became a Buddhist temple later on."],
    ["Which king built Angkor Wat?",["Suryavarman II","Jayavarman VII","Norodom Sihanouk","Indravarman I"],"He had it built in the first half of the 1100s."],
    ["The jungle temple Ta Prohm appears in which film?",["Tomb Raider","Indiana Jones","Apocalypse Now","Avatar"],"Lara Croft climbs through its strangler-fig roots in the 2001 film."],
-   ["Phnom Penh sits where the Tonlé Sap meets which river?",["Mekong","Red River","Chao Phraya","Irrawaddy"],"Boats have been meeting at this junction for centuries."]]},
+   ["Phnom Penh sits where the Tonlé Sap meets which river?",["Mekong","Red River","Chao Phraya","Irrawaddy"],"Boats have been meeting at this junction for centuries."],
+   ["Tonlé Sap is Southeast Asia's largest…",["Freshwater lake","Salt marsh","Sea cave","Coral bay"],"It swells to several times its size in the rainy season."]]},
  singapore:{lang:"Singlish",words:[["Shiok", "delicious, great"], ["Makan", "to eat"], ["Chope", "to reserve a seat, usually with a tissue packet"]],
   coffee:["Ya Kun Kaya Toast", "Singapore · Far East Square, kopi and kaya toast since 1944"],cowork:["The Working Capitol", "Singapore · shophouses on Keong Saik Road"],
   facts:[["In 1965, Singapore separated from…",["Malaysia","Indonesia","Britain","Thailand"],"It had joined Malaysia only two years earlier."],
    ["Who set up a British trading post in Singapore in 1819?",["Stamford Raffles","James Brooke","Francis Light","Arthur Wellesley"],"Brooke ruled Sarawak, and Light founded Penang."],
    ["The name Singapore comes from Sanskrit for…",["Lion City","Tiger Port","Dragon Bay","Merchant Town"],"There were never lions there. The legend says a prince mistook another animal for one."],
-   ["Kaya, the spread on kopitiam toast, is made mainly from…",["Coconut and egg","Peanut and sugar","Durian and cream","Mung bean and lard"],"Pandan often gives it its green colour."]]},
+   ["Kaya, the spread on kopitiam toast, is made mainly from…",["Coconut and egg","Peanut and sugar","Durian and cream","Mung bean and lard"],"Pandan often gives it its green colour."],
+   ["Singapore's half-lion, half-fish mascot is the…",["Merlion","Dragonfish","Garuda","Naga"],"It was created in the 1960s as a tourism logo."]]},
  australia:{lang:"Aussie",words:[["G'day", "hello"], ["Ta", "thanks"], ["Arvo", "afternoon"]],
   coffee:["Caffiend", "Cairns · Grafton Street, a laneway local favourite for strong coffee"],cowork:["Art Work Spaces", "Cairns · Abbott Street, day passes and a balcony"],
   facts:[["Uluru is in which part of Australia?",["Northern Territory","South Australia","Western Australia","Queensland"],"It's near the middle of the country, about 450 km from Alice Springs by road."],
    ["Coober Pedy, where many people live underground, is known for mining…",["Opal","Gold","Sapphire","Iron ore"],"Underground homes are a way to escape the outback heat."],
    ["Which Australian mammal lays eggs?",["Echidna","Wombat","Quokka","Bilby"],"Echidnas and platypuses are the only egg-laying mammals alive today."],
-   ["The First Fleet of British ships reached Sydney Cove in…",["1788","1688","1742","1851"],"The date, 26 January, is now Australia Day."]]},
+   ["The First Fleet of British ships reached Sydney Cove in…",["1788","1688","1742","1851"],"The date, 26 January, is now Australia Day."],
+   ["Before Canberra, which city served as Australia's temporary seat of government?",["Melbourne","Sydney","Adelaide","Brisbane"],"Parliament sat there from 1901 to 1927."]]},
  newzealand:{lang:"Māori & Kiwi",words:[["Kia ora", "hello, thanks, good health"], ["Whānau", "family"], ["Ka pai", "good, well done"]],
   coffee:["The Coffee Shack", "Wānaka · great coffee from a converted garage"],cowork:["General Service", "Wānaka · Dunmore St, with a little café in the alley"],
   facts:[["The Māori name Aotearoa is usually translated as land of the long…",["White cloud","Green hill","Blue water","Grey mountain"],"It's widely used alongside the name New Zealand."],
    ["New Zealand's highest peak is…",["Aoraki","Ruapehu","Taranaki","Tongariro"],"Also called Mount Cook, it's about 3,724 m. Edmund Hillary trained on it before Everest."],
    ["The New Zealand-born scientist called the father of nuclear physics is…",["Ernest Rutherford","Niels Bohr","James Chadwick","Max Planck"],"He's on the NZ$100 note."],
-   ["The Treaty of Waitangi was first signed in…",["1840","1769","1893","1907"],"It's still a founding document of New Zealand."]]},
+   ["The Treaty of Waitangi was first signed in…",["1840","1769","1893","1907"],"It's still a founding document of New Zealand."],
+   ["New Zealand's capital city is…",["Wellington","Auckland","Christchurch","Dunedin"],"Auckland is bigger, but Wellington has been the capital since 1865."]]},
  colombia:{lang:"Colombian Spanish",words:[["¿Qué más?", "what's up? (hello)"], ["Parce", "buddy"], ["Tinto", "a small black coffee"]],
   coffee:["Finca El Ocaso", "Salento · coffee farm tours, roasting and tastings"],cowork:["Atom House", "Medellín · Laureles, a nomad favourite"],
   facts:[["Colombia is a world leader in mining which gem?",["Emeralds","Rubies","Sapphires","Opals"],"The mines at Muzo have been famous for hundreds of years."],
    ["Caño Cristales is nicknamed the river of…",["Five Colours","Seven Waterfalls","Singing Stones","Golden Sand"],"A river plant turns it bright red for part of the year."],
    ["The El Dorado legend comes from a gold ritual at which lake?",["Guatavita","Titicaca","Tota","Calima"],"A Muisca chief covered in gold dust dived in, or so the story goes."],
-   ["When Bogotá closes main roads to cars on Sundays, it's called…",["Ciclovía","TransMilenio","Feria de Flores","Carnaval"],"Over a million people bike, run or walk it each week."]]},
+   ["When Bogotá closes main roads to cars on Sundays, it's called…",["Ciclovía","TransMilenio","Feria de Flores","Carnaval"],"Over a million people bike, run or walk it each week."],
+   ["Bogotá sits at an altitude of about…",["2,600 m","800 m","1,500 m","4,000 m"],"That's why it's cool all year, so close to the equator."]]},
  portugal:{lang:"Portuguese",words:[["Olá", "hello"], ["Obrigado / Obrigada", "thank you"], ["Saudade", "a deep, bittersweet longing"]],
   coffee:["Fábrica Coffee Roasters", "Lisbon · one of the first third-wave roasters in the city"],cowork:["Second Home Lisboa", "Lisbon · inside the Mercado da Ribeira market hall"],
   facts:[["Portugal produces about half of the world's…",["Cork","Olives","Almonds","Chestnuts"],"It comes from the bark of cork oaks, which grows back after harvesting."],
    ["The painted tiles on Portuguese buildings are called…",["Azulejos","Mosaicos","Terracotas","Cerámicas"],"They cover churches, train stations and whole house fronts."],
    ["The world's oldest bookshop still operating, in Lisbon, is…",["Livraria Bertrand","Livraria Lello","Ler Devagar","Livraria Ferin"],"It opened in 1732. Lello, in Porto, is the famous pretty one."],
-   ["Portugal's melancholic song style, heard in small taverns, is…",["Fado","Corridinho","Vira","Malhão"],"The other three are folk dances from around the country."]]},
+   ["Pastéis de nata were first made in Lisbon by…",["Monks","Royal bakers","Sailors","Fishermen"],"Monks at Jerónimos Monastery used up spare egg yolks, because the egg whites starched their habits."],
+   ["Lisbon's Belém Tower stands on which river?",["Tagus","Douro","Mondego","Guadiana"],"The Douro is the one that runs through Porto."]]},
  japan:{lang:'Japanese',words:[['Konnichiwa','hello'],['Arigatō','thank you'],['Kōhī','coffee']],
   coffee:['Koffee Mameya Kakeru','Tokyo · Kiyosumi-Shirakawa, coffee served like a tasting menu'],cowork:['Impact Hub Tokyo','Tokyo · Meguro'],
   facts:[["The Tale of Genji, often called the world's first novel, was written by…",["Murasaki Shikibu","Sei Shōnagon","Matsuo Bashō","Natsume Sōseki"],"She was a noblewoman at the imperial court, writing around the year 1000."],
    ["Japan's largest lake is…",["Lake Biwa","Lake Kawaguchi","Lake Ashi","Lake Towada"],"It sits just northeast of Kyoto and is around 4 million years old."],
    ["The northernmost of Japan's four main islands is…",["Hokkaido","Honshu","Kyushu","Shikoku"],"It's famous for powder snow, dairy farms and Sapporo's snow festival."],
-   ["Kintsugi repairs broken pottery using…",["Lacquer and gold","Silver and wire","Rice glue and clay","Tin and solder"],"The cracks are made a feature, not hidden."]]},
+   ["Kintsugi repairs broken pottery using…",["Lacquer and gold","Silver and wire","Rice glue and clay","Tin and solder"],"The cracks are made a feature, not hidden."],
+   ["Before Tokyo, Japan's capital for over 1,000 years was…",["Kyoto","Osaka","Nara","Kamakura"],"The emperor moved around 1868, when Edo was renamed Tokyo."]]},
  cuba:{lang:'Spanish',words:[['Oye','hey, listen'],['Gracias','thank you'],['Cafecito','a tiny, sweet, very strong coffee']],
   coffee:['Café El Escorial','Havana · on Plaza Vieja, Old Havana'],cowork:['Galiano 115','Havana · café with Wi-Fi for local entrepreneurs, Centro Habana'],
   facts:[["Which author lived at Finca Vigía, just outside Havana?",["Ernest Hemingway","F. Scott Fitzgerald","William Faulkner","John Steinbeck"],"He lived there for around 20 years, and his boat is still on the grounds."],
    ["Cuba's largest offshore island is…",["Isla de la Juventud","Cayo Coco","Cayo Largo","Cayo Guillermo"],"Its name means Isle of Youth. It used to be the Isle of Pines."],
    ["The world's smallest bird, found only in Cuba, is the…",["Bee hummingbird","Cuban tody","Cuban trogon","Zapata wren"],"It weighs about 2 grams. The trogon is Cuba's national bird."],
-   ["Which dance was born in Havana in the 1950s?",["Cha-cha-chá","Merengue","Bachata","Tango"],"Violinist Enrique Jorrín created it. Merengue and bachata are Dominican."]]},
+   ["Which dance was born in Havana in the 1950s?",["Cha-cha-chá","Merengue","Bachata","Tango"],"Violinist Enrique Jorrín created it. Merengue and bachata are Dominican."],
+   ["Havana's famous seafront promenade is the…",["Malecón","Prado","Obispo","Vedado"],"It runs for about 8 km along the sea wall."]]},
  mexico:{lang:'Spanish',words:[['Hola','hello'],['Gracias','thank you'],['Sobremesa','lingering at the table to chat after a meal']],
   coffee:['Blend Station','Mexico City · Condesa and Roma Norte'],cowork:['Público','Mexico City · several spaces, including Roma and Condesa'],
   facts:[["Maize was bred thousands of years ago from a wild grass called…",["Teosinte","Sorghum","Amaranth","Millet"],"It looks so little like corn that scientists argued about it for decades."],
    ["Mexico City grew on top of which Aztec capital?",["Tenochtitlan","Teotihuacan","Chichén Itzá","Monte Albán"],"It sat on an island in Lake Texcoco. The other three are older sites."],
    ["The orange marigolds used for Día de Muertos are called…",["Cempasúchil","Bougainvillea","Jacaranda","Nopal"],"Their colour and scent are said to guide spirits home."],
-   ["Frida Kahlo's home in Coyoacán is known as…",["La Casa Azul","La Casa Rosa","La Casa Verde","La Casa Roja"],"She was born there and died there, and it's now a museum."]]},
+   ["Frida Kahlo's home in Coyoacán is known as…",["La Casa Azul","La Casa Rosa","La Casa Verde","La Casa Roja"],"She was born there and died there, and it's now a museum."],
+   ["The world's largest pyramid by volume is in…",["Cholula","Teotihuacan","Oaxaca","Mérida"],"It looks like a hill with a church on top."]]},
  iceland:{lang:"Icelandic",words:[["Hæ", "hi"], ["Takk", "thanks"], ["Gluggaveður", "weather that only looks nice through a window"]],
   coffee:["Reykjavík Roasters", "Reykjavík · small-batch roaster on Kárastígur"],cowork:["Hafnar.Haus", "Reykjavík · creative hub by the old harbour"],
   facts:[["Iceland's parliament, founded in 930, is called the…",["Althing","Folketing","Riksdag","Storting"],"The other three are the parliaments of Denmark, Sweden and Norway."],
    ["Iceland's largest glacier is…",["Vatnajökull","Langjökull","Hofsjökull","Eyjafjallajökull"],"Vatnajökull covers around 8% of the country."],
    ["Iceland became an independent republic in 1944, breaking from…",["Denmark","Norway","Britain","Sweden"],"It left its union with the Danish king during World War II."],
-   ["A boy named Ari, whose father is Jón, would usually be called…",["Ari Jónsson","Ari Jónsdóttir","Jón Arason","Ari Jónsen"],"Most Icelanders use their parent's first name, not a family name."]]},
+   ["A boy named Ari, whose father is Jón, would usually be called…",["Ari Jónsson","Ari Jónsdóttir","Jón Arason","Ari Jónsen"],"Most Icelanders use their parent's first name, not a family name."],
+   ["The Blue Lagoon's water comes from…",["A geothermal power plant","Melting glaciers","A natural hot spring","Pumped-in sea water"],"It's runoff from the Svartsengi plant, rich in silica and very blue."]]},
  vietnam:{lang:'Vietnamese',words:[['Xin chào','hello'],['Cảm ơn','thank you'],['Cà phê','coffee']],
   coffee:['Café Giảng','Hanoi · the family café that has served egg coffee since 1946'],cowork:['Toong','Hanoi'],
   facts:[["Modern written Vietnamese uses which alphabet?",["Latin","Chinese","Khmer","Cyrillic"],"Quốc ngữ was developed by missionaries in the 1600s, with lots of accents to mark tones."],
    ["Hang Sơn Đoòng in Vietnam is the world's largest…",["Cave","Waterfall","Sinkhole","Sea arch"],"It's so big it has its own jungle and clouds inside."],
    ["Huế was the imperial capital under which dynasty?",["Nguyễn","Trần","Lý","Lê"],"The Nguyễn were Vietnam's last dynasty, ending in 1945."],
-   ["The highest peak in Indochina, in northern Vietnam, is…",["Fansipan","Phu Bia","Ngọc Linh","Bà Đen"],"It stands around 3,143 m, and now has a cable car to the top."]]},
+   ["The highest peak in Indochina, in northern Vietnam, is…",["Fansipan","Phu Bia","Ngọc Linh","Bà Đen"],"It stands around 3,143 m, and now has a cable car to the top."],
+   ["Ho Chi Minh City was formerly called…",["Saigon","Huế","Da Nang","Haiphong"],"It was renamed in 1976, and many people still say Saigon."]]},
  italy:{lang:"Italian",words:[["Ciao", "hi and bye"], ["Grazie", "thank you"], ["Dolce far niente", "the sweetness of doing nothing"]],
   coffee:["Sant'Eustachio Il Caffè", "Rome · near the Pantheon, roasting since 1938"],cowork:["Talent Garden Roma Ostiense", "Rome · Ostiense"],
   facts:[["The classic stovetop moka pot was invented by…",["Alfonso Bialetti","Achille Gaggia","Luigi Bezzera","Angelo Moriondo"],"His octagonal pot launched in 1933. The other three worked on espresso machines."],
    ["The coins thrown into Rome's Trevi Fountain go to…",["Charity","The city museums","Fountain repairs","The Vatican"],"They're collected and given to Caritas, a Catholic charity."],
    ["Italy's longest river is the…",["Po","Tiber","Arno","Adige"],"The Tiber runs through Rome, but the Po is about 250 km longer."],
-   ["Pompeii was buried in 79 AD by which volcano?",["Vesuvius","Etna","Stromboli","Vulcano"],"The ash preserved the city almost perfectly for 1,700 years."]]},
+   ["Pompeii was buried in 79 AD by which volcano?",["Vesuvius","Etna","Stromboli","Vulcano"],"The ash preserved the city almost perfectly for 1,700 years."],
+   ["Europe's oldest university still running is in…",["Bologna","Padua","Naples","Rome"],"It dates to 1088."]]},
  canada:{lang:'Canadian',words:[['Toque','a knitted winter hat'],['Double-double','coffee with two creams, two sugars'],['Loonie','the one-dollar coin']],
   coffee:['Pilot Coffee Roasters','Toronto'],cowork:['Centre for Social Innovation','Toronto'],
   facts:[["Canada's only officially bilingual province is…",["New Brunswick","Quebec","Ontario","Manitoba"],"Quebec's sole official language is French. New Brunswick has had both English and French since 1969."],
    ["Canadian James Naismith invented basketball in 1891 while working in…",["Springfield","Boston","Chicago","Philadelphia"],"He nailed peach baskets to a gym balcony in Springfield, Massachusetts."],
    ["The first Tim Hortons opened in 1964 in…",["Hamilton","Toronto","Ottawa","London"],"It was founded by a hockey player, and the first shop was in Hamilton, Ontario."],
-   ["Canada's newest territory, created in 1999, is…",["Nunavut","Yukon","Northwest Territories","Labrador"],"It was split off from the Northwest Territories. Labrador is part of a province."]]}
+   ["Canada's newest territory, created in 1999, is…",["Nunavut","Yukon","Northwest Territories","Labrador"],"It was split off from the Northwest Territories. Labrador is part of a province."],
+   ["Canada's smallest province is…",["Prince Edward Island","Nova Scotia","New Brunswick","Newfoundland"],"It's the home of Anne of Green Gables."]]}
 };
 /* per country: one piece of old wisdom Mocha takes home (the country's lesson) */
 const WISDOM={
@@ -1635,7 +1719,7 @@ function hashStr(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Ma
 const KEY='slothdoku-v3';
 function load(){
   const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,seenHelp:false,diff:'normal',custom:{},shadow:true,chapter:0,newItems:false,
-    coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:6};
+    coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:7};
   const sumL=o=>(o.levels.chill-1)+(o.levels.tricky-1)+(o.levels.wild-1);
   const backPay=o=>10+5*sumL(o);
   let v=null;
@@ -1645,6 +1729,13 @@ function load(){
     if(!v.v){o.coins=backPay(o);o.v=5}
     if(o.v<5){o.coins=Math.min(o.coins,backPay(o));o.v=5}
     if(o.v<6){o.level=1+sumL(o);o.v=6} /* three difficulty tracks merge into one journey */
+    if(o.v<7){ /* countries grew from 4 levels to 5: keep everyone on the same stop */
+      const up=c=>c<TOUR_AT?c:c>=TOUR_AT+COUNTRIES.length*4?c+COUNTRIES.length:TOUR_AT+Math.floor((c-TOUR_AT)/4)*TOUR_LEN+(c-TOUR_AT)%4;
+      o.level=up(o.level-1)+1;
+      ['stars','best'].forEach(f=>{const n={};Object.entries(o[f]||{}).forEach(([k,v])=>{const m=/^j:(\d+)$/.exec(k);n[m?'j:'+(up(+m[1]-1)+1):k]=v});o[f]=n});
+      Object.keys(o.stampLv||{}).forEach(k=>o.stampLv[k]=up(o.stampLv[k]-1)+1);
+      o.v=7;
+    }
     o.stamps=(o.stamps||[]).filter(id=>COUNTRIES.some(c=>c.id===id));
     Object.keys(o.equip||{}).forEach(sl=>{if(!['head','face','neck','hand'].includes(sl)||!ITEMS.some(i=>i.id===o.equip[sl]))delete o.equip[sl]});
     /* tour changed under older saves: stamp every country whose levels are already behind you */
@@ -1689,7 +1780,7 @@ function legAt(c){
 let REPLAY=null;
 const playLv=()=>REPLAY||SAVE.level;
 const curLeg=()=>legAt(playLv()-1);
-function legTitle(L){return L.kind==='free'?['Free play · new stops coming as Matthew travels','Café Basecamp']:L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[`World Tour · stop ${L.i+1} of ${COUNTRIES.length}${L.round?' · encore':''}`,L.leg.name]}
+function legTitle(L){return L.kind==='free'?['Free play · new stops coming as Matthew travels','Café Basecamp']:L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[(s=>`${s.name} · stop ${L.i-secIdx(s,'first')+1} of ${secIdx(s,'last')-secIdx(s,'first')+1}`)(sectionOf(L.i)),L.leg.name]}
 function chapterIndex(){return legAt(Math.min(stats().cleared,TOUR_AT-1)).i}
 const dailyDone=()=>!!SAVE.daily['d:'+todayKey()];
 function chapterHTML(ch,i){return `<div class="chapter"><div class="eyebrow">Chapter ${i+1} of ${CHAPTERS.length}</div><h3>${ch.title}</h3><p>${ch.text}</p></div>`}
@@ -1987,28 +2078,36 @@ function start(){
     if(phase==='build'){say('idle','Build the floor first. Drag each piece into place.');document.getElementById('trip').scrollIntoView({block:'start',behavior:reduced?'auto':'smooth'})}
   },30);
 }
-/* level select: replay any level you've reached; your real progress never moves backwards */
+/* replay: a whole section, a country or chapter, or one level for the 3-star hunters. Real progress never moves backwards */
+let REPLAY_END=null;
 function openLevels(){
   let host=document.getElementById('lvlhost');if(!host){host=document.createElement('div');host.id='lvlhost';document.body.appendChild(host)}
-  const top=SAVE.level,cur=playLv();
-  const stops=gearStops().concat(TOUR_END<top?[{key:'free',name:'Free play',label:'After the tour',start:TOUR_END,len:Math.max(1,top-TOUR_END)}]:[]);
-  const rows=stops.filter(g=>g.start<top).map(g=>{
-    const lv=Array.from({length:g.len},(_,i)=>g.start+i+1);
-    return `<p class="lvlstop">${g.name}<small>${g.label}</small></p><div class="lvlgrid">${lv.map(n=>{const st=SAVE.stars['j:'+n]||0;
-      return `<button type="button" data-lv="${n}" ${n>top?'disabled':''} aria-current="${n===cur}" aria-label="Level ${n}${st?`, ${st} stars`:''}">${n}${st?`<span class="st">${'★'.repeat(st)}</span>`:''}</button>`}).join('')}</div>`}).join('');
+  const top=SAVE.level,cur=playLv(),stops=gearStops();
+  const starsIn=(a,len)=>{let t=0;for(let n=a+1;n<=a+len;n++)t+=SAVE.stars['j:'+n]||0;return t};
+  const stopRow=g=>{
+    const lv=Array.from({length:g.len},(_,i)=>g.start+i+1),open=cur>g.start&&cur<=g.start+g.len;
+    return `<details class="rstop"${open?' open':''}><summary><b>${g.name}</b><span class="rst">★ ${starsIn(g.start,g.len)}/${g.len*3}</span></summary>
+      <button class="btn rbtn" type="button" data-from="${g.start+1}" data-to="${g.start+g.len}">Replay ${g.name}</button>
+      <div class="lvlgrid">${lv.map(n=>{const st=SAVE.stars['j:'+n]||0;
+      return `<button type="button" data-from="${n}" data-to="${n}" ${n>top?'disabled':''} aria-current="${n===cur}" aria-label="Level ${n}${st?`, ${st} stars`:''}">${n}${st?`<span class="st">${'★'.repeat(st)}</span>`:''}</button>`}).join('')}</div></details>`};
+  const groups=[{name:'The Story',list:stops.filter(g=>g.label.startsWith('Chapter'))},...SECTIONS.map(s=>({name:s.name,list:stops.filter(g=>g.label===s.name)}))];
+  const rows=groups.map(g=>{
+    const a=g.list[0].start,len=g.list.reduce((t,x)=>t+x.len,0);
+    if(a>=top)return `<p class="rsec locked">${g.name}<small>Keep travelling</small></p>`;
+    return `<div class="rsec"><div class="rsechd"><p>${g.name}<small>★ ${starsIn(a,len)}/${len*3}</small></p><button class="pill" type="button" data-from="${a+1}" data-to="${a+len}">Replay all</button></div>${g.list.filter(x=>x.start<top).map(stopRow).join('')}</div>`}).join('');
   host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="lvlTitle"><div class="helpcard">
-    <h2 id="lvlTitle" style="margin:0">Levels</h2>
-    <p class="fine" style="margin:0">Replay any level you've reached. Tips still count. Stamps and gifts stay where you earned them.</p>
-    <div style="max-height:60vh;overflow-y:auto">${rows}</div>
+    <h2 id="lvlTitle" style="margin:0">Replay</h2>
+    <p class="fine" style="margin:0">Replay a section, a country or one level. Tips still count and stars can improve. Stamps and gifts stay where you earned them.</p>
+    <div style="max-height:58vh;overflow-y:auto">${rows}</div>
     <div class="row"><button class="btn go" type="button" id="lvlLatest">Play my latest level (${top})</button><button class="btn" type="button" id="lvlClose">Close</button></div></div></div>`;
   const close=()=>{host.innerHTML=''};
-  const go=n=>{close();REPLAY=n>=top?null:n;if(mode!=='journey')setMode('journey');else start()};
-  host.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>go(+b.dataset.lv));
-  document.getElementById('lvlLatest').onclick=()=>go(top);
+  const go=(n,to)=>{close();REPLAY=n>=top?null:n;REPLAY_END=REPLAY?to:null;if(mode!=='journey')setMode('journey');else start()};
+  host.querySelectorAll('[data-from]').forEach(b=>b.onclick=()=>go(+b.dataset.from,+b.dataset.to));
+  document.getElementById('lvlLatest').onclick=()=>go(top,top);
   document.getElementById('lvlClose').onclick=close;
   host.querySelector('.helpov').onclick=e=>{if(e.target.classList.contains('helpov'))close()};
   host.querySelector('.helpov').onkeydown=e=>{if(e.key==='Escape')close()};
-  const curBtn=host.querySelector('[aria-current="true"]');if(curBtn)setTimeout(()=>curBtn.scrollIntoView({block:'center'}),30);
+  const curBtn=host.querySelector('.lvlgrid [aria-current="true"]');if(curBtn)setTimeout(()=>curBtn.scrollIntoView({block:'center'}),30);
 }
 document.getElementById('levelsBtn').onclick=openLevels;
 /* swap the page backdrop when the trip moves somewhere new */
@@ -2243,7 +2342,7 @@ function win(){
   if(REPLAY){
     const Lv=REPLAY,key='j:'+Lv,L0=legAt(Lv-1);
     SAVE.stars[key]=Math.max(SAVE.stars[key]||0,k);if(!SAVE.best[key]||elapsed<SAVE.best[key])SAVE.best[key]=elapsed;save();
-    REPLAY=Lv+1>=SAVE.level?null:Lv+1;
+    REPLAY=Lv+1>=SAVE.level||(REPLAY_END&&Lv>=REPLAY_END)?null:Lv+1;if(!REPLAY)REPLAY_END=null;
     setTimeout(async()=>{
       if(SAVE.scenes&&L0.kind!=='free')await playScene(sceneFor(L0,'out'));
       tipJar({k,tips,total,Lv,got:[],replay:true});
@@ -2272,8 +2371,9 @@ function win(){
       const w=WISDOM[L0.leg.id];
       await playScene({bg:L0.bg,party:true,title:['Country complete',L0.leg.name],cust:L0.leg.cust,lines:[['c',`You did it! Before you go, an old saying from here${w.say?': '+w.say:'.'}`],['c',`“${w.en}”`],['m','Lesson learned: '+w.why]]});
       if(stamp)await passportPop(stamp,SAVE.stamps.length);
+      {const s=SECTIONS.find(x=>x.last===L0.leg.id&&x.next);if(s&&stamp)await sectionCard(s)}
       if(newLeg.kind==='free'){
-        await playScene({bg:CHAPTERS.length-1,party:true,title:['World Tour complete',`${COUNTRIES.length} of ${COUNTRIES.length} stamps`],crowd:STORY_CAST,lines:[['m',`${NUMW[COUNTRIES.length]} countries. ${NUMW[COUNTRIES.length]} stamps. One very full passport.`],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Right. Time for a well-earned nap."]]});
+        await playScene({bg:CHAPTERS.length-1,party:true,title:['The Slow Pour complete',`${COUNTRIES.length} of ${COUNTRIES.length} stamps`],crowd:STORY_CAST,lines:[['m',`${NUMW[COUNTRIES.length]} countries. ${NUMW[COUNTRIES.length]} stamps. One very full passport.`],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Right. Time for a well-earned nap."]]});
         SAVE.toured=true;save();await hammockEnding();holdLeg=null;start();return;
       }
     }
@@ -2591,10 +2691,25 @@ function endCard(){
     host.querySelector('#endGo').onclick=close;host.querySelector('#endGo').focus();
   });
 }
+/* end of a section: a skippable card, never a pop-up mid-puzzle */
+function sectionCard(sec){
+  return new Promise(res=>{
+    let host=document.getElementById('endhost');if(!host){host=document.createElement('div');host.id='endhost';document.body.appendChild(host)}
+    host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="secTitle"><div class="helpcard endcard">
+      <div class="endart">${slothSVG(SAVE.equip)}</div><div class="eyebrow">Section complete</div><h2 id="secTitle">${sec.name}</h2><p>${sec.line}</p>
+      <p>Those are the same fixes I build for solo founders. If your business has a leak or two, come have a coffee chat.</p><p class="sig">Matthew, the human behind Mocha</p>
+      <a class="btn" href="https://www.nomadcafe.co/?utm_source=slothdoku&utm_medium=game&utm_campaign=section_${sec.id}" target="_blank" rel="noopener">See how it works</a>
+      <button class="btn go" type="button" id="secGo">${sec.next}</button></div></div>`;
+    sfx.win&&sfx.win();burst(90);
+    const close=()=>{host.innerHTML='';res()};
+    host.querySelector('#secGo').onclick=close;host.querySelector('#secGo').focus();
+  });
+}
 /* ================= the real ending: Mocha in a hammock, pan out, fade to black ================= */
 const IG_URL=''; /* Matthew's Instagram, e.g. https://www.instagram.com/handle/ — button hides while empty */
 function hammockArt(){
   const mocha=slothSVG(SAVE.equip).replace('<svg viewBox','<svg x="186" y="128" width="46" height="48" viewBox');
+  const freja=slothSVG(CUST.freja.eq,null,CUST.freja.fur).replace('<svg viewBox','<svg x="146" y="130" width="44" height="46" viewBox');
   return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
   <defs><linearGradient id="hsky" gradientUnits="userSpaceOnUse" x1="0" y1="-250" x2="0" y2="200"><stop offset="0" stop-color="#3b4a72"/><stop offset=".45" stop-color="#e9866a"/><stop offset=".75" stop-color="#f2c27a"/></linearGradient></defs>
   <rect x="-400" y="-500" width="1200" height="800" fill="url(#hsky)"/>
@@ -2608,6 +2723,8 @@ function hammockArt(){
   <g class="hsway">
    <path d="M101 168Q205 222 308 168" stroke="#8a6416" stroke-width="2" fill="none"/>
    <ellipse cx="214" cy="186" rx="40" ry="12" fill="${furColor()==='gold'?'#f2b705':furColor()}"/>
+   <ellipse cx="170" cy="186" rx="30" ry="11" fill="${CUST.freja.fur}"/>
+   ${freja}
    ${mocha}
    <path d="M232 178q14-8 20-22" stroke="${furColor()==='gold'?'#f2b705':furColor()}" stroke-width="6" fill="none" stroke-linecap="round"/>
    <g transform="rotate(18 254 150)"><rect x="250" y="138" width="9" height="20" rx="3" fill="#a8641f"/><rect x="252" y="131" width="5" height="9" rx="1.5" fill="#a8641f"/><rect x="250" y="144" width="9" height="6" fill="#fbf8f0"/></g>
@@ -2637,6 +2754,127 @@ function hammockEnding(){
     host.querySelector('#hmkGo').onclick=()=>{clearTimeout(t);host.innerHTML='';res()};
   });
 }
+/* ================= sloth training: six hand-built boards, each teaches one idea. Optional, outside the level count ================= */
+const TRAIN=[
+ {title:'One of each',n:4,sol:[1,3,0,2],g:[[3,1,2,2],[3,3,2,2],[3,3,2,2],[0,0,0,0]],
+  steps:[{want:'sloth',cells:[[0,1]],say:"Every row, column and colour gets exactly one sloth. This colour has only one square, so its sloth can only go here. Press and hold it."}],
+  free:"See the X's? A sloth rules out its row, its column, its colour and every square touching it. Now finish. Hold wherever only one square is left.",
+  learned:"Look for the colour or line with one square left. Start there."},
+ {title:'Mark as you go',n:4,sol:[2,0,3,1],g:[[2,2,1,3],[2,2,3,3],[2,2,3,3],[0,0,0,0]],given:[0,2],
+  steps:[{want:'x',cells:[[0,0],[0,1],[0,3],[1,2],[2,2],[3,2]],say:"A sloth sits here. Nothing can share its row or column. Tap each glowing square to mark an X. You can swipe across them too."}],
+  free:"Good. Marks keep your head clear. Finish the board, and remember, sloths never touch.",
+  learned:"An X costs nothing. A wrong sloth costs a leaf. Mark first."},
+ {title:'Corners count',n:5,sol:[2,4,1,3,0],g:[[2,0,0,0,1],[2,2,0,0,1],[2,2,3,3,3],[4,2,3,3,3],[4,2,3,3,3]],given:[2,1],pre:[[1,2],[3,0],[3,2]],
+  steps:[{want:'x',cells:[[1,2],[3,0],[3,2]],say:"Row, column and colour are already marked. But sloths can't touch, not even at the corners. Mark the glowing corners."}],
+  free:"Now a colour has only one square left. Find it, and carry on from there.",
+  learned:"Always check the corners. Beginners forget them."},
+ {title:'Stuck in a line',n:5,sol:[2,4,1,3,0],g:[[0,0,0,0,0],[0,0,0,0,1],[2,2,0,0,1],[4,0,0,3,3],[4,0,0,0,0]],glow:[[2,0],[2,1]],
+  steps:[{want:'x',cells:[[2,2],[2,3],[2,4]],say:"Look at the bright colour. All its squares sit in one row. Wherever its sloth goes, that row is taken. So mark the rest of the row."}],
+  free:"That opened things up. Finish it.",
+  learned:"A colour stuck in one row owns that row. Same for columns."},
+ {title:'Two by two',n:6,sol:[2,5,3,1,4,0],g:[[0,0,0,2,1,1],[0,0,0,2,2,1],[5,3,3,2,4,4],[5,3,4,4,4,4],[5,5,4,4,4,4],[5,4,4,4,4,4]],glow:[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[0,4],[0,5],[1,5]],
+  steps:[{want:'x',cells:[[0,3],[1,3],[1,4]],say:"These two bright colours live only in the top two rows. They need a sloth each, so they use up both rows. Mark everything else up there."}],
+  free:"Now the board gives way. Finish it.",
+  learned:"Two colours in two rows. Three in three. It always adds up."},
+ {title:'The squeeze',n:5,sol:[4,2,0,3,1],g:[[2,2,2,0,0],[2,2,1,1,0],[2,2,2,1,3],[2,2,4,3,3],[4,4,4,4,4]],glow:[[1,2],[1,3],[2,3]],
+  steps:[{want:'x',cells:[[2,2],[0,3],[1,4]],say:"Imagine a sloth on a glowing square. It would wipe out every square of the bright colour, and that colour needs a sloth. So those squares are never sloths. Mark them."}],
+  free:"You're seeing it now. Finish it.",
+  learned:"If a square would wipe out a colour, it's never a sloth."}
+];
+const beanKnown=()=>!!(SAVE.bean&&SAVE.bean.met);
+function teacherHTML(){return `<div class="tface${beanKnown()?'':' hood'}">${beanSVG()}${beanKnown()?'':'<span>?</span>'}</div>`}
+const teacherName=()=>beanKnown()?'Brother Bean':'The hooded teacher';
+function openTraining(){
+  let host=document.getElementById('trainhost');if(!host){host=document.createElement('div');host.id='trainhost';document.body.appendChild(host)}
+  const T=SAVE.train=SAVE.train||{done:[]};
+  const closeAll=()=>{host.remove();beanIdle=Date.now()};
+  const menu=()=>{
+    const intro=beanKnown()?"You again. Good. Sit. Six small boards, one idea each.":"Someone in a dark hood has been sitting very still at the back of the café. They say they can teach you to see the board. Six small boards, one idea each.";
+    host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="trTitle"><div class="helpcard">
+      <h2 id="trTitle">Sloth Training</h2><div class="tteach">${teacherHTML()}<div><b>${teacherName()}</b><p>${intro}</p></div></div>
+      <div class="tlist">${TRAIN.map((l,i)=>`<button type="button" class="btn" data-l="${i}"><span>${i+1}. ${l.title}</span><span>${T.done.includes(i)?'✓':''}</span></button>`).join('')}</div>
+      <p class="fine">Optional. Mistakes cost nothing here.</p>
+      <button class="btn go" type="button" id="trClose">Back to the game</button></div></div>`;
+    host.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>lesson(+b.dataset.l));
+    host.querySelector('#trClose').onclick=closeAll;
+    host.querySelector('.helpov').onkeydown=e=>{if(e.key==='Escape')closeAll()};
+    host.querySelector('#trClose').focus();
+  };
+  const reveal=()=>{
+    const lines=["*ding*… You have learned to sit still and look closely. Most people never do.","The hood is only for the draft. I am Brother Bean. I wander from café to café, and I only stop for people who are not in a hurry.","Mocha should have this. One bead, one breath. Pour slow, little one."];
+    SAVE.bean={met:true,on:todayKey()};if(!SAVE.unlocked.includes('mala'))SAVE.unlocked.push('mala');SAVE.equip.neck='mala';save();refreshSloths();beanBell();
+    let i=0;
+    const draw=()=>{const last=i===lines.length-1;
+      host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="trTitle"><div class="helpcard" style="align-items:center;text-align:center">
+        <div class="tface big">${beanSVG()}</div><h2 id="trTitle">Brother Bean</h2><p style="margin:0;font-size:16px;line-height:1.45">${lines[i]}</p>
+        ${last?`<div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700"><span style="width:56px;height:56px;display:inline-block">${slothSVG(null,'mala')}</span>New: Brother Bean's mala</div>`:''}
+        <button class="btn go" type="button" id="trNext" style="width:100%">${last?'Back to training':'▸'}</button></div></div>`;
+      host.querySelector('#trNext').onclick=()=>{if(last){toast("Mocha is wearing Brother Bean's mala");menu()}else{i++;draw()}};host.querySelector('#trNext').focus()};
+    draw();
+  };
+  const lesson=idx=>{
+    const L=TRAIN[idx],n=L.n,cells=Array.from({length:n},()=>Array(n).fill(0));
+    let stepI=0,finished=false,gest=null;
+    const mark=(y,x)=>{for(let yy=0;yy<n;yy++)for(let xx=0;xx<n;xx++)if(cells[yy][xx]===0&&(yy===y||xx===x||L.g[yy][xx]===L.g[y][x]||(Math.abs(yy-y)<=1&&Math.abs(xx-x)<=1)))cells[yy][xx]=1};
+    if(L.given){const[y,x]=L.given;cells[y][x]=2;if(L.pre){mark(y,x);L.pre.forEach(([a,b])=>cells[a][b]=0)}}
+    const step=()=>L.steps[stepI]||null;
+    const has=(list,y,x)=>(list||[]).some(c=>c[0]===y&&c[1]===x);
+    host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="trTitle"><div class="helpcard">
+      <div class="thead"><h2 id="trTitle">${idx+1}. ${L.title}</h2><button class="icon" type="button" id="trBack" aria-label="Back to the lessons">×</button></div>
+      <div class="tteach">${teacherHTML()}<div><b>${teacherName()}</b><p id="trSay"></p></div></div>
+      <div class="tboard" id="trBoard" style="grid-template-columns:repeat(${n},minmax(0,1fr));grid-template-rows:repeat(${n},minmax(0,1fr))"></div>
+      <p class="fine tkey"><b>Hold</b> to place a sloth · <b>Tap</b> to mark an X</p><div id="trFoot"></div></div></div>`;
+    const tb=host.querySelector('#trBoard'),sayEl=host.querySelector('#trSay');
+    const say=t=>{sayEl.textContent=t};
+    for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+      const b=document.createElement('button');b.type='button';b.className='cell';b.dataset.y=y;b.dataset.x=x;b.setAttribute('aria-label',`Row ${y+1} column ${x+1}`);
+      b.style.background=`var(--r${L.g[y][x]%10})`;const w=o=>o?'3px':'0.5px',g=L.g,r=g[y][x];
+      b.style.borderTopWidth=y>0?w(g[y-1][x]!==r):'0';b.style.borderLeftWidth=x>0?w(g[y][x-1]!==r):'0';b.style.borderBottomWidth=y<n-1?w(g[y+1][x]!==r):'0';b.style.borderRightWidth=x<n-1?w(g[y][x+1]!==r):'0';
+      b.addEventListener('click',e=>{if(e.detail===0)tapT(y,x)});b.addEventListener('keydown',e=>{if(e.key==='s'||e.key==='S'){e.preventDefault();slothT(y,x)}});
+      tb.appendChild(b);
+    }
+    const paint=()=>{const st=step();
+      [...tb.children].forEach(b=>{const y=+b.dataset.y,x=+b.dataset.x,v=cells[y][x],want=v===2?'s':v===1?'x':'e';
+        if(b.dataset.v!==want){b.innerHTML=v===2?SLOTH:v===1?'<span class="x">×</span>':'';b.dataset.v=want}
+        b.classList.toggle('ttarget',!!st&&has(st.cells,y,x)&&(st.want==='sloth'?v!==2:v!==1));
+        b.classList.toggle('thold',!!st&&st.want==='sloth'&&has(st.cells,y,x)&&v!==2);
+        b.classList.toggle('tglow',!!st&&has(L.glow,y,x))});tb.classList.toggle('hasglow',!!st&&!!L.glow)};
+    const shake=(y,x)=>{const b=tb.children[y*n+x];b.classList.remove('bad');void b.offsetWidth;b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),500)};
+    const advance=()=>{stepI++;if(step())say(step().say);else say(L.free);paint()};
+    const check=()=>{if(!L.sol.every((c,y)=>cells[y][c]===2))return;finished=true;paint();sfx.win();burst(50);
+      const first=!T.done.includes(idx);if(first){T.done.push(idx);addCoins(5)}save();say(L.learned);
+      const allDone=T.done.length===TRAIN.length,last=idx===TRAIN.length-1,mustReveal=allDone&&!beanKnown();
+      host.querySelector('#trFoot').innerHTML=`${first?'<p class="fine" style="margin:0 0 8px">+5 coins</p>':''}<button class="btn go" type="button" id="trOn" style="width:100%">${mustReveal?'▸':last?'Back to the lessons':'Next lesson'}</button>`;
+      host.querySelector('#trOn').onclick=()=>{mustReveal?reveal():last?menu():lesson(idx+1)};host.querySelector('#trOn').focus()};
+    function slothT(y,x){
+      if(finished||cells[y][x]===2)return;const st=step();
+      if(st&&st.want==='x'){shake(y,x);sfx.nope();say('Tap, don\'t hold. Marks first. '+st.say);return}
+      if(L.sol[y]!==x||(st&&!has(st.cells,y,x))){shake(y,x);sfx.nope();say(st?st.say:'Not there. Look for the line or colour with one square left.');return}
+      cells[y][x]=2;mark(y,x);sfx.sloth();paint();
+      if(st)advance();check();
+    }
+    function tapT(y,x){
+      if(finished||cells[y][x]===2)return;cells[y][x]=cells[y][x]===1?0:1;sfx.x();const st=step();
+      if(st&&st.want==='x'&&st.cells.every(([a,b])=>cells[a][b]===1)){paint();advance();return}
+      paint();
+    }
+    const cellOf=e=>{const el=document.elementFromPoint(e.clientX,e.clientY),c=el&&el.closest&&el.closest('.cell');return c&&tb.contains(c)?c:null};
+    tb.addEventListener('pointerdown',e=>{if(e.button===2)return;const c=cellOf(e);if(!c||finished)return;e.preventDefault();c.classList.add('press');
+      const y=+c.dataset.y,x=+c.dataset.x;gest={y,x,el:c,moved:false,long:false,timer:setTimeout(()=>{if(gest&&!gest.moved){gest.long=true;c.classList.remove('press');slothT(y,x)}},420)}});
+    tb.addEventListener('pointermove',e=>{if(!gest||gest.long)return;const c=cellOf(e);if(!c)return;const y=+c.dataset.y,x=+c.dataset.x;if(y===gest.y&&x===gest.x&&!gest.moved)return;
+      clearTimeout(gest.timer);gest.el.classList.remove('press');
+      if(!gest.moved){gest.moved=true;if(cells[gest.y][gest.x]===0)tapT(gest.y,gest.x)}
+      if(cells[y][x]===0)tapT(y,x)});
+    const up=()=>{if(!gest)return;const g=gest;gest=null;clearTimeout(g.timer);g.el.classList.remove('press');if(!g.long&&!g.moved)tapT(g.y,g.x)};
+    tb.addEventListener('pointerup',up);tb.addEventListener('pointercancel',()=>{if(gest){clearTimeout(gest.timer);gest.el.classList.remove('press');gest=null}});
+    tb.addEventListener('contextmenu',e=>{e.preventDefault();const c=cellOf(e);if(c&&Date.now()-lastTouch>1500)slothT(+c.dataset.y,+c.dataset.x)});
+    tb.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')lastTouch=Date.now()},true);
+    host.querySelector('#trBack').onclick=menu;
+    host.querySelector('.helpov').onkeydown=e=>{if(e.key==='Escape')menu()};
+    say(step().say);paint();
+  };
+  menu();
+}
 /* ================= how to play: explainer + difficulty picker ================= */
 function openHelp(first){
   let host=document.getElementById('helphost');if(!host){host=document.createElement('div');host.id='helphost';document.body.appendChild(host)}
@@ -2647,12 +2885,14 @@ function openHelp(first){
     ${step(2,'Place the sloths','Every row, every column and every colour gets exactly one sloth. Sloths never touch, not even corners.')}
     ${step(3,'Controls','<b>Tap</b> a square to mark an X. <b>Hold</b> (or right-click) to place a sloth. <b>Swipe</b> to X lots of squares. Wrong sloths cost a leaf. Lose 3 leaves and you retry.')}
     ${step(4,'Earn tips','Clear a level to fill the tip jar. Spend coins on outfits in your <b>Napsack</b>. Answer the trivia for bonus tips.')}
-    ${step(5,'Travel',`The story takes Mocha to 7 stops. Then the World Tour: ${COUNTRIES.length} countries, ${TOUR_LEN} levels each. Finish one to get a passport stamp, travel notes and a piece of ancient wisdom.`)}
+    ${step(5,'Travel',`The story takes Mocha to 7 stops. Then three trips: World Tour, Eurotrip and The Slow Pour. ${COUNTRIES.length} countries, ${TOUR_LEN} levels each. Finish one to get a passport stamp, travel notes and a piece of ancient wisdom.`)}
     <div><h3 style="margin:0 0 8px;font-size:15.5px">Pick your mode</h3><div class="modes">${Object.entries(DIFFS).filter(([k])=>k!=='custom').map(([k,d])=>`<button type="button" data-diff="${k}" aria-pressed="${(SAVE.diff||'normal')===k}"><b>${d.name}</b><span>${d.blurb}</span></button>`).join('')}</div></div>
     <p class="fine">Want to fine-tune each rule, or turn off the piece shadow? Open <button type="button" class="linkbtn" id="helpSet">⚙ Settings</button>. Your level, coins and stamps never change.</p>
+    <button class="btn" type="button" id="helpTrain">🎓 Sloth Training (optional)</button>
     <button class="btn go" type="button" id="helpGo">${first?"Let's go":'Back to the puzzle'}</button></div></div>`;
     host.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{const was=SAVE.diff||'normal';SAVE.diff=b.dataset.diff;save();sfx.sloth();draw();if(was!==SAVE.diff)host.dataset.changed='1';host.querySelector(`[data-diff="${SAVE.diff}"]`).focus()});
     host.querySelector('#helpGo').onclick=close;
+    host.querySelector('#helpTrain').onclick=()=>{close();openTraining()};
     host.querySelector('#helpSet').onclick=()=>{close();openSettings()};
   };
   const close=()=>{const ch=host.dataset.changed;host.innerHTML='';delete host.dataset.changed;SAVE.seenHelp=true;save();
