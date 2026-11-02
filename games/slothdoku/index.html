@@ -384,6 +384,9 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .startcard{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px;text-align:center}.startcard h1{margin:0;font:800 40px var(--f-display);color:var(--ink)}.startcard h2{margin:0;font:800 26px var(--f-display)}.startcard p{margin:0}
 .startart{width:128px;height:128px;margin:0 auto}.startart svg{width:100%;height:100%}.stsub{color:var(--muted);font-size:15px;margin-bottom:6px!important}.stover{margin-top:8px;color:var(--muted);font-size:14px;align-self:center}
 .stlist{list-style:none;margin:0;padding:10px;background:var(--tray);border-radius:12px;text-align:left}.stlist li{padding:2px 0}.btn.danger{background:#fbeae6;border-color:#a8391a;color:#a8391a}
+.preview.mini{position:sticky;top:6px;z-index:5;padding:8px 12px;gap:10px;box-shadow:0 6px 14px -10px rgba(31,58,44,.6)}.preview.mini .big{width:68px}.preview.mini .big svg{animation:none}.preview.mini h2{font-size:20px}.preview.mini p{font-size:12.5px;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.naptabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;background:var(--tray);border-radius:12px;padding:4px}.naptabs button{border:0;border-radius:9px;padding:8px 0;background:transparent;font:700 12.5px var(--f-body);color:var(--ink);cursor:pointer}.naptabs button[aria-pressed="true"]{background:var(--forest);color:var(--tray)}
+.items.compact{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.compact .item{padding:5px 2px 6px;font-size:10.5px;line-height:1.15;gap:2px;border-width:1.5px;min-width:0}.compact .item svg{width:46px;height:46px}.compact .item span{overflow-wrap:anywhere}.compact .item small{font-size:10.5px;font-weight:700;color:var(--ink)}.compact .item small .coin{width:10px;height:10px}.naphint{margin:0;font-size:12px;color:var(--muted);text-align:center}
 .lvlstop{margin:0;font:800 15px var(--f-display);color:var(--ink)}.lvlstop small{font:600 12px var(--f-body);color:var(--muted);margin-left:6px}
 .pill{border:2px solid var(--ink);background:transparent;border-radius:999px;padding:6px 12px;font:700 13px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap;flex:none}
 .pill.done{border-color:var(--sage);color:var(--muted)}
@@ -1306,7 +1309,7 @@ const NOTES={
    ["Užupis, in Vilnius, is famous for…",["Its playful self-declared republic","Its Soviet-era ski jump","Its medieval gold mine","Its floating river market"],"It has its own constitution on a wall, with lines like 'everyone has the right to be happy'."],
    ["Which city was Lithuania's temporary capital between the two World Wars?",["Kaunas","Klaipėda","Šiauliai","Trakai"],"Vilnius, the official capital, was held by Poland at the time."],
    ["Lithuanian's closest living relative is…",["Latvian","Polish","Estonian","Russian"],"They're the last two living Baltic languages. Estonian isn't related at all."],
-   ["In 1992, Lithuania's Olympic basketball team wore tie-dye shirts paid for by which band?",["Grateful Dead","Rolling Stones","Pink Floyd","U2"],"The newly independent team had no money, so the band helped out. They won bronze in Barcelona, shirts and all."]]},
+   ["In 1992, Lithuania's Olympic basketball team wore tie-dye shirts from which band?",["Grateful Dead","Rolling Stones","Pink Floyd","U2"],"The band sponsored the newly independent team, and shirt sales helped fund it. They won bronze in Barcelona."]]},
  hungary:{lang:"Hungarian",words:[["Szia", "hi and bye"], ["Köszönöm", "thank you"], ["Egészségedre", "cheers, literally 'to your health'"]],
   coffee:["Espresso Embassy", "Budapest · ranked among Europe's best coffee shops in 2026"],cowork:["KAPTÁR", "Budapest · one of the city's first coworking spaces"],
   facts:[["The ballpoint pen was invented by journalist…",["László Bíró","Ernő Rubik","Ferenc Puskás","Franz Liszt"],"In many countries a ballpoint is still called a biro."],
@@ -1747,7 +1750,7 @@ function hashStr(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Ma
 const KEY='slothdoku-v3';
 function load(){
   const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,seenHelp:false,diff:'normal',custom:{},shadow:true,chapter:0,newItems:false,
-    coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:8,topEver:1};
+    coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:8};
   const sumL=o=>(o.levels.chill-1)+(o.levels.tricky-1)+(o.levels.wild-1);
   const backPay=o=>10+5*sumL(o);
   let v=null;
@@ -1772,7 +1775,6 @@ function load(){
       Object.keys(o.stampLv||{}).forEach(k=>o.stampLv[k]=up(o.stampLv[k]-1)+1);
       o.v=8;
     }
-    o.topEver=Math.max(o.topEver||1,o.level);
     o.stamps=(o.stamps||[]).filter(id=>COUNTRIES.some(c=>c.id===id));
     Object.keys(o.equip||{}).forEach(sl=>{if(!['head','face','neck','hand'].includes(sl)||!ITEMS.some(i=>i.id===o.equip[sl]))delete o.equip[sl]});
     /* tour changed under older saves: stamp every country whose levels are already behind you */
@@ -2119,7 +2121,7 @@ function start(){
 let REPLAY_END=null;
 function openLevels(){
   let host=document.getElementById('lvlhost');if(!host){host=document.createElement('div');host.id='lvlhost';document.body.appendChild(host)}
-  const frontier=SAVE.level,top=Math.max(frontier,SAVE.topEver||1),cur=playLv(),stops=gearStops();
+  const frontier=SAVE.level,top=frontier,cur=playLv(),stops=gearStops();
   const starsIn=(a,len)=>{let t=0;for(let n=a+1;n<=a+len;n++)t+=SAVE.stars['j:'+n]||0;return t};
   const stopRow=g=>{
     const lv=Array.from({length:g.len},(_,i)=>g.start+i+1),open=cur>g.start&&cur<=g.start+g.len;
@@ -2134,7 +2136,7 @@ function openLevels(){
     return `<div class="rsec"><div class="rsechd"><p>${g.name}<small>★ ${starsIn(a,len)}/${len*3}</small></p><button class="pill" type="button" data-from="${a+1}" data-to="${a+len}">Replay all</button></div>${g.list.filter(x=>x.start<top).map(stopRow).join('')}</div>`}).join('');
   host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="lvlTitle"><div class="helpcard">
     <h2 id="lvlTitle" style="margin:0">Replay</h2>
-    <p class="fine" style="margin:0">Replay a section, a country or one level. Tips still count and stars can improve. Stamps and gifts stay where you earned them.</p>
+    <p class="fine" style="margin:0">Replay anything you've reached: a section, a country or one level. Tips still count and stars can improve.</p>
     <div style="max-height:58vh;overflow-y:auto">${rows}</div>
     <div class="row"><button class="btn go" type="button" id="lvlLatest">Play my latest level (${frontier})</button><button class="btn" type="button" id="lvlClose">Close</button></div></div></div>`;
   const close=()=>{host.innerHTML=''};
@@ -2379,7 +2381,7 @@ function win(){
   if(REPLAY){
     const Lv=REPLAY,key='j:'+Lv,L0=legAt(Lv-1);
     SAVE.stars[key]=Math.max(SAVE.stars[key]||0,k);if(!SAVE.best[key]||elapsed<SAVE.best[key])SAVE.best[key]=elapsed;save();
-    REPLAY=Lv+1===SAVE.level||(REPLAY_END&&Lv>=REPLAY_END)||Lv+1>Math.max(SAVE.level,SAVE.topEver||1)?null:Lv+1;if(!REPLAY)REPLAY_END=null;
+    REPLAY=Lv+1>=SAVE.level||(REPLAY_END&&Lv>=REPLAY_END)?null:Lv+1;if(!REPLAY)REPLAY_END=null;
     setTimeout(async()=>{
       if(SAVE.scenes&&L0.kind!=='free')await playScene(sceneFor(L0,'out'));
       tipJar({k,tips,total,Lv,got:[],replay:true});
@@ -2388,7 +2390,7 @@ function win(){
   }
   const c0=stats().cleared,L0=legAt(c0),st0=stageAt(c0),Lv=SAVE.level,key='j:'+Lv;
   SAVE.stars[key]=Math.max(SAVE.stars[key]||0,k);if(!SAVE.best[key]||elapsed<SAVE.best[key])SAVE.best[key]=elapsed;
-  SAVE.level=Lv+1;SAVE.topEver=Math.max(SAVE.topEver||1,SAVE.level);
+  SAVE.level=Lv+1;
   /* last level in a country: stamp the passport */
   let stamp=null;
   if(L0.kind==='tour'&&L0.k===L0.len-1&&!SAVE.stamps.includes(L0.leg.id)){SAVE.stamps.push(L0.leg.id);SAVE.stampLv=SAVE.stampLv||{};SAVE.stampLv[L0.leg.id]=Lv;stamp=L0.leg;SAVE.newItems=true}
@@ -2659,9 +2661,23 @@ function renderCloset(){
   const met=id=>{const k=STORY_CAST.indexOf(id);if(k>=0)return k<=ci;const t=COUNTRIES.findIndex(x=>x.cust===id);return c>=TOUR_AT+t*TOUR_LEN};
   const gearOut=gear+'</div>';
   if(mode==='closet'){
-    h=pv+fold('shop','Shop & wardrobe','Earn coins from tips. Gold items are for sale; dashed ones are trophies. The shelves restock with local goods every time you finish a stop.',shop)
-      +fold('fur','Fur','',furs)
-      +fold('gear','Trip gifts','Everyone Mocha helps gives you one gift when you finish their stop. Tap one you own to wear it.',gearOut);
+    const tabs=[['head','Head'],['face','Face'],['neck','Neck'],['hand','Paws'],['fur','Fur'],['gifts','Gifts']],cur=tabs.some(t=>t[0]===SAVE.napTab)?SAVE.napTab:'head';
+    const tile=(it,sl)=>{const owned=SAVE.unlocked.includes(it.id),on=SAVE.equip[sl]===it.id;
+      if(owned)return `<button type="button" class="item" data-id="${it.id}" aria-pressed="${on}">${slothSVG(null,it.id)}<span>${it.name}</span></button>`;
+      if(it.price!=null){const poor=SAVE.coins<it.price;return `<button type="button" class="item shop${poor?' poor':''}" data-buy="${it.id}" ${poor?'aria-disabled="true"':''}>${slothSVG(null,it.id)}<span>${it.name}</span><small><span class="coin"></span>${it.price}</small></button>`}
+      const[v,g]=it.need(s);return `<button type="button" class="item locked" data-how="${(it.how+(it.secret?'':` (${Math.min(v,g)}/${g})`)).replace(/"/g,'&quot;')}">${slothSVG(null,it.id)}<span>${it.secret?'???':it.name}</span></button>`};
+    let body='';
+    if(cur==='fur')body=FURS.filter(f=>SAVE.furs.includes(f.id)||furOnShelf(f.id,s.cleared)).map(f=>{const owned=SAVE.furs.includes(f.id),on=SAVE.fur===f.id,art=slothSVG({...SAVE.equip},null,f.color);
+      if(owned)return `<button type="button" class="item" data-fur="${f.id}" aria-pressed="${on}">${art}<span>${f.name}</span></button>`;
+      const poor=SAVE.coins<f.price;return `<button type="button" class="item shop${poor?' poor':''}" data-buyfur="${f.id}">${art}<span>${f.name}</span><small><span class="coin"></span>${f.price}</small></button>`}).join('');
+    else if(cur==='gifts')body=gearStops().flatMap(g=>g.items.map((id,k)=>{const it=ITEM[id],reached=c>=g.start;
+      return SAVE.unlocked.includes(id)?tile(it,it.slot):`<button type="button" class="item locked" data-how="${reached?`A gift from ${g.name}. Reach level ${g.at[k]}.`:`A gift from someone you haven't met yet. Reach level ${g.at[k]}.`}">${slothSVG(null,id)}<span>${reached?it.name:'???'}</span></button>`})).join('');
+    else body=ITEMS.filter(i=>i.slot===cur&&(SAVE.unlocked.includes(i.id)||(!GEAR_AT[i.id]&&(i.need||(i.price!=null&&onShelf(i.id,s.cleared)))))).map(it=>tile(it,cur)).join('');
+    const worn=eqNames.length?eqNames.join(', '):'Nothing on';
+    h=`<div class="preview mini"><div class="big">${slothSVG(SAVE.equip)}</div><div style="min-width:0"><h2>Mocha ${coinHTML(SAVE.coins)}</h2><p>${fur.name} fur · ${worn}</p></div></div>
+      <div class="naptabs" role="group" aria-label="Napsack category">${tabs.map(([k,n])=>`<button type="button" data-naptab="${k}" aria-pressed="${k===cur}">${n}</button>`).join('')}</div>
+      <div class="items compact">${body}</div>
+      <p class="naphint">${cur==='gifts'?'One gift from everyone Mocha helps.':'Tap to wear. Prices mean it\'s for sale, and the shelves restock as you travel.'}</p>`;
   }else{
   h=pv+fold('pass','Passport',SAVE.stamps.length?'Tap a stamp to reopen its travel notes.':`The World Tour starts at level ${TOUR_AT+1}, after the story. Finish ${TOUR_LEN} levels in a country to earn its stamp.`,passportBook());
   {const got=COUNTRIES.filter(k=>SAVE.stamps.includes(k.id));
@@ -2674,6 +2690,8 @@ function renderCloset(){
   h+=fold('story',"Mocha's story",'',storyH);
   }
   closetEl.innerHTML=h;
+  closetEl.querySelectorAll('[data-naptab]').forEach(b=>b.onclick=()=>{SAVE.napTab=b.dataset.naptab;save();renderCloset();sfx.x()});
+  closetEl.querySelectorAll('[data-how]').forEach(b=>b.onclick=()=>{toast(b.dataset.how);sfx.nope()});
   closetEl.querySelectorAll('details[data-fold]').forEach(d=>d.addEventListener('toggle',()=>{SAVE.open=SAVE.open||{};SAVE.open[d.dataset.fold]=d.open;save()}));
   closetEl.querySelectorAll('[data-stamp]').forEach(b=>b.onclick=()=>{const k=COUNTRIES.find(c=>c.id===b.dataset.stamp);passportPop(k,SAVE.stamps.indexOf(k.id)+1,true)});
   closetEl.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{
@@ -2684,14 +2702,14 @@ function renderCloset(){
   });
   closetEl.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{
     const it=ITEM[b.dataset.buy];
-    if(SAVE.coins<it.price){sfx.nope();say('bad',`Need ${it.price-SAVE.coins} more coins. Tips first.`);return}
+    if(SAVE.coins<it.price){sfx.nope();toast(`Need ${it.price-SAVE.coins} more coins.`);say('bad',`Need ${it.price-SAVE.coins} more coins. Tips first.`);return}
     addCoins(-it.price);SAVE.unlocked.push(it.id);SAVE.equip[it.slot]=it.id;save();sfx.buy();burst(30);
     say('combo',pick([`Bought: ${it.name}. Wearing it now.`,`${it.name}! Worth every coin.`]));refreshSloths();renderCloset();
   });
   closetEl.querySelectorAll('[data-fur]').forEach(b=>b.onclick=()=>{SAVE.fur=b.dataset.fur;save();refreshSloths();renderCloset();sfx.sloth();say('good','New look, same nap schedule.')});
   closetEl.querySelectorAll('[data-buyfur]').forEach(b=>b.onclick=()=>{
     const f=FURS.find(x=>x.id===b.dataset.buyfur);
-    if(SAVE.coins<f.price){sfx.nope();say('bad',`Need ${f.price-SAVE.coins} more coins.`);return}
+    if(SAVE.coins<f.price){sfx.nope();toast(`Need ${f.price-SAVE.coins} more coins.`);say('bad',`Need ${f.price-SAVE.coins} more coins.`);return}
     addCoins(-f.price);SAVE.furs.push(f.id);SAVE.fur=f.id;save();sfx.buy();burst(30);say('combo',`${f.name} fur! Very distinguished.`);refreshSloths();renderCloset();
   });
 }
@@ -2938,13 +2956,13 @@ function openStart(){
     host.innerHTML=`<div class="startov" role="dialog" aria-modal="true" aria-labelledby="stTitle"><div class="startcard">
       <div class="startart">${slothSVG(SAVE.equip,null,furColor())}</div><h2 id="stTitle">Hand it all back?</h2>
       <p>Mocha goes back to the canopy with nothing but a stapler's worth of dreams. Starting over means handing back:</p>
-      <ul class="stlist"><li><b>${SAVE.coins}</b> coins</li><li><b>${ownItems}</b> outfits, gifts and furs</li><li><b>${stamps}</b> passport stamps</li></ul>
-      <p class="fine" style="margin:0">Your best stars stay, and so do the levels you've opened under Levels. This can't be undone.</p>
+      <ul class="stlist"><li><b>${SAVE.coins}</b> coins</li><li><b>${ownItems}</b> outfits, gifts and furs</li><li><b>${stamps}</b> passport stamps</li><li>Your stars, and every level you've opened</li></ul>
+      <p class="fine" style="margin:0">You'll have to earn it all again. This can't be undone.</p>
       <button class="btn danger" type="button" id="stYes">Hand it all back</button>
       <button class="btn go" type="button" id="stNo">Keep my stuff</button></div></div>`;
     host.querySelector('#stNo').onclick=menu;host.querySelector('#stNo').focus();
     host.querySelector('#stYes').onclick=()=>{
-      Object.assign(SAVE,{level:1,coins:10,unlocked:[],equip:{},fur:'classic',furs:['classic'],stamps:[],stampLv:{},chapter:0,newItems:false,finished:false,toured:false,maxCombo:0,pokes:0,seenIntro:false,bean:null,qi:0});
+      Object.assign(SAVE,{level:1,coins:10,unlocked:[],equip:{},fur:'classic',furs:['classic'],stamps:[],stampLv:{},chapter:0,newItems:false,finished:false,toured:false,maxCombo:0,pokes:0,seenIntro:false,bean:null,qi:0,stars:{},best:{}});
       {const k='d:'+todayKey(),t=SAVE.daily[k];SAVE.daily=t?{[k]:t}:{}}
       if(SAVE.train)SAVE.train.done=[];
       REPLAY=null;REPLAY_END=null;save();refreshSloths();closeStart();setMode('journey');toast('Back to the canopy. Slowly.');
