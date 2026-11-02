@@ -2793,29 +2793,26 @@ function hammockEnding(){
 }
 /* ================= sloth training: six hand-built boards, each teaches one idea. Optional, outside the level count ================= */
 const TRAIN=[
- {title:'One of each',n:4,sol:[1,3,0,2],g:[[3,1,2,2],[3,3,2,2],[3,3,2,2],[0,0,0,0]],
+ {id:'rules',level:'Beginner',title:'One of each',n:4,sol:[1,3,0,2],g:[[3,1,2,2],[3,3,2,2],[3,3,2,2],[0,0,0,0]],
   steps:[{want:'sloth',cells:[[0,1]],say:"Every row, column and colour gets exactly one sloth. This colour has only one square, so its sloth can only go here. Press and hold it."}],
-  free:"See the X's? A sloth rules out its row, its column, its colour and every square touching it. Now finish. Hold wherever only one square is left.",
-  learned:"Look for the colour or line with one square left. Start there."},
- {title:'Mark as you go',n:4,sol:[2,0,3,1],g:[[2,2,1,3],[2,2,3,3],[2,2,3,3],[0,0,0,0]],given:[0,2],
+  learned:"See the X's? A sloth rules out its row, column, colour and every touching square. So look for the colour or line with one square left, and start there."},
+ {id:'mark',level:'Beginner',title:'Mark as you go',n:4,sol:[2,0,3,1],g:[[2,2,1,3],[2,2,3,3],[2,2,3,3],[0,0,0,0]],given:[0,2],
   steps:[{want:'x',cells:[[0,0],[0,1],[0,3],[1,2],[2,2],[3,2]],say:"A sloth sits here. Nothing can share its row or column. Tap each glowing square to mark an X. You can swipe across them too."}],
-  free:"Good. Marks keep your head clear. Finish the board, and remember, sloths never touch.",
   learned:"An X costs nothing. A wrong sloth costs a leaf. Mark first."},
- {title:'Corners count',n:5,sol:[2,4,1,3,0],g:[[2,0,0,0,1],[2,2,0,0,1],[2,2,3,3,3],[4,2,3,3,3],[4,2,3,3,3]],given:[2,1],pre:[[1,2],[3,0],[3,2]],
+ {id:'corners',level:'Beginner',title:'Corners count',n:5,sol:[2,4,1,3,0],g:[[2,0,0,0,1],[2,2,0,0,1],[2,2,3,3,3],[4,2,3,3,3],[4,2,3,3,3]],given:[2,1],pre:[[1,2],[3,0],[3,2]],
   steps:[{want:'x',cells:[[1,2],[3,0],[3,2]],say:"Row, column and colour are already marked. But sloths can't touch, not even at the corners. Mark the glowing corners."}],
-  free:"Now a colour has only one square left. Find it, and carry on from there.",
   learned:"Always check the corners. Beginners forget them."},
- {title:'Stuck in a line',n:5,sol:[2,4,1,3,0],g:[[0,0,0,0,0],[0,0,0,0,1],[2,2,0,0,1],[4,0,0,3,3],[4,0,0,0,0]],glow:[[2,0],[2,1]],
+ {id:'line',level:'Advanced',title:'Stuck in a line',n:5,sol:[2,4,1,3,0],g:[[0,0,0,0,0],[0,0,0,0,1],[2,2,0,0,1],[4,0,0,3,3],[4,0,0,0,0]],glow:[[2,0],[2,1]],
   steps:[{want:'x',cells:[[2,2],[2,3],[2,4]],say:"Look at the bright colour. All its squares sit in one row. Wherever its sloth goes, that row is taken. So mark the rest of the row."}],
-  free:"That opened things up. Finish it.",
   learned:"A colour stuck in one row owns that row. Same for columns."},
- {title:'Two by two',n:6,sol:[2,5,3,1,4,0],g:[[0,0,0,2,1,1],[0,0,0,2,2,1],[5,3,3,2,4,4],[5,3,4,4,4,4],[5,5,4,4,4,4],[5,4,4,4,4,4]],glow:[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[0,4],[0,5],[1,5]],
+ {id:'pair',level:'Advanced',title:'Two by two',n:6,sol:[2,5,3,1,4,0],g:[[0,0,0,2,1,1],[0,0,0,2,2,1],[5,3,3,2,4,4],[5,3,4,4,4,4],[5,5,4,4,4,4],[5,4,4,4,4,4]],glow:[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[0,4],[0,5],[1,5]],
   steps:[{want:'x',cells:[[0,3],[1,3],[1,4]],say:"These two bright colours live only in the top two rows. They need a sloth each, so they use up both rows. Mark everything else up there."}],
-  free:"Now the board gives way. Finish it.",
   learned:"Two colours in two rows. Three in three. It always adds up."},
- {title:'The squeeze',n:5,sol:[4,2,0,3,1],g:[[2,2,2,0,0],[2,2,1,1,0],[2,2,2,1,3],[2,2,4,3,3],[4,4,4,4,4]],glow:[[1,2],[1,3],[2,3]],
+ {id:'group',level:'Advanced',title:'The big group',n:6,sol:[3,5,1,4,0,2],g:[[1,3,3,3,5,5],[1,3,3,5,5,5],[1,1,4,4,4,5],[0,1,4,4,4,5],[0,0,2,4,4,4],[2,2,2,4,4,4]],glow:[[0,0],[0,1],[0,2],[0,3],[1,0],[1,1],[1,2],[2,0],[2,1],[3,0],[3,1],[4,0],[4,1],[4,2],[5,0],[5,1],[5,2]],
+  steps:[{want:'x',cells:[[1,3],[2,2],[2,3],[3,2],[3,3],[4,3],[5,3]],say:"Count the bright colours. There are four, and they all fit inside the first four columns. They need all four of those columns, so nothing else can have a sloth there. Mark the rest. Swiping helps."}],
+  learned:"Four colours in four columns, or five in five. Spot the group, and clear everything else in those lines."},
+ {id:'squeeze',level:'Advanced',title:'The squeeze',n:5,sol:[4,2,0,3,1],g:[[2,2,2,0,0],[2,2,1,1,0],[2,2,2,1,3],[2,2,4,3,3],[4,4,4,4,4]],glow:[[1,2],[1,3],[2,3]],
   steps:[{want:'x',cells:[[2,2],[0,3],[1,4]],say:"Imagine a sloth on a glowing square. It would wipe out every square of the bright colour, and that colour needs a sloth. So those squares are never sloths. Mark them."}],
-  free:"You're seeing it now. Finish it.",
   learned:"If a square would wipe out a colour, it's never a sloth."}
 ];
 const beanKnown=()=>!!(SAVE.bean&&SAVE.bean.met);
@@ -2824,13 +2821,14 @@ const teacherName=()=>beanKnown()?'Brother Bean':'The hooded teacher';
 function openTraining(){
   let host=document.getElementById('trainhost');if(!host){host=document.createElement('div');host.id='trainhost';document.body.appendChild(host)}
   const T=SAVE.train=SAVE.train||{done:[]};
+  T.done=T.done.map(d=>typeof d==='number'?['rules','mark','corners','line','pair','squeeze'][d]:d); /* older saves stored lesson numbers */
   const closeAll=()=>{host.remove();beanIdle=Date.now()};
   const menu=()=>{
-    const intro=beanKnown()?"You again. Good. Sit. Six small boards, one idea each.":"Someone in a dark hood has been sitting very still at the back of the café. They say they can teach you to see the board. Six small boards, one idea each.";
+    const intro=beanKnown()?"You again. Good. Sit. Small boards, one idea each.":"Someone in a dark hood has been sitting very still at the back of the café. They say they can teach you to see the board. Small boards, one idea each.";
     host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="trTitle"><div class="helpcard">
       <h2 id="trTitle">Sloth Training</h2><div class="tteach">${teacherHTML()}<div><b>${teacherName()}</b><p>${intro}</p></div></div>
-      <div class="tlist">${TRAIN.map((l,i)=>`<button type="button" class="btn" data-l="${i}"><span>${i+1}. ${l.title}</span><span>${T.done.includes(i)?'✓':''}</span></button>`).join('')}</div>
-      <p class="fine">Optional. Mistakes cost nothing here.</p>
+      ${['Beginner','Advanced'].map(lv=>`<div><h3 class="sh">${lv}<small> · ${lv==='Beginner'?'the basics, about two minutes':'for when the boards get big'}</small></h3><div class="tlist">${TRAIN.map((l,i)=>l.level!==lv?'':`<button type="button" class="btn" data-l="${i}"><span>${i+1}. ${l.title}</span><span>${T.done.includes(l.id)?'✓':''}</span></button>`).join('')}</div></div>`).join('')}
+      <p class="fine">Optional. Mistakes cost nothing, and you never have to finish a board.</p>
       <button class="btn go" type="button" id="trClose">Back to the game</button></div></div>`;
     host.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>lesson(+b.dataset.l));
     host.querySelector('#trClose').onclick=closeAll;
@@ -2877,18 +2875,22 @@ function openTraining(){
         b.classList.toggle('thold',!!st&&st.want==='sloth'&&has(st.cells,y,x)&&v!==2);
         b.classList.toggle('tglow',!!st&&has(L.glow,y,x))});tb.classList.toggle('hasglow',!!st&&!!L.glow)};
     const shake=(y,x)=>{const b=tb.children[y*n+x];b.classList.remove('bad');void b.offsetWidth;b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),500)};
-    const advance=()=>{stepI++;if(step())say(step().say);else say(L.free);paint()};
-    const check=()=>{if(!L.sol.every((c,y)=>cells[y][c]===2))return;finished=true;paint();sfx.win();burst(50);
-      const first=!T.done.includes(idx);if(first){T.done.push(idx);addCoins(5)}save();say(L.learned);
-      const allDone=T.done.length===TRAIN.length,last=idx===TRAIN.length-1,mustReveal=allDone&&!beanKnown();
-      host.querySelector('#trFoot').innerHTML=`${first?'<p class="fine" style="margin:0 0 8px">+5 coins</p>':''}<button class="btn go" type="button" id="trOn" style="width:100%">${mustReveal?'▸':last?'Back to the lessons':'Next lesson'}</button>`;
-      host.querySelector('#trOn').onclick=()=>{mustReveal?reveal():last?menu():lesson(idx+1)};host.querySelector('#trOn').focus()};
+    const advance=()=>{stepI++;if(step()){say(step().say);paint();return}
+      finished=true;paint();
+      const left=L.sol.map((x,y)=>[y,x]).filter(([y,x])=>cells[y][x]!==2);
+      left.forEach(([y,x],i)=>setTimeout(()=>{cells[y][x]=2;mark(y,x);sfx.sloth();paint();if(i===left.length-1)complete()},reduced?0:260*(i+1)));
+      if(!left.length)complete()};
+    const complete=()=>{sfx.win();burst(50);
+      const first=!T.done.includes(L.id);if(first){T.done.push(L.id);addCoins(5)}save();say(L.learned);
+      const allDone=TRAIN.every(l=>T.done.includes(l.id)),next=TRAIN[idx+1],mustReveal=allDone&&!beanKnown(),basicsDone=L.level==='Beginner'&&next&&next.level==='Advanced';
+      host.querySelector('#trFoot').innerHTML=`${first?'<p class="fine" style="margin:0 0 8px">+5 coins</p>':''}${basicsDone?'<p style="margin:0 0 8px"><b>That\'s the basics.</b> Go play, or stay for the advanced lessons.</p><button class="btn go" type="button" id="trPlay" style="width:100%;margin-bottom:8px">Go play</button>':''}<button class="${basicsDone?'btn':'btn go'}" type="button" id="trOn" style="width:100%">${mustReveal?'▸':basicsDone?'Advanced training':next?'Next lesson':'Back to the lessons'}</button>`;
+      if(basicsDone)host.querySelector('#trPlay').onclick=closeAll;
+      host.querySelector('#trOn').onclick=()=>{mustReveal?reveal():next?lesson(idx+1):menu()};host.querySelector(basicsDone?'#trPlay':'#trOn').focus()};
     function slothT(y,x){
       if(finished||cells[y][x]===2)return;const st=step();
       if(st&&st.want==='x'){shake(y,x);sfx.nope();say('Tap, don\'t hold. Marks first. '+st.say);return}
-      if(L.sol[y]!==x||(st&&!has(st.cells,y,x))){shake(y,x);sfx.nope();say(st?st.say:'Not there. Look for the line or colour with one square left.');return}
-      cells[y][x]=2;mark(y,x);sfx.sloth();paint();
-      if(st)advance();check();
+      if(!st||!has(st.cells,y,x)){shake(y,x);sfx.nope();if(st)say(st.say);return}
+      cells[y][x]=2;mark(y,x);sfx.sloth();paint();advance();
     }
     function tapT(y,x){
       if(finished||cells[y][x]===2)return;cells[y][x]=cells[y][x]===1?0:1;sfx.x();const st=step();
