@@ -52,7 +52,7 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-s
 .icon{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);background:var(--tray);color:var(--ink);font-size:17px;cursor:pointer;display:grid;place-items:center;padding:0;flex:none}
 .icon[aria-pressed="false"]{opacity:.45}
 .tabs{display:flex;background:var(--tray);border-radius:999px;padding:4px;gap:4px;border:2px solid var(--ink)}
-.tabs button{flex:1;border:0;border-radius:999px;padding:9px 4px;font:700 15px var(--f-body);background:transparent;color:var(--ink);cursor:pointer}
+.tabs button{flex:1 1 auto;border:0;border-radius:999px;padding:9px 3px;font:700 14px var(--f-body);background:transparent;color:var(--ink);cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--forest);color:var(--tray)}
 .tabs .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--heart);margin-left:5px;vertical-align:middle}
 #game{display:flex;flex-direction:column;gap:12px}
@@ -380,6 +380,10 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .cell.ttarget{box-shadow:inset 0 0 0 4px #e8742f;animation:tpulse 1.1s ease-in-out infinite;z-index:2}.tboard.hasglow .cell:not(.tglow){filter:saturate(.3) brightness(.97)}.cell.thold::after{content:'hold';display:grid;place-items:center;font:800 13px var(--f-body);color:#1f3a2c}
 @keyframes tpulse{50%{box-shadow:inset 0 0 0 7px #e8742f}}
 @media (prefers-reduced-motion:reduce){.cell.ttarget{animation:none}}
+.startov{position:fixed;inset:0;z-index:70;background:var(--bg);display:grid;place-items:center;padding:16px;overflow-y:auto}
+.startcard{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px;text-align:center}.startcard h1{margin:0;font:800 40px var(--f-display);color:var(--ink)}.startcard h2{margin:0;font:800 26px var(--f-display)}.startcard p{margin:0}
+.startart{width:128px;height:128px;margin:0 auto}.startart svg{width:100%;height:100%}.stsub{color:var(--muted);font-size:15px;margin-bottom:6px!important}.stover{margin-top:8px;color:var(--muted);font-size:14px;align-self:center}
+.stlist{list-style:none;margin:0;padding:10px;background:var(--tray);border-radius:12px;text-align:left}.stlist li{padding:2px 0}.btn.danger{background:#fbeae6;border-color:#a8391a;color:#a8391a}
 .lvlstop{margin:0;font:800 15px var(--f-display);color:var(--ink)}.lvlstop small{font:600 12px var(--f-body);color:var(--muted);margin-left:6px}
 .pill{border:2px solid var(--ink);background:transparent;border-radius:999px;padding:6px 12px;font:700 13px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap;flex:none}
 .pill.done{border-color:var(--sage);color:var(--muted)}
@@ -500,7 +504,7 @@ document.head.appendChild(s)})();
   <header>
     <button class="mascot" id="mascot" type="button" aria-label="Poke the sloth"></button>
     <div class="who"><h1>Slothdoku</h1><div class="bubble" id="bubble" aria-live="polite">Slow down. Think. Place a sloth.</div></div>
-    <button class="icon" id="help" type="button" aria-label="How to play" title="How to play">?</button>
+    <button class="icon" id="home" type="button" aria-label="Start screen" title="Start screen">⌂</button>
     <button class="icon" id="settings" type="button" aria-label="Settings" title="Settings">⚙</button>
     <button class="icon" id="sound" type="button" aria-pressed="true" aria-label="Sound" title="Sound">♪</button>
   </header>
@@ -508,10 +512,11 @@ document.head.appendChild(s)})();
     <button role="tab" id="tab-journey" aria-selected="true" type="button">Journey</button>
     <button role="tab" id="tab-closet" aria-selected="false" type="button">Napsack<span class="dot" id="newdot" hidden></span></button>
     <button role="tab" id="tab-pass" aria-selected="false" type="button">Passport</button>
+    <button id="levelsBtn" type="button" aria-label="Replay part of the game">Levels</button>
   </div>
   <div class="closet" id="closet" hidden></div>
   <div id="game">
-    <div class="trip" id="trip"><div class="where" id="where"></div><button class="pill" id="levelsBtn" type="button" aria-label="Replay part of the game">Replay</button><button class="pill" id="dailyBtn" type="button">Today's puzzle</button></div>
+    <div class="trip" id="trip"><div class="where" id="where"></div><button class="pill" id="dailyBtn" type="button">Today's puzzle</button></div>
     <div class="bar">
       <div class="lvl" id="lvl">Level 1</div>
       <div class="stats"><span class="coins" id="coins" title="Coins"><span class="coin"></span><span id="coinN">0</span></span><span class="combo" id="combo" hidden></span><div class="hearts" id="hearts"></div><div class="time" id="time">0:00</div></div>
@@ -568,6 +573,7 @@ const ITEMS=[
  {id:'necktie',slot:'neck',name:'Office tie',svg:`<path d="M21 51.5l11 6.5 11-6.5-2.4 7L32 61l-8.6-2.5z" fill="#fbf8f0" stroke="#c8c2b0" stroke-width=".8"/><path d="M29.2 57.6h5.6l-.8 3.6h-4z" fill="#2b4f6e"/><path d="M29.6 61.2h4.8l2.4 6.4L32 70.6l-4.8-3z" fill="#2b4f6e"/><path d="M28.6 63.4l6-1.6M28 66.4l7.6-2" stroke="#e9b949" stroke-width="1" opacity=".9"/>`},
  {id:'beret',slot:'head',name:'Beret',price:30,svg:`<g transform="rotate(-12 30 13)"><ellipse cx="30" cy="13" rx="23" ry="8.5" fill="#c0563f"/><path d="M9 15q21 8 43 0" stroke="#8e3b2b" stroke-width="2" fill="none"/><path d="M30 5V1" stroke="#8e3b2b" stroke-width="3" stroke-linecap="round"/></g>`},
  {id:'monocle',slot:'face',name:'Monocle',price:30,svg:`<circle cx="42.5" cy="33" r="7.5" fill="rgba(255,255,255,.22)" stroke="#c9962f" stroke-width="2.4"/><path d="M48 39q5 10 0 21" stroke="#c9962f" stroke-width="1.2" fill="none"/>`},
+ {id:'tiedye',slot:'head',name:'Tie-dye bucket hat',price:60,svg:`<path d="M15 19l4-15h26l4 15z" fill="#e9b949"/><path d="M25 9q7-4 14 0q6 5-2 8q-9 3-13-2q-1-4 5-4q5 0 5 2" stroke="#2f8a6a" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M18 16q2-5 5-8M42 6q3 4 4 10M28 18q6 1 11-1" stroke="#c0392b" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M3 21q29-9 58 0l-3 5q-26-7-52 0z" fill="#2f8a6a"/><path d="M7 22.4q25-7 50 0" stroke="#e9b949" stroke-width="2.2" stroke-dasharray="5 4" fill="none"/><path d="M9 24q23-6 46 0" stroke="#c0392b" stroke-width="1.6" stroke-dasharray="3 6" fill="none"/>`},
  {id:'bucket',slot:'head',name:'Bucket hat',price:30,svg:`<path d="M15 19l4-15h26l4 15z" fill="#a9bfa4"/><path d="M3 21q29-9 58 0l-3 5q-26-7-52 0z" fill="#8fa98a"/><path d="M17 14h30" stroke="#7a9f6a" stroke-width="1.5"/>`},
  {id:'plant',slot:'hand',name:'Tiny plant',price:35,svg:`<path d="M49 58h13l-2 10h-9z" fill="#c0563f"/><path d="M55.5 58q-5-6-1-12M55.5 58q4-7 2-13" stroke="#2f5d44" stroke-width="2" fill="none"/><ellipse cx="51" cy="47" rx="3.2" ry="5.5" fill="#5d8a4e" transform="rotate(-30 51 47)"/><ellipse cx="60" cy="46" rx="3.2" ry="5.5" fill="#5d8a4e" transform="rotate(28 60 46)"/><ellipse cx="55.5" cy="43" rx="2.8" ry="5" fill="#7a9f6a"/>`},
  {id:'boba',slot:'hand',name:'Bubble tea',price:40,svg:`<path d="M49 51h12l-2 16h-8z" fill="#e9d6a9" stroke="#1f3a2c" stroke-width="1.3"/><circle cx="53" cy="64" r="1.6" fill="#3b2a1d"/><circle cx="57" cy="63.5" r="1.6" fill="#3b2a1d"/><circle cx="55" cy="60.5" r="1.6" fill="#3b2a1d"/><path d="M56 50l3-10" stroke="#c0563f" stroke-width="2.6" stroke-linecap="round"/><rect x="48" y="49" width="14" height="3" rx="1" fill="#1f3a2c"/>`},
@@ -590,6 +596,7 @@ const ITEMS=[
  {id:'carnival',slot:'face',name:'Carnival mask',svg:`<path d="M52 27q8-12 3-24q-7 10-3 24z" fill="#2b6f8e"/><path d="M50 27q2-13-4-20q-3 11 4 20z" fill="#c0392b"/><path d="M7 31q4-10 15-8 6 1 10 4 4-3 10-4 11-2 15 8-2 10-13 10-7 0-12-5-5 5-12 5-11 0-13-10z" fill="#e9b949" stroke="#c9962f" stroke-width="1"/><path d="M9 36q11 8 23 1 12 7 23-1" stroke="#2b6f8e" stroke-width="1.8" fill="none"/><path d="M10 38.5q10 7 22 1 12 6 22-1" stroke="#c0392b" stroke-width="1.4" fill="none"/><ellipse cx="21.5" cy="32.5" rx="4.8" ry="3.6" fill="#3b2a1d"/><ellipse cx="42.5" cy="32.5" rx="4.8" ry="3.6" fill="#3b2a1d"/><circle cx="21.5" cy="33" r="2.2" fill="#fbf8f0"/><circle cx="42.5" cy="33" r="2.2" fill="#fbf8f0"/>${[[12,28],[16,25],[48,25],[52,28],[32,30]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="#fbf8f0"/>`).join('')}`},
  {id:'tipkhao',slot:'hand',name:'Sticky rice basket',svg:`<path d="M48.5 56h13l-1.6 10.5h-9.8z" fill="#d9b765" stroke="#8a6a32" stroke-width=".9"/>${[58.5,61,63.5].map(y=>`<path d="M${48.9+(y-56)*.15} ${y}h${12.2-(y-56)*.3}" stroke="#a8843f" stroke-width=".8"/>`).join('')}<path d="M50.5 56.5l1 9.5M55 56.5v9.8M59.5 56.5l-1 9.5" stroke="#a8843f" stroke-width=".7"/><path d="M47.8 56q7.2-6 14.4 0z" fill="#e9cf8d" stroke="#8a6a32" stroke-width=".9"/><circle cx="55" cy="52.4" r="1.3" fill="#8a6a32"/><path d="M48.5 57.5q-4-8 3-11M61.5 57.5q4-8-3-11" stroke="#c0563f" stroke-width="1.1" fill="none"/><rect x="50" y="66.3" width="10" height="1.8" rx=".9" fill="#8a6a32"/>`},
  {id:'snorkel',slot:'face',name:'Snorkel mask',svg:`<path d="M5 30h7M52 30h7" stroke="#1f2a30" stroke-width="3"/><rect x="11" y="23.5" width="42" height="18.5" rx="8.5" fill="rgba(143,199,224,.42)" stroke="#e9b949" stroke-width="3"/><path d="M27.5 41.5q4.5 6.5 9 0" fill="rgba(143,199,224,.42)" stroke="#e9b949" stroke-width="2.4"/><path d="M16 28q5-2.5 10-1" stroke="#fbf8f0" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/><path d="M60.5 46V9q0-3.5 3.5-3.5" stroke="#e8742f" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M60.5 45q0 7-8 7H40" stroke="#1f2a30" stroke-width="3.2" fill="none" stroke-linecap="round"/>`},
+ {id:'buttertart',slot:'hand',name:'Butter tart',svg:`<path d="M45 57h18l-2.4 8q-6.6 2.2-13.2 0z" fill="#d9a35b" stroke="#8a6416" stroke-width=".8"/><ellipse cx="54" cy="57" rx="9" ry="2.8" fill="#8a5a2b" stroke="#8a6416" stroke-width=".7"/><path d="M49 56.6q2-1.2 4 0M55 57.4q2-1 3.6 0" stroke="#c98b3d" stroke-width=".8" fill="none"/>`},
  {id:'chevy',slot:'hand',name:"Tiny '57 Chevy",svg:`<path d="M45 60.4v-1.6q0-1.2 1.2-1.2h3.6l3.2-3.6h7.2q1.4 0 2 1.2l1.2 2.4h1.6q2 0 2 2v.8z" fill="#3fb0a8" stroke="#1f2a30" stroke-width=".7"/><path d="M51 57.4l2.4-2.6h5.8l1.2 2.6z" fill="#d7eef6"/><path d="M45 62.4h22" stroke="#fbf8f0" stroke-width="1.1"/><rect x="45" y="60.4" width="22" height="3.6" rx="1" fill="#3fb0a8" stroke="#1f2a30" stroke-width=".7"/><circle cx="50" cy="64.4" r="2.1" fill="#1f2a30"/><circle cx="62" cy="64.4" r="2.1" fill="#1f2a30"/><circle cx="50" cy="64.4" r=".8" fill="#d2cab5"/><circle cx="62" cy="64.4" r=".8" fill="#d2cab5"/>`},
  {id:'campervan',slot:'hand',name:'Tiny campervan',svg:`<ellipse cx="55" cy="51.4" rx="8.4" ry="1.4" fill="#e9b949" stroke="#c9962f" stroke-width=".5"/><path d="M52 52.6v1M58 52.6v1" stroke="#3b2a1d" stroke-width=".8"/><rect x="45.5" y="53.2" width="19" height="11.4" rx="3.6" fill="#fbf8f0" stroke="#3b2a1d" stroke-width=".9"/><path d="M45.5 58.4v-1.6q0-3.6 3.6-3.6h11.8q3.6 0 3.6 3.6v1.6z" fill="#4f9fbf"/><rect x="47.4" y="54.6" width="3.6" height="2.8" rx=".8" fill="#d7eef6"/><rect x="52.2" y="54.6" width="3.6" height="2.8" rx=".8" fill="#d7eef6"/><path d="M59.6 54.6h2.6q1.2 0 1.2 1.4v1.4h-3.8z" fill="#d7eef6"/><path d="M45.5 61h19" stroke="#e8742f" stroke-width="1"/><circle cx="49.6" cy="64.6" r="2.1" fill="#1f2a30"/><circle cx="60.4" cy="64.6" r="2.1" fill="#1f2a30"/><circle cx="49.6" cy="64.6" r=".8" fill="#d2cab5"/><circle cx="60.4" cy="64.6" r=".8" fill="#d2cab5"/>`},
  {id:'stapler',slot:'hand',name:"Gary's stapler",svg:`<rect x="46.5" y="61" width="18" height="4.2" rx="1" fill="#3b4a57"/><path d="M46.6 60.6l1-4.6h13.8q2.2 0 2.2 2.2v2.4z" fill="#c0392b"/><path d="M49 57.6h11" stroke="#e07a6f" stroke-width="1" stroke-linecap="round"/><circle cx="48.4" cy="60.6" r="1.6" fill="#1f2a30"/><rect x="58" y="61.6" width="5" height="1.2" fill="#8d9aa6"/>`},
@@ -775,7 +782,7 @@ Object.assign(CUST,{
   luka:{name:"Luka",fur:"#7d6b5a",eq:{face:"sunnies"}},
   marko:{name:"Marko",fur:"#6e5a48",eq:{face:"readers"}},
   zsofi:{name:"Zsófi",fur:"#9c8270",eq:{head:"bandana",neck:"lei"}},
-  jonas:{name:"Jonas",fur:"#8a6f55",eq:{neck:"kerchief",hand:"cup"}},
+  julius:{name:"Julius",fur:"#8a6f55",eq:{head:"tiedye",hand:"cup"}},
   liga:{name:"Līga",fur:"#9c7b5e",eq:{head:"flowers",neck:"apron"}},
   aino:{name:"Aino",fur:"#a39684",eq:{head:"beanie",neck:"scarf"}},
   astrid:{name:"Astrid",fur:"#7d6a58",eq:{face:"readers",hand:"croissant"}},
@@ -783,6 +790,7 @@ Object.assign(CUST,{
   /* parked countries */
   ines:{name:'Inês',fur:'#9b6b43',eq:{face:'readers',hand:'cup'}},
   lupe:{name:'Lupe',fur:'#6b4a33',eq:{head:'flowers',neck:'lei'}},
+  ma:{name:'Ma',fur:'#8a7a6a',eq:{face:'readers',neck:'apron'}},
   yoli:{name:'Yoli',fur:'#7d5a3f',eq:{head:'strawhat',face:'sunnies'}},
   sigga:{name:'Sigga',fur:'#b8ad9e',eq:{head:'beanie',neck:'scarf'}},
   rosa:{name:'Nonna Rosa',fur:'#8a7f72',eq:{face:'readers',head:'flowers'}}
@@ -1017,7 +1025,17 @@ const COUNTRIES=[
    {i:[['c',"By 9am the croissants are gone. People arrive at 9:15 and I say sorry, sorry, sorry."],['m',"How many do you turn away?"]],x:['c',"Thirty, maybe forty a day. Some leave sad. One man cried. It was very French."]},
    {i:[['m',"Take pre-orders the night before. Pay ahead, you bake to the number, and their croissant waits for them."]],x:['c',"I bake the exact amount now. Nobody cries, nothing goes to waste, and I sleep until 4:30. Luxury!"]},
    {i:[['c',"A table for one? But you ordered two coffees."],['m',"Did I? Force of habit. Freja always had the other one."]],x:['c',"Write her a postcard. I have stamps. I am French, I know that look."]},
-   {i:[['c',"Take this baguette, still warm. Carry it under your arm like a real Parisian."],['m',"It smells amazing. It may not survive the train."]],x:['c',"Off to Spain! Paco runs a café there. Just don't call him during siesta."]}
+   {i:[['c',"Take this baguette, still warm. Carry it under your arm like a real Parisian."],['m',"It smells amazing. It may not survive the train."]],x:['c',"Copenhagen next. Freja's bike shop is still there, you know. So is Mette, keeping your café warm."]}
+  ]},
+ {id:'denmark',name:"Denmark",cust:'mette',tease:"Bikes, harbour swims and a very familiar door. Hej, Copenhagen.",
+  stamp:{ring:"#c0563f",motif:`<rect x="0" y="74" width="100" height="26" fill="#8fb9c4"/><rect x="6" y="30" width="22" height="44" fill="#e9b949"/><path d="M6 30l11-12 11 12z" fill="#e9b949"/><rect x="28" y="38" width="22" height="36" fill="#c0563f"/><path d="M28 38l11-10 11 10z" fill="#c0563f"/><rect x="50" y="26" width="22" height="48" fill="#5f9eb0"/><path d="M50 26l11-12 11 12z" fill="#5f9eb0"/><rect x="72" y="36" width="22" height="38" fill="#e8a27a"/><path d="M72 36l11-10 11 10z" fill="#e8a27a"/><rect x="14" y="40" width="6" height="8" fill="#fbf8f0"/><rect x="14" y="54" width="6" height="8" fill="#fbf8f0"/><rect x="36" y="46" width="6" height="8" fill="#fbf8f0"/><rect x="36" y="58" width="6" height="8" fill="#fbf8f0"/><rect x="58" y="36" width="6" height="8" fill="#fbf8f0"/><rect x="58" y="52" width="6" height="8" fill="#fbf8f0"/><rect x="80" y="46" width="6" height="8" fill="#fbf8f0"/><rect x="80" y="58" width="6" height="8" fill="#fbf8f0"/><path d="M24 84h40l-6 8H30z" fill="#7a5a3e"/><path d="M44 84V58" stroke="#3b2a1d" stroke-width="2"/><path d="M44 60l14 10H44z" fill="#fbf8f0"/>`},
+  bg:`<rect width="300" height="300" fill="#e3ecee"/><circle cx="58" cy="44" r="16" fill="#f3e6cf"/><rect x="0" y="98" width="46" height="52" fill="#e9b949"/><path d="M0 98l23.0 -16 23.0 16z" fill="#e9b949"/><path d="M0 98h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="9" y="106" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="27" y="106" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="9" y="128" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="27" y="128" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="46" y="110" width="46" height="40" fill="#c0563f"/><path d="M46 110l23.0 -16 23.0 16z" fill="#c0563f"/><path d="M46 110h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="55" y="118" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="73" y="118" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="92" y="90" width="46" height="60" fill="#5f9eb0"/><path d="M92 90l23.0 -16 23.0 16z" fill="#5f9eb0"/><path d="M92 90h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="101" y="98" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="119" y="98" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="101" y="120" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="119" y="120" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="140" y="106" width="46" height="44" fill="#e8a27a"/><path d="M140 106l23.0 -16 23.0 16z" fill="#e8a27a"/><path d="M140 106h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="149" y="114" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="167" y="114" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="149" y="136" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="167" y="136" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="186" y="94" width="46" height="56" fill="#f3e6cf"/><path d="M186 94l23.0 -16 23.0 16z" fill="#f3e6cf"/><path d="M186 94h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="195" y="102" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="213" y="102" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="195" y="124" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="213" y="124" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="232" y="108" width="46" height="42" fill="#7a9f6a"/><path d="M232 108l23.0 -16 23.0 16z" fill="#7a9f6a"/><path d="M232 108h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="241" y="116" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="259" y="116" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="241" y="138" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="259" y="138" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="276" y="98" width="46" height="52" fill="#e9b949"/><path d="M276 98l23.0 -16 23.0 16z" fill="#e9b949"/><path d="M276 98h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="285" y="106" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="303" y="106" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="285" y="128" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="303" y="128" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect y="150" width="300" height="10" fill="#bfb59c"/><rect y="160" width="300" height="40" fill="#8fb9c4"/><path d="M150 178h80l-10 14h-60z" fill="#7a5a3e"/><rect x="150" y="174" width="80" height="4" fill="#c0563f"/><path d="M190 174V96" stroke="#3b2a1d" stroke-width="2.4"/><path d="M190 100l26 18-26 0z" fill="#fbf8f0" opacity=".9"/><path d="M190 96l14 4-14 4z" fill="#c0563f"/><path d="M30 186q8-5 16 0M250 190q8-5 16 0" stroke="#fbf8f0" stroke-width="2" fill="none" opacity=".7"/><rect y="200" width="300" height="100" fill="#d2cab5"/><path d="M0 204h300" stroke="#a89c80" stroke-width="3"/><circle cx="28" cy="226" r="9" fill="none" stroke="#3b2a1d" stroke-width="2"/><circle cx="56" cy="226" r="9" fill="none" stroke="#3b2a1d" stroke-width="2"/><path d="M28 226l10-14h14l4 14M38 212l4 14h-14M50 212v-4h4" stroke="#c0563f" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M36 210h6" stroke="#3b2a1d" stroke-width="2"/>`,
+  beats:[
+   {i:[['c',"Hej, Mocha! Welcome home. I kept Café Basecamp warm for you. Cinnamon snails are in the oven."],['m',"Home. I didn't know how much I'd missed this table."]],x:['c',"Sit. Candles on, blanket on. A little hygge first. The world can wait an hour."]},
+   {i:[['c',"Can I tell you something? I want to start a coffee bike by the lakes. But I'm not ready."],['m',"What would make you ready?"]],x:['c',"A better bike. A course. A logo. More savings. Maybe next spring. Maybe the one after."]},
+   {i:[['m',"Can I tell you a secret? I wasn't ready either. Basecamp began as one table and a borrowed grinder."],['m',"Start this Saturday. Small and wobbly is fine. You get ready by doing it."]],x:['c',"I opened by the lakes. Burnt the first batch, fixed it, sold forty cups. Mocha, I'm really doing it."]},
+   {c:'freja',i:[['c',"Mocha. You're dripping on my bike shop."],['m',"Freja. I'm not ready to ask you this, so I'm asking. Come travel with me?"]],x:['c',"Took you long enough. Slowly, though. I'll get my bike."]},
+   {i:[['c',"Here's your key to Basecamp. You left it with me before the trip. It belongs with you."],['m',"Thank you for keeping it safe. For keeping all of it safe."]],x:['c',"Spain next, both of you. Paco runs a café there. Just don't call him during siesta."]}
   ]},
  {id:'spain',name:"Spain",cust:'paco',tease:"Orange trees and late dinners. Hola, España.",
   stamp:{ring:"#c0563f",motif:`<circle cx="72" cy="24" r="12" fill="#e9b949"/><rect x="40" y="30" width="20" height="62" fill="#e9d6a9"/><rect x="43" y="16" width="14" height="16" fill="#e9b949"/><path d="M43 16l7-12 7 12z" fill="#c0563f"/><rect x="46" y="21" width="8" height="8" rx="4" fill="#3b2a1d"/><rect x="45" y="42" width="10" height="12" rx="5" fill="#c0563f"/><rect x="45" y="62" width="10" height="12" rx="5" fill="#c0563f"/><circle cx="20" cy="70" r="12" fill="#2f5d44"/><circle cx="16" cy="66" r="2.2" fill="#e8742f"/><circle cx="24" cy="72" r="2.2" fill="#e8742f"/><rect x="18" y="80" width="4" height="12" fill="#6b4e36"/><circle cx="82" cy="72" r="10" fill="#2f5d44"/><circle cx="80" cy="70" r="2" fill="#e8742f"/><rect x="80" y="80" width="4" height="12" fill="#6b4e36"/><rect x="6" y="92" width="88" height="4" fill="#c0563f"/>`},
@@ -1026,7 +1044,7 @@ const COUNTRIES=[
    {i:[['c',"¡Hola! You made it before lunch. Lunch here is at three, dinner at ten."],['m',"So breakfast is... whenever?"]],x:['c',"Exactly. Have a tostada with tomato and olive oil. Then we talk, slowly."]},
    {i:[['c',"I teach flamenco. From two to five I close for siesta, and the messages pile up."],['m',"And by five, they've booked somewhere else?"]],x:['c',"Every day. My phone buzzes, I snore, and the bookings dance off to the studio next door."]},
    {i:[['m',"Set a siesta auto-reply. Say when you're back and add your booking link, so they book while you nap."]],x:['c',"Twelve bookings came in during siesta today. I didn't wake up once. ¡Olé!"]},
-   {c:'freja',i:[['c',"Your postcard said 'wish you were here'. So. I rode the last bit from Seville."],['m',"Freja? You cycled to Spain because of a postcard?"]],x:['c',"It was a very good postcard. Now, is anyone awake in this town?"]},
+   {c:'freja',i:[['c',"Three in the afternoon, and nothing in this whole town is open."],['m',"This might be the best country in the world."]],x:['c',"You say that about every country with a nap in it. Fine. Budge up."]},
    {i:[['c',"Take my abanico, my flamenco fan. For hot days, and for fanning yourself when bookings roll in."],['m',"Very elegant. I'll fan the espresso machine too."]],x:['c',"Portugal is next door. Inês will feed you custard tarts until you can't move."]}
   ]},
  {id:'portugal',name:"Portugal",cust:'ines',tease:"Hills, trams and custard tarts. Hello, Lisbon.",
@@ -1037,17 +1055,7 @@ const COUNTRIES=[
    {i:[['c',"Tourists ask me for directions a hundred times a day. I sell tiles, but mostly I point."],['m',"How many of them buy something?"]],x:['c',"Almost none. They say obrigado, then they walk off to catch the tram."]},
    {i:[['m',"Draw one good map of the area, hang it in your window, and put your shop right in the middle of it."]],x:['c',"They stop to read the map, see the tiles, and come in. I sold more today than all last week!"]},
    {c:'freja',i:[['c',"There's fado tonight, down in Alfama. You don't have to come."],['m',"I was going to nap. But I could come. For a bit."]],x:['c',"You stayed awake for the whole thing. For you, that's basically a love song."]},
-   {i:[['c',"Take this tram conductor cap. My grandfather drove Tram 28 for thirty years."],['m',"I'll wear it every time I make a delivery."]],x:['c',"Iceland next. Sigga will sort you out with something hot."]}
-  ]},
- {id:'iceland',name:"Iceland",cust:'sigga',tease:"Cold air, hot springs. Hæ, Iceland.",
-  stamp:{ring:"#2b4f6e",motif:`<circle cx="50" cy="50" r="48" fill="#1f3346"/><path d="M5 50q20-25 45-10t45-15" stroke="#7fe0a8" stroke-width="8" fill="none" opacity=".9"/><path d="M5 66q25-20 45-8t45-12" stroke="#6ac0d0" stroke-width="6" fill="none" opacity=".8"/><path d="M8 82l26-22 18 13 18-18 22 27q-20 18-42 18T8 82z" fill="#e8eef0"/>`},
-  bg:`<rect width="300" height="300" fill="#1f3346"/><circle cx="30" cy="30" r="1.6" fill="#fbf8f0"/><circle cx="90" cy="60" r="1.6" fill="#fbf8f0"/><circle cx="160" cy="20" r="1.6" fill="#fbf8f0"/><circle cx="240" cy="50" r="1.6" fill="#fbf8f0"/><circle cx="280" cy="15" r="1.6" fill="#fbf8f0"/><circle cx="120" cy="15" r="1.6" fill="#fbf8f0"/><path d="M-10 110q80-70 160-30t170-40" stroke="#7fe0a8" stroke-width="22" fill="none" opacity=".55"/><path d="M-10 140q90-50 170-20t150-30" stroke="#6ac0d0" stroke-width="14" fill="none" opacity=".45"/><path d="M0 230l70-80 50 40 60-70 70 60 50-30V300H0z" fill="#3b4a57"/><path d="M60 162l10-12 12 10zM172 128l8-8 10 9z" fill="#e8eef0"/><rect y="235" width="300" height="65" fill="#e8eef0"/><rect x="200" y="206" width="40" height="30" fill="#c0563f"/><path d="M196 208l24-18 24 18z" fill="#3b2a1d"/><rect x="214" y="214" width="10" height="10" fill="#e9b949"/><ellipse cx="80" cy="262" rx="50" ry="12" fill="#8fc3cf"/><path d="M60 250q4-10 0-18M80 248q4-10 0-18M100 250q4-10 0-18" stroke="#fbf8f0" stroke-width="2" fill="none" opacity=".7"/>`,
-  beats:[
-   {i:[['c',"Hæ! Coffee is serious business here. We drink it all day, even at midnight in June."],['m',"Midnight sun and endless coffee. Finally, my people."]],x:['c',"Sit in the hot pot with the regulars. That's where all the gossip happens."]},
-   {i:[['c',"Summer, my hot-spring café is packed with tourists. Winter, it's me and the wind."],['m',"What about the locals?"]],x:['c',"They pop in sometimes. But in January I can hear a snowflake land."]},
-   {i:[['m',"Sell locals a winter pass in autumn, paid up front. Ten soaks and ten coffees, a bit cheaper than walk-ins."]],x:['c',"Eighty passes sold in October. Cash in the bank, and my regulars come every week. Even the puffins are jealous."]},
-   {c:'freja',i:[['c',"The storm's closed the road. So that's one hot pot, two sloths, all night."],['m',"I can think of worse ways to be stuck."]],x:['c',"You said that out loud. Slowly, but you said it."]},
-   {i:[['c',"Take this lopapeysa. My amma knitted it. It keeps out every kind of weather."],['m',"So warm. I could nap in this for a whole winter."]],x:['c',"Mexico next. Long flight, warm welcome. Lupe has the café de olla on."]}
+   {i:[['c',"Take this tram conductor cap. My grandfather drove Tram 28 for thirty years."],['m',"I'll wear it every time I make a delivery."]],x:['c',"Mexico next. Long flight, warm welcome. Lupe has the café de olla on."]}
   ]},
  {id:'mexico',name:'Mexico',cust:'lupe',tease:'Cinnamon in the air. Hola, México.',
   stamp:{ring:'#2f8a6a',motif:`<rect x="40" y="18" width="20" height="78" rx="10" fill="#5d8a4e"/><rect x="18" y="36" width="12" height="32" rx="6" fill="#5d8a4e"/><rect x="18" y="58" width="26" height="10" rx="5" fill="#5d8a4e"/><rect x="70" y="26" width="12" height="32" rx="6" fill="#5d8a4e"/><rect x="56" y="48" width="26" height="10" rx="5" fill="#5d8a4e"/><circle cx="50" cy="16" r="6" fill="#e07a9f"/>`},
@@ -1057,27 +1065,7 @@ const COUNTRIES=[
    {i:[['c',"The new stall next door sells café de olla for half my price."],['m',"Are your regulars leaving?"]],x:['c',"Two so far. One of them is my cousin."]},
    {i:[['m',"Don't drop your price. Sell what they can't copy: your grandmother's recipe, your name on the cup."]],x:['c',"Sold out by ten, at full price. People pay more for a story. Who knew?"]},
    {i:[['c',"Who's the one in the wool scarf, melting on my patio?"],['m',"That's Freja. She's here for the coffee. Just the coffee."]],x:['c',"Nobody flies this far for coffee, corazón. Drink up."]},
-   {i:[['c',"Take this mug from my grandmother's shelf. Clay keeps the cinnamon in."],['m',"Café de olla goes on the Basecamp menu."]],x:['c',"Riga next. Līga sells honey at the old market. She could use a clever idea."]}
-  ]},
- {id:'latvia',name:"Latvia",cust:'liga',tease:"Rye bread, honey and zeppelin hangars. Sveiki, Riga.",
-  stamp:{ring:"#8e2b2f",motif:`<path d="M20 96h60v-10H20z" fill="#d2cab5"/><path d="M28 86h44V74H28z" fill="#bfb59c"/><path d="M44 74h12V30h-12z" fill="#e9d6a9"/><path d="M46 30q4-10 8 0z" fill="#2f8a6a"/><rect x="48.5" y="16" width="3" height="14" fill="#2f8a6a"/><path d="M50 16l-14-8M50 16l14-8M50 16V4" stroke="#2f8a6a" stroke-width="3" stroke-linecap="round"/><circle cx="35" cy="8" r="4.4" fill="#e9b949"/><circle cx="50" cy="4" r="4.4" fill="#e9b949"/><circle cx="65" cy="8" r="4.4" fill="#e9b949"/><path d="M8 96q42-12 84 0z" fill="#8e2b2f"/>`},
-  bg:`<rect width="300" height="300" fill="#dfe9ea"/><circle cx="250" cy="48" r="18" fill="#f3e6cf"/><path d="M0 150h300v20H0z" fill="#8fb9c4"/><rect x="10" y="112" width="30" height="40" fill="#e8a27a"/><path d="M10 112l15-12 15 12z" fill="#8a3a22"/><rect x="244" y="118" width="40" height="34" fill="#e9d6a9"/><path d="M244 118l20-14 20 14z" fill="#8a3a22"/><rect x="196" y="100" width="22" height="52" fill="#c0563f"/><rect x="200" y="78" width="14" height="22" fill="#2f5d44"/><path d="M201 78l6-46 6 46z" fill="#2f5d44"/><path d="M207 32v-8" stroke="#3b2a1d" stroke-width="1.4"/><circle cx="207" cy="88" r="3" fill="#e9b949"/><rect x="60" y="120" width="26" height="32" fill="#f3e6cf"/><path d="M60 120h26l-4-10h-18z" fill="#2f5d44"/><rect y="170" width="300" height="30" fill="#7a9f6a"/><path d="M40 200v-26q30-30 60 0v26z" fill="#c9a77a"/><path d="M40 174q30-30 60 0" stroke="#8a6a32" stroke-width="2.5" fill="none"/><path d="M52 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M64 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M76 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M88 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M104 200v-26q30-30 60 0v26z" fill="#c9a77a"/><path d="M104 174q30-30 60 0" stroke="#8a6a32" stroke-width="2.5" fill="none"/><path d="M116 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M128 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M140 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M152 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M168 200v-26q30-30 60 0v26z" fill="#c9a77a"/><path d="M168 174q30-30 60 0" stroke="#8a6a32" stroke-width="2.5" fill="none"/><path d="M180 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M192 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M204 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M216 200v-20" stroke="#a8843f" stroke-width="1.2"/><rect y="200" width="300" height="100" fill="#d9c9a8"/><path d="M0 214h300" stroke="#c4b28d" stroke-width="2"/>`,
-  beats:[
-   {i:[['c',"Sveiki! Welcome to the Central Market. These halls once held zeppelins. Now they hold my honey."],['m',"That's an upgrade."]],x:['c',"Try rye bread with honey. My grandmother's recipe. Don't tell the stall next door."]},
-   {i:[['c',"Speaking of them. They sell honey at half my price, and the tourists follow the cheap sign."],['m',"Will you drop your price too?"]],x:['c',"If I go any lower, my bees will go on strike."]},
-   {i:[['m',"Don't race them down. Make a gift box: honey, rye bread, caraway cheese, wrapped in your pattern. Only yours."]],x:['c',"Sold out by noon. A man from Lyon bought six and asked if I ship. I do now."]},
-   {c:'freja',i:[['c',"It's midsummer. You're meant to jump the bonfire with someone, for luck."],['m',"Sloths don't jump."]],x:['c',"Then we walk round it. Slowly. Holding on, so nobody trips."]},
-   {i:[['c',"Take my Jāņi wreath. Oak leaves for strength, flowers for luck."],['m',"I'll wear it on slow mornings."]],x:['c',"Jonas in Lithuania is next. He's looking for good staff, and you're good people."]}
-  ]},
- {id:'lithuania',name:"Lithuania",cust:'jonas',tease:"Amber, basketball and pink soup. Labas, Vilnius.",
-  stamp:{ring:"#3f6b3a",motif:`<path d="M0 100q50-56 100 0z" fill="#7a9f6a"/><path d="M20 100q30-40 60 0z" fill="#5d8a4e"/><rect x="36" y="34" width="28" height="40" fill="#b5532f"/><path d="M34 34h32v-6h-5v3h-4v-3h-5v3h-4v-3h-5v3h-4v-3h-5z" fill="#8a3a22"/><rect x="44" y="44" width="5" height="8" rx="2.5" fill="#3b2a1d"/><rect x="52" y="44" width="5" height="8" rx="2.5" fill="#3b2a1d"/><rect x="46" y="60" width="8" height="14" rx="4" fill="#3b2a1d"/><path d="M50 28V6" stroke="#3b2a1d" stroke-width="2"/><rect x="50" y="6" width="22" height="5" fill="#e9b949"/><rect x="50" y="11" width="22" height="5" fill="#2f5d44"/><rect x="50" y="16" width="22" height="5" fill="#c0563f"/>`},
-  bg:`<rect width="300" height="300" fill="#f3e6cf"/><circle cx="62" cy="52" r="20" fill="#f0c56a"/><circle cx="238" cy="54" r="18" fill="#c0563f"/><path d="M226 54q12 6 24 0" stroke="#e9b949" stroke-width="5" fill="none"/><path d="M227 66l6 14h10l6-14" fill="#c0563f"/><path d="M233 80l2 8M243 80l-2 8" stroke="#3b2a1d" stroke-width="1.2"/><rect x="233" y="88" width="10" height="7" fill="#7a5a3e"/><path d="M70 200q50-110 120 0z" fill="#7a9f6a"/><path d="M80 200q40-70 100 0z" fill="#5d8a4e"/><rect x="118" y="104" width="26" height="40" fill="#b5532f"/><path d="M116 104h30v-6h-5v3h-4v-3h-4v3h-4v-3h-4v3h-4v-3h-5z" fill="#8a3a22"/><rect x="125" y="114" width="4" height="7" rx="2" fill="#3b2a1d"/><rect x="133" y="114" width="4" height="7" rx="2" fill="#3b2a1d"/><path d="M131 98V78" stroke="#3b2a1d" stroke-width="1.6"/><rect x="131" y="78" width="16" height="3.4" fill="#e9b949"/><rect x="131" y="81.4" width="16" height="3.4" fill="#2f5d44"/><rect x="131" y="84.8" width="16" height="3.4" fill="#c0563f"/><rect x="168" y="118" width="16" height="82" fill="#fbf8f0"/><path d="M168 118q8-16 16 0z" fill="#fbf8f0"/><path d="M176 104v-8" stroke="#3b2a1d" stroke-width="1.4"/><rect x="173" y="134" width="6" height="10" rx="3" fill="#8fb9c4"/><rect x="0" y="130" width="46" height="70" fill="#e9d6a9"/><path d="M-3 130l26.0 -18 26.0 18z" fill="#c0563f"/><rect x="8" y="144" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="26" y="144" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="44" y="142" width="40" height="58" fill="#f3e6cf"/><path d="M41 142l23.0 -18 23.0 18z" fill="#c0563f"/><rect x="52" y="156" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="70" y="156" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="196" y="138" width="44" height="62" fill="#e8a27a"/><path d="M193 138l25.0 -18 25.0 18z" fill="#c0563f"/><rect x="204" y="152" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="222" y="152" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="238" y="126" width="62" height="74" fill="#e9d6a9"/><path d="M235 126l34.0 -18 34.0 18z" fill="#c0563f"/><rect x="246" y="140" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="264" y="140" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="282" y="140" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect y="200" width="300" height="100" fill="#d2cab5"/><path d="M0 222h300" stroke="#bfb59c" stroke-width="2"/>`,
-  beats:[
-   {i:[['c',"Labas! Sit, sit. Have some šaltibarščiai. Yes, it's pink. Yes, it's cold. Trust me."],['m',"Pink soup. This trip keeps getting better."]],x:['c',"Cepelinai for lunch. They're named after zeppelins. One bite and you'll see why."]},
-   {i:[['c',"My café is full every day, but I can't find good staff. I'm washing cups at midnight."],['m',"Have you tried job ads?"]],x:['c',"Three ads. One reply. He asked if the job was mostly naps. Honestly, fair question."]},
-   {i:[['m',"Ask your regulars. They love this place. Send a friend you end up hiring, get a free month of coffee."]],x:['c',"Two regulars sent their cousins. Both brilliant. One makes better latte art than me. Rude."]},
-   {c:'freja',i:[['c',"So. About the bonfire."],['m',"Yes. The bonfire. Very warm. Good bonfire."]],x:['c',"Good talk. Excellent. Eat your pink soup."]},
-   {i:[['c',"Take this mini basketball. In Lithuania, basketball is basically our second religion."],['m',"I'll practise my free throws. Very, very slowly."]],x:['c',"Havana next. Big jump. Yoli keeps a café going on very little."]}
+   {i:[['c',"Take this mug from my grandmother's shelf. Clay keeps the cinnamon in."],['m',"Café de olla goes on the Basecamp menu."]],x:['c',"Havana next, just across the water. Yoli keeps a café going on very little."]}
   ]},
  {id:'cuba',name:"Cuba",cust:'yoli',tease:"Old Chevys and a very small coffee. ¡Oye, Cuba!",
   stamp:{ring:'#c0563f',motif:`<circle cx="78" cy="20" r="9" fill="#e9b949"/><path d="M4 92V70h92v22z" fill="#4f9fbf"/><path d="M14 66v-8q0-4 4-4h14l10-12h24q5 0 7 5l5 11h10q6 0 6 6v2z" fill="#3fb0a8" stroke="#1f2a30" stroke-width="1.5"/><path d="M36 53l8-9h20l5 9z" fill="#d7eef6"/><path d="M12 66h78" stroke="#fbf8f0" stroke-width="3"/><circle cx="30" cy="68" r="7" fill="#1f2a30"/><circle cx="72" cy="68" r="7" fill="#1f2a30"/><circle cx="30" cy="68" r="2.6" fill="#d2cab5"/><circle cx="72" cy="68" r="2.6" fill="#d2cab5"/>`},
@@ -1107,31 +1095,63 @@ const COUNTRIES=[
    {i:[['c',"I run the sauna, the café, the towels and the bookings. All me. I don't ask for help."],['m',"Is that sisu?"]],x:['c',"Sisu. Also maybe stubborn. The bakery next door keeps asking to team up. I keep saying no."]},
    {i:[['m',"Say yes. A sauna ticket gets a bun next door, a bun gets money off a sauna. Share customers, not work."]],x:['c',"Their regulars are my regulars now. And I get a free cinnamon bun every morning. Fine. You were right."]},
    {i:[['c',"Three hours in my sauna and not one word. Who is she?"],['m',"Someone who asked me to come home. I said there's one more stop."]],x:['c',"You told me to say yes to the bakery. Who are you saying no to?"]},
-   {i:[['c',"Take this kuksa. Carved from birch. Your coffee will taste like a forest."],['m',"A cup made from a tree. Very cozy."]],x:['c',"Last stop: home. Mette has been keeping your café warm in Copenhagen. She wants to ask you something."]}
+   {i:[['c',"Take this kuksa. Carved from birch. Your coffee will taste like a forest."],['m',"A cup made from a tree. Very cozy."]],x:['c',"Julius in Lithuania is next. He's looking for good staff, and there's a big game on."]}
   ]},
- {id:'denmark',name:"Denmark",cust:'mette',tease:"Bikes, harbour swims and a very familiar door. Hej, Copenhagen.",
-  stamp:{ring:"#c0563f",motif:`<rect x="0" y="74" width="100" height="26" fill="#8fb9c4"/><rect x="6" y="30" width="22" height="44" fill="#e9b949"/><path d="M6 30l11-12 11 12z" fill="#e9b949"/><rect x="28" y="38" width="22" height="36" fill="#c0563f"/><path d="M28 38l11-10 11 10z" fill="#c0563f"/><rect x="50" y="26" width="22" height="48" fill="#5f9eb0"/><path d="M50 26l11-12 11 12z" fill="#5f9eb0"/><rect x="72" y="36" width="22" height="38" fill="#e8a27a"/><path d="M72 36l11-10 11 10z" fill="#e8a27a"/><rect x="14" y="40" width="6" height="8" fill="#fbf8f0"/><rect x="14" y="54" width="6" height="8" fill="#fbf8f0"/><rect x="36" y="46" width="6" height="8" fill="#fbf8f0"/><rect x="36" y="58" width="6" height="8" fill="#fbf8f0"/><rect x="58" y="36" width="6" height="8" fill="#fbf8f0"/><rect x="58" y="52" width="6" height="8" fill="#fbf8f0"/><rect x="80" y="46" width="6" height="8" fill="#fbf8f0"/><rect x="80" y="58" width="6" height="8" fill="#fbf8f0"/><path d="M24 84h40l-6 8H30z" fill="#7a5a3e"/><path d="M44 84V58" stroke="#3b2a1d" stroke-width="2"/><path d="M44 60l14 10H44z" fill="#fbf8f0"/>`},
-  bg:`<rect width="300" height="300" fill="#e3ecee"/><circle cx="58" cy="44" r="16" fill="#f3e6cf"/><rect x="0" y="98" width="46" height="52" fill="#e9b949"/><path d="M0 98l23.0 -16 23.0 16z" fill="#e9b949"/><path d="M0 98h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="9" y="106" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="27" y="106" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="9" y="128" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="27" y="128" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="46" y="110" width="46" height="40" fill="#c0563f"/><path d="M46 110l23.0 -16 23.0 16z" fill="#c0563f"/><path d="M46 110h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="55" y="118" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="73" y="118" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="92" y="90" width="46" height="60" fill="#5f9eb0"/><path d="M92 90l23.0 -16 23.0 16z" fill="#5f9eb0"/><path d="M92 90h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="101" y="98" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="119" y="98" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="101" y="120" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="119" y="120" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="140" y="106" width="46" height="44" fill="#e8a27a"/><path d="M140 106l23.0 -16 23.0 16z" fill="#e8a27a"/><path d="M140 106h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="149" y="114" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="167" y="114" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="149" y="136" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="167" y="136" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="186" y="94" width="46" height="56" fill="#f3e6cf"/><path d="M186 94l23.0 -16 23.0 16z" fill="#f3e6cf"/><path d="M186 94h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="195" y="102" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="213" y="102" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="195" y="124" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="213" y="124" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="232" y="108" width="46" height="42" fill="#7a9f6a"/><path d="M232 108l23.0 -16 23.0 16z" fill="#7a9f6a"/><path d="M232 108h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="241" y="116" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="259" y="116" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="241" y="138" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="259" y="138" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="276" y="98" width="46" height="52" fill="#e9b949"/><path d="M276 98l23.0 -16 23.0 16z" fill="#e9b949"/><path d="M276 98h46" stroke="#3b2a1d" stroke-opacity=".25" stroke-width="2"/><rect x="285" y="106" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="303" y="106" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="285" y="128" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect x="303" y="128" width="9" height="12" fill="#fbf8f0" opacity=".85"/><rect y="150" width="300" height="10" fill="#bfb59c"/><rect y="160" width="300" height="40" fill="#8fb9c4"/><path d="M150 178h80l-10 14h-60z" fill="#7a5a3e"/><rect x="150" y="174" width="80" height="4" fill="#c0563f"/><path d="M190 174V96" stroke="#3b2a1d" stroke-width="2.4"/><path d="M190 100l26 18-26 0z" fill="#fbf8f0" opacity=".9"/><path d="M190 96l14 4-14 4z" fill="#c0563f"/><path d="M30 186q8-5 16 0M250 190q8-5 16 0" stroke="#fbf8f0" stroke-width="2" fill="none" opacity=".7"/><rect y="200" width="300" height="100" fill="#d2cab5"/><path d="M0 204h300" stroke="#a89c80" stroke-width="3"/><circle cx="28" cy="226" r="9" fill="none" stroke="#3b2a1d" stroke-width="2"/><circle cx="56" cy="226" r="9" fill="none" stroke="#3b2a1d" stroke-width="2"/><path d="M28 226l10-14h14l4 14M38 212l4 14h-14M50 212v-4h4" stroke="#c0563f" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M36 210h6" stroke="#3b2a1d" stroke-width="2"/>`,
+ {id:'lithuania',name:"Lithuania",cust:'julius',tease:"Amber, basketball and pink soup. Labas, Vilnius.",
+  stamp:{ring:"#3f6b3a",motif:`<path d="M0 100q50-56 100 0z" fill="#7a9f6a"/><path d="M20 100q30-40 60 0z" fill="#5d8a4e"/><rect x="36" y="34" width="28" height="40" fill="#b5532f"/><path d="M34 34h32v-6h-5v3h-4v-3h-5v3h-4v-3h-5v3h-4v-3h-5z" fill="#8a3a22"/><rect x="44" y="44" width="5" height="8" rx="2.5" fill="#3b2a1d"/><rect x="52" y="44" width="5" height="8" rx="2.5" fill="#3b2a1d"/><rect x="46" y="60" width="8" height="14" rx="4" fill="#3b2a1d"/><path d="M50 28V6" stroke="#3b2a1d" stroke-width="2"/><rect x="50" y="6" width="22" height="5" fill="#e9b949"/><rect x="50" y="11" width="22" height="5" fill="#2f5d44"/><rect x="50" y="16" width="22" height="5" fill="#c0563f"/>`},
+  bg:`<rect width="300" height="300" fill="#f3e6cf"/><circle cx="62" cy="52" r="20" fill="#f0c56a"/><circle cx="238" cy="54" r="18" fill="#c0563f"/><path d="M226 54q12 6 24 0" stroke="#e9b949" stroke-width="5" fill="none"/><path d="M227 66l6 14h10l6-14" fill="#c0563f"/><path d="M233 80l2 8M243 80l-2 8" stroke="#3b2a1d" stroke-width="1.2"/><rect x="233" y="88" width="10" height="7" fill="#7a5a3e"/><path d="M70 200q50-110 120 0z" fill="#7a9f6a"/><path d="M80 200q40-70 100 0z" fill="#5d8a4e"/><rect x="118" y="104" width="26" height="40" fill="#b5532f"/><path d="M116 104h30v-6h-5v3h-4v-3h-4v3h-4v-3h-4v3h-4v-3h-5z" fill="#8a3a22"/><rect x="125" y="114" width="4" height="7" rx="2" fill="#3b2a1d"/><rect x="133" y="114" width="4" height="7" rx="2" fill="#3b2a1d"/><path d="M131 98V78" stroke="#3b2a1d" stroke-width="1.6"/><rect x="131" y="78" width="16" height="3.4" fill="#e9b949"/><rect x="131" y="81.4" width="16" height="3.4" fill="#2f5d44"/><rect x="131" y="84.8" width="16" height="3.4" fill="#c0563f"/><rect x="168" y="118" width="16" height="82" fill="#fbf8f0"/><path d="M168 118q8-16 16 0z" fill="#fbf8f0"/><path d="M176 104v-8" stroke="#3b2a1d" stroke-width="1.4"/><rect x="173" y="134" width="6" height="10" rx="3" fill="#8fb9c4"/><rect x="0" y="130" width="46" height="70" fill="#e9d6a9"/><path d="M-3 130l26.0 -18 26.0 18z" fill="#c0563f"/><rect x="8" y="144" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="26" y="144" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="44" y="142" width="40" height="58" fill="#f3e6cf"/><path d="M41 142l23.0 -18 23.0 18z" fill="#c0563f"/><rect x="52" y="156" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="70" y="156" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="196" y="138" width="44" height="62" fill="#e8a27a"/><path d="M193 138l25.0 -18 25.0 18z" fill="#c0563f"/><rect x="204" y="152" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="222" y="152" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="238" y="126" width="62" height="74" fill="#e9d6a9"/><path d="M235 126l34.0 -18 34.0 18z" fill="#c0563f"/><rect x="246" y="140" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="264" y="140" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect x="282" y="140" width="8" height="12" fill="#3b2a1d" opacity=".55"/><rect y="200" width="300" height="100" fill="#d2cab5"/><path d="M0 222h300" stroke="#bfb59c" stroke-width="2"/>`,
   beats:[
-   {i:[['c',"Hej, Mocha! Welcome home. I kept Café Basecamp warm for you. Cinnamon snails are in the oven."],['m',"Home. I didn't know how much I'd missed this table."]],x:['c',"Sit. Candles on, blanket on. A little hygge first. The world can wait an hour."]},
-   {i:[['c',"Can I tell you something? I want to start a coffee bike by the lakes. But I'm not ready."],['m',"What would make you ready?"]],x:['c',"A better bike. A course. A logo. More savings. Maybe next spring. Maybe the one after."]},
-   {i:[['m',"Can I tell you a secret? I wasn't ready either. Basecamp began as one table and a borrowed grinder."],['m',"Start this Saturday. Small and wobbly is fine. You get ready by doing it."]],x:['c',"I opened by the lakes. Burnt the first batch, fixed it, sold forty cups. Mocha, I'm really doing it."]},
-   {c:'freja',i:[['c',"Mocha. You're dripping on my bike shop."],['m',"Freja. I've been not ready for about a year. I'd like to stop."]],x:['c',"Took you long enough. Slowly, though. I like slowly."]},
-   {i:[['c',"Here's your key to Basecamp. You left it with me before the trip. It belongs with you."],['m',"Thank you for keeping it safe. For keeping all of it safe."]],x:['c',"Your hammock is waiting, Mocha. It fits two, I checked. Go rest."]}
+   {i:[['c',"Labas! Sit, sit. Have some šaltibarščiai. Yes, it's pink. Yes, it's cold. Trust me."],['m',"Pink soup and a tie-dye hat. This trip keeps getting better."]],x:['c',"Cepelinai for lunch. They're named after zeppelins. One bite and you'll see why."]},
+   {i:[['c',"My café is full every day, but I can't find good staff. I'm washing cups at midnight."],['m',"Have you tried job ads?"]],x:['c',"Three ads. One reply. He asked if the job was mostly naps. Honestly, fair question."]},
+   {i:[['m',"Ask your regulars. They love this place. Send a friend you end up hiring, get a free month of coffee."]],x:['c',"Two regulars sent their cousins. Both brilliant. One makes better latte art than me. Rude."]},
+   {c:'freja',i:[['c',"Two tickets, upper deck. You said one more stop, so I came to the stop."],['m',"Freja. You came."]],x:['c',"Fifteen thousand people screaming, and you fell asleep in the second quarter. I missed this."]},
+   {i:[['c',"Take this mini basketball. In Lithuania, basketball is basically our second religion."],['m',"I'll practise my free throws. Very, very slowly."]],x:['c',"Riga next. Līga sells honey at the old market. She could use a clever idea."]}
+  ]},
+ {id:'latvia',name:"Latvia",cust:'liga',tease:"Rye bread, honey and zeppelin hangars. Sveiki, Riga.",
+  stamp:{ring:"#8e2b2f",motif:`<path d="M20 96h60v-10H20z" fill="#d2cab5"/><path d="M28 86h44V74H28z" fill="#bfb59c"/><path d="M44 74h12V30h-12z" fill="#e9d6a9"/><path d="M46 30q4-10 8 0z" fill="#2f8a6a"/><rect x="48.5" y="16" width="3" height="14" fill="#2f8a6a"/><path d="M50 16l-14-8M50 16l14-8M50 16V4" stroke="#2f8a6a" stroke-width="3" stroke-linecap="round"/><circle cx="35" cy="8" r="4.4" fill="#e9b949"/><circle cx="50" cy="4" r="4.4" fill="#e9b949"/><circle cx="65" cy="8" r="4.4" fill="#e9b949"/><path d="M8 96q42-12 84 0z" fill="#8e2b2f"/>`},
+  bg:`<rect width="300" height="300" fill="#dfe9ea"/><circle cx="250" cy="48" r="18" fill="#f3e6cf"/><path d="M0 150h300v20H0z" fill="#8fb9c4"/><rect x="10" y="112" width="30" height="40" fill="#e8a27a"/><path d="M10 112l15-12 15 12z" fill="#8a3a22"/><rect x="244" y="118" width="40" height="34" fill="#e9d6a9"/><path d="M244 118l20-14 20 14z" fill="#8a3a22"/><rect x="196" y="100" width="22" height="52" fill="#c0563f"/><rect x="200" y="78" width="14" height="22" fill="#2f5d44"/><path d="M201 78l6-46 6 46z" fill="#2f5d44"/><path d="M207 32v-8" stroke="#3b2a1d" stroke-width="1.4"/><circle cx="207" cy="88" r="3" fill="#e9b949"/><rect x="60" y="120" width="26" height="32" fill="#f3e6cf"/><path d="M60 120h26l-4-10h-18z" fill="#2f5d44"/><rect y="170" width="300" height="30" fill="#7a9f6a"/><path d="M40 200v-26q30-30 60 0v26z" fill="#c9a77a"/><path d="M40 174q30-30 60 0" stroke="#8a6a32" stroke-width="2.5" fill="none"/><path d="M52 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M64 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M76 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M88 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M104 200v-26q30-30 60 0v26z" fill="#c9a77a"/><path d="M104 174q30-30 60 0" stroke="#8a6a32" stroke-width="2.5" fill="none"/><path d="M116 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M128 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M140 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M152 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M168 200v-26q30-30 60 0v26z" fill="#c9a77a"/><path d="M168 174q30-30 60 0" stroke="#8a6a32" stroke-width="2.5" fill="none"/><path d="M180 200v-20" stroke="#a8843f" stroke-width="1.2"/><path d="M192 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M204 200v-30" stroke="#a8843f" stroke-width="1.2"/><path d="M216 200v-20" stroke="#a8843f" stroke-width="1.2"/><rect y="200" width="300" height="100" fill="#d9c9a8"/><path d="M0 214h300" stroke="#c4b28d" stroke-width="2"/>`,
+  beats:[
+   {i:[['c',"Sveiki! Welcome to the Central Market. These halls once held zeppelins. Now they hold my honey."],['m',"That's an upgrade."]],x:['c',"Try rye bread with honey. My grandmother's recipe. Don't tell the stall next door."]},
+   {i:[['c',"Speaking of them. They sell honey at half my price, and the tourists follow the cheap sign."],['m',"Will you drop your price too?"]],x:['c',"If I go any lower, my bees will go on strike."]},
+   {i:[['m',"Don't race them down. Make a gift box: honey, rye bread, caraway cheese, wrapped in your pattern. Only yours."]],x:['c',"Sold out by noon. A man from Lyon bought six and asked if I ship. I do now."]},
+   {c:'freja',i:[['c',"Riga won, and the whole city's out at the bonfire. You're meant to jump it with someone, for luck."],['m',"Sloths don't jump."]],x:['c',"Then we walk round it. Slowly. Holding on, so nobody trips."]},
+   {i:[['c',"Take my Jāņi wreath. Oak leaves for strength, flowers for luck."],['m',"I'll wear it on slow mornings."]],x:['c',"Iceland next. Sigga will sort you out with something hot."]}
+  ]},
+ {id:'iceland',name:"Iceland",cust:'sigga',tease:"Cold air, hot springs. Hæ, Iceland.",
+  stamp:{ring:"#2b4f6e",motif:`<circle cx="50" cy="50" r="48" fill="#1f3346"/><path d="M5 50q20-25 45-10t45-15" stroke="#7fe0a8" stroke-width="8" fill="none" opacity=".9"/><path d="M5 66q25-20 45-8t45-12" stroke="#6ac0d0" stroke-width="6" fill="none" opacity=".8"/><path d="M8 82l26-22 18 13 18-18 22 27q-20 18-42 18T8 82z" fill="#e8eef0"/>`},
+  bg:`<rect width="300" height="300" fill="#1f3346"/><circle cx="30" cy="30" r="1.6" fill="#fbf8f0"/><circle cx="90" cy="60" r="1.6" fill="#fbf8f0"/><circle cx="160" cy="20" r="1.6" fill="#fbf8f0"/><circle cx="240" cy="50" r="1.6" fill="#fbf8f0"/><circle cx="280" cy="15" r="1.6" fill="#fbf8f0"/><circle cx="120" cy="15" r="1.6" fill="#fbf8f0"/><path d="M-10 110q80-70 160-30t170-40" stroke="#7fe0a8" stroke-width="22" fill="none" opacity=".55"/><path d="M-10 140q90-50 170-20t150-30" stroke="#6ac0d0" stroke-width="14" fill="none" opacity=".45"/><path d="M0 230l70-80 50 40 60-70 70 60 50-30V300H0z" fill="#3b4a57"/><path d="M60 162l10-12 12 10zM172 128l8-8 10 9z" fill="#e8eef0"/><rect y="235" width="300" height="65" fill="#e8eef0"/><rect x="200" y="206" width="40" height="30" fill="#c0563f"/><path d="M196 208l24-18 24 18z" fill="#3b2a1d"/><rect x="214" y="214" width="10" height="10" fill="#e9b949"/><ellipse cx="80" cy="262" rx="50" ry="12" fill="#8fc3cf"/><path d="M60 250q4-10 0-18M80 248q4-10 0-18M100 250q4-10 0-18" stroke="#fbf8f0" stroke-width="2" fill="none" opacity=".7"/>`,
+  beats:[
+   {i:[['c',"Hæ! Coffee is serious business here. We drink it all day, even at midnight in June."],['m',"Midnight sun and endless coffee. Finally, my people."]],x:['c',"Sit in the hot pot with the regulars. That's where all the gossip happens."]},
+   {i:[['c',"Summer, my hot-spring café is packed with tourists. Winter, it's me and the wind."],['m',"What about the locals?"]],x:['c',"They pop in sometimes. But in January I can hear a snowflake land."]},
+   {i:[['m',"Sell locals a winter pass in autumn, paid up front. Ten soaks and ten coffees, a bit cheaper than walk-ins."]],x:['c',"Eighty passes sold in October. Cash in the bank, and my regulars come every week. Even the puffins are jealous."]},
+   {c:'freja',i:[['c',"The storm's closed the road. So that's one hot pot, two sloths, all night."],['m',"I can think of worse ways to be stuck."]],x:['c',"You said that out loud. Slowly, but you said it."]},
+   {i:[['c',"Take this lopapeysa. My amma knitted it. It keeps out every kind of weather."],['m',"So warm. I could nap in this for a whole winter."]],x:['c',"Home next. Your ma has been asking. Bring Freja."]}
   ]}
 ];
 const PARKED_COUNTRIES=[];
+/* the last stop goes back to Canada, so it shares the lake backdrop: Mocha brings Freja home */
+COUNTRIES.push({id:'home',name:"Home",cust:'ma',tease:"Lakes, pines and the smell of butter tarts. Home.",
+  stamp:{ring:'#c0563f',motif:`<circle cx="78" cy="20" r="9" fill="#e9b949"/><path d="M4 92V66h92v26z" fill="#4f9fbf"/><path d="M20 66l14-34 14 34zM44 66l12-26 12 26z" fill="#2f5d44"/><path d="M60 92q18-10 36 0z" fill="#fbf8f0" opacity=".5"/>`},
+  bg:COUNTRIES[0].bg,
+  beats:[
+   {i:[['c',"Look who finally came home. And who's this one, dripping on my porch?"],['m',"Ma, this is Freja."]],x:['c',"Freja. Good. Eat something. You're both too thin for sloths."]},
+   {i:[['c',"My butter tarts are the best on the lake, but the cottage people drive right past the stand."],['m',"Do they know it's there?"]],x:['c',"There's a sign. Your father painted it in 1994. It said TARTS. Then it fell over."]},
+   {i:[['m',"New sign, one kilometre before the stand. Then a sold-out board, so they know to come early."]],x:['c',"Sold out by noon. Your father thinks his old sign did it. Let him."]},
+   {c:'freja',i:[['c',"Your ma showed me your baby photos. All eleven hours of them."],['m',"I'm so sorry."]],x:['c',"Don't be. You were just as slow back then. I'm staying."]},
+   {i:[['c',"Take this butter tart for the road. Not that you're going anywhere for a while."],['m',"It won't last the walk to the dock."]],x:['c',"Your hammock's waiting, the pair of you. It fits two, I checked. Go rest."]}
+  ]});
+COUNTRIES.find(c=>c.id==='lithuania').side=1;COUNTRIES.find(c=>c.id==='latvia').side=2; /* the basketball trip */
 COUNTRIES.forEach(c=>BG.push(c.bg));
 /* the trip is split into sections: the story, then three legs of travel */
 const SECTIONS=[
  {id:'tour',name:'World Tour',first:'canada',last:'colombia',next:'On to the Eurotrip ✈',line:'Eleven stops, eleven small shops, and every one had a leak you could fix in a week.'},
  {id:'euro',name:'Eurotrip',first:'uk',last:'france',next:'Keep going ✈',line:'Twelve countries by train. Same lesson everywhere: simple systems beat more hustle.'},
- {id:'pour',name:'The Slow Pour',first:'spain',last:'denmark'}
+ {id:'pour',name:'The Slow Pour',first:'denmark',last:'home'}
 ];
 const secIdx=(s,id)=>COUNTRIES.findIndex(c=>c.id===s[id]);
 const sectionOf=i=>SECTIONS.find(s=>i>=secIdx(s,'first')&&i<=secIdx(s,'last'));
 /* square postage stamps: perforated edge, framed picture, country band, and a postmark once collected */
-const STAMP_VAL={canada:'92¢',peru:'S/ 6,50',japan:'¥110',thailand:'฿15',laos:'₭8000',vietnam:'4000₫',cambodia:'៛2000',singapore:'90¢',australia:'$1.50',newzealand:'$3',colombia:'$500',uk:"£1.70",iceland:"260 kr",netherlands:"1,14 €",germany:"0,95 €",czechia:"33 Kč",poland:"4,50 zł",austria:"1,05 €",switzerland:"1.20 CHF",italy:"1,30 €",france:"1,39 €",spain:"1,50 €",portugal:"0,95 €",croatia:"1,20 €",montenegro:"1,00 €",hungary:"450 Ft",lithuania:"1,30 €",latvia:"1,50 €",finland:"2,50 €",sweden:"22 kr",denmark:"36 kr.",mexico:"$15",cuba:"5 CUP"};
+const STAMP_VAL={canada:'92¢',peru:'S/ 6,50',japan:'¥110',thailand:'฿15',laos:'₭8000',vietnam:'4000₫',cambodia:'៛2000',singapore:'90¢',australia:'$1.50',newzealand:'$3',colombia:'$500',uk:"£1.70",iceland:"260 kr",netherlands:"1,14 €",germany:"0,95 €",czechia:"33 Kč",poland:"4,50 zł",austria:"1,05 €",switzerland:"1.20 CHF",italy:"1,30 €",france:"1,39 €",spain:"1,50 €",portugal:"0,95 €",croatia:"1,20 €",montenegro:"1,00 €",hungary:"450 Ft",lithuania:"1,30 €",latvia:"1,50 €",finland:"2,50 €",sweden:"22 kr",denmark:"36 kr.",mexico:"$15",cuba:"5 CUP",home:"92¢"};
 let stampUid=0;
 function stampSVG(c,got=true,lv){
   const s=c.stamp,col=got?s.ring:'#a9bfa4',u='st'+(++stampUid);
@@ -1203,12 +1223,12 @@ const GEAR={
  s0:['stapler'], s1:['bandana'], s2:['grinder'], s3:['strawhat'], s4:['laptop'], s5:['studenterhue'], s6:['goldcup'],
  canada:['beaver'], peru:['alpaca'], japan:['hachimaki'], thailand:['jasmine'], laos:['tipkhao'], vietnam:['nonla'], cambodia:['tuktuk'],
  singapore:['kopibag'], australia:['snorkel'], newzealand:['campervan'], colombia:['carnival'],
- mexico:['olla'], cuba:['chevy'],
+ mexico:['olla'], cuba:['chevy'], home:['buttertart'],
  /* Europe */ uk:['flatcap'], iceland:['lopapeysa'], netherlands:['stroopwafel'], germany:['lebkuchen'], czechia:['marionette'], poland:['amber'], austria:['tirolerhut'], switzerland:['cowbell'], italy:['goggles'], france:['baguette'], spain:['abanico'], portugal:['tramcap'], croatia:['kravata'], montenegro:['kapa'], hungary:['magiccube'], lithuania:['minihoop'], latvia:['oakwreath'], finland:['kuksa'], sweden:['dalahorse'], denmark:['basecampkey']
 };
 /* the shop restocks as you travel: each item appears once you finish the stop it belongs to (no entry = on the shelf from day one) */
 const SHOP_AT={
- nata:'portugal',puffin:'iceland',moka:'italy',marigold:'mexico',
+ nata:'portugal',puffin:'iceland',tiedye:'lithuania',moka:'italy',marigold:'mexico',
  busticket:'s1',bucket:'s1',sunnies:'s1',headphones:'s1',passport:'s1',camera:'s1',
  poncho:'s2',kerchief:'s2',bean:'s2',
  lei:'s3',visor:'s3',redsunnies:'s3',hearts:'s3',
@@ -1286,7 +1306,7 @@ const NOTES={
    ["Užupis, in Vilnius, is famous for…",["Its playful self-declared republic","Its Soviet-era ski jump","Its medieval gold mine","Its floating river market"],"It has its own constitution on a wall, with lines like 'everyone has the right to be happy'."],
    ["Which city was Lithuania's temporary capital between the two World Wars?",["Kaunas","Klaipėda","Šiauliai","Trakai"],"Vilnius, the official capital, was held by Poland at the time."],
    ["Lithuanian's closest living relative is…",["Latvian","Polish","Estonian","Russian"],"They're the last two living Baltic languages. Estonian isn't related at all."],
-   ["Trakai Castle is built on…",["An island","A cliff","A sand dune","A marsh"],"It sits in Lake Galvė, reached by a wooden footbridge."]]},
+   ["In 1992, Lithuania's Olympic basketball team wore tie-dye shirts paid for by which band?",["Grateful Dead","Rolling Stones","Pink Floyd","U2"],"The newly independent team had no money, so the band helped out. They won bronze in Barcelona, shirts and all."]]},
  hungary:{lang:"Hungarian",words:[["Szia", "hi and bye"], ["Köszönöm", "thank you"], ["Egészségedre", "cheers, literally 'to your health'"]],
   coffee:["Espresso Embassy", "Budapest · ranked among Europe's best coffee shops in 2026"],cowork:["KAPTÁR", "Budapest · one of the city's first coworking spaces"],
   facts:[["The ballpoint pen was invented by journalist…",["László Bíró","Ernő Rubik","Ferenc Puskás","Franz Liszt"],"In many countries a ballpoint is still called a biro."],
@@ -1441,6 +1461,13 @@ const NOTES={
    ["The northernmost of Japan's four main islands is…",["Hokkaido","Honshu","Kyushu","Shikoku"],"It's famous for powder snow, dairy farms and Sapporo's snow festival."],
    ["Kintsugi repairs broken pottery using…",["Lacquer and gold","Silver and wire","Rice glue and clay","Tin and solder"],"The cracks are made a feature, not hidden."],
    ["Before Tokyo, Japan's capital for over 1,000 years was…",["Kyoto","Osaka","Nara","Kamakura"],"The emperor moved around 1868, when Edo was renamed Tokyo."]]},
+ home:{lang:'English',words:[['Toque','a knitted winter hat'],['Eh','a question, a greeting, and everything between'],['Cottage','a lake house, in Ontario at least']],
+  coffee:['Pilot Coffee Roasters','Toronto'],cowork:['Centre for Social Innovation','Toronto'],
+  facts:[["Ottawa sits on the border between Ontario and…",["Quebec","Manitoba","New York","Nova Scotia"],"Cross a bridge over the river and you're in Gatineau."],
+   ["Expo 67, the famous World's Fair, was held in…",["Montreal","Toronto","Vancouver","Calgary"],"It marked Canada's 100th birthday."],
+   ["Toronto's CN Tower opened in…",["1976","1956","1996","1936"],"It was the world's tallest free-standing structure for over 30 years."],
+   ["The largest lake entirely within Canada is…",["Great Bear Lake","Great Slave Lake","Lake Winnipeg","Lake Athabasca"],"Superior and Huron are bigger, but the US shares them."],
+   ["Canada's official summer sport is…",["Lacrosse","Baseball","Curling","Soccer"],"Hockey has winter. A 1994 law gave lacrosse the summer."]]},
  cuba:{lang:'Spanish',words:[['Oye','hey, listen'],['Gracias','thank you'],['Cafecito','a tiny, sweet, very strong coffee']],
   coffee:['Café El Escorial','Havana · on Plaza Vieja, Old Havana'],cowork:['Galiano 115','Havana · café with Wi-Fi for local entrepreneurs, Centro Habana'],
   facts:[["Which author lived at Finca Vigía, just outside Havana?",["Ernest Hemingway","F. Scott Fitzgerald","William Faulkner","John Steinbeck"],"He lived there for around 20 years, and his boat is still on the grounds."],
@@ -1513,6 +1540,7 @@ const WISDOM={
  colombia:{say:"Vísteme despacio, que tengo prisa.",en:"Dress me slowly, I’m in a hurry.",from:"Old Spanish proverb, heard all over Colombia",why:"Rushing costs more time than it saves."},
  portugal:{say:"Devagar se vai ao longe.",en:"Slowly, you go far.",from:"Old Portuguese proverb",why:"Pick a pace you can keep for years, not weeks."},
  japan:{say:'Ichi-go ichi-e',en:'One time, one meeting.',from:'Saying from the Japanese tea ceremony',why:'Treat every guest like this visit will never happen again.'},
+ home:{say:'Seventh Generation',en:'In every decision, think about how it will affect seven generations from now.',from:'A principle of the Haudenosaunee Confederacy',why:'Build for the people who come after you. Slowly.'},
  cuba:{say:'La mejor manera de decir es hacer.',en:'The best way of saying is doing.',from:'Attributed to José Martí, Cuban poet',why:'Stop describing it. Start it.'},
  mexico:{say:'Dime con quién andas, y te diré quién eres.',en:"Tell me who you walk with, and I'll tell you who you are.",from:'Old Mexican dicho',why:'Your circle shapes your work. Choose it on purpose.'},
  iceland:{say:"Maður er manns gaman.",en:"People are the joy of people.",from:"The Hávamál, a Viking-age poem",why:"Going it alone gets old fast. Find your people."},
@@ -1719,7 +1747,7 @@ function hashStr(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Ma
 const KEY='slothdoku-v3';
 function load(){
   const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,seenHelp:false,diff:'normal',custom:{},shadow:true,chapter:0,newItems:false,
-    coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:7};
+    coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:8,topEver:1};
   const sumL=o=>(o.levels.chill-1)+(o.levels.tricky-1)+(o.levels.wild-1);
   const backPay=o=>10+5*sumL(o);
   let v=null;
@@ -1736,6 +1764,15 @@ function load(){
       Object.keys(o.stampLv||{}).forEach(k=>o.stampLv[k]=up(o.stampLv[k]-1)+1);
       o.v=7;
     }
+    if(o.v<8){ /* Slow Pour route changed and Home was added: keep everyone on the same stop */
+      const was='canada peru japan thailand laos vietnam cambodia singapore australia newzealand colombia uk netherlands switzerland czechia germany croatia montenegro poland hungary austria italy france spain portugal iceland mexico latvia lithuania cuba sweden finland denmark'.split(' ');
+      const up=c=>{if(c<TOUR_AT)return c;const t=c-TOUR_AT,i=Math.floor(t/TOUR_LEN);if(i>=was.length)return c+TOUR_LEN;const n=COUNTRIES.findIndex(x=>x.id===was[i]);return TOUR_AT+n*TOUR_LEN+t%TOUR_LEN};
+      o.level=up(o.level-1)+1;
+      ['stars','best'].forEach(f=>{const n={};Object.entries(o[f]||{}).forEach(([k,v])=>{const m=/^j:(\d+)$/.exec(k);n[m?'j:'+(up(+m[1]-1)+1):k]=v});o[f]=n});
+      Object.keys(o.stampLv||{}).forEach(k=>o.stampLv[k]=up(o.stampLv[k]-1)+1);
+      o.v=8;
+    }
+    o.topEver=Math.max(o.topEver||1,o.level);
     o.stamps=(o.stamps||[]).filter(id=>COUNTRIES.some(c=>c.id===id));
     Object.keys(o.equip||{}).forEach(sl=>{if(!['head','face','neck','hand'].includes(sl)||!ITEMS.some(i=>i.id===o.equip[sl]))delete o.equip[sl]});
     /* tour changed under older saves: stamp every country whose levels are already behind you */
@@ -1780,7 +1817,7 @@ function legAt(c){
 let REPLAY=null;
 const playLv=()=>REPLAY||SAVE.level;
 const curLeg=()=>legAt(playLv()-1);
-function legTitle(L){return L.kind==='free'?['Free play · new stops coming as Matthew travels','Café Basecamp']:L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[(s=>`${s.name} · stop ${L.i-secIdx(s,'first')+1} of ${secIdx(s,'last')-secIdx(s,'first')+1}`)(sectionOf(L.i)),L.leg.name]}
+function legTitle(L){return L.kind==='free'?['Free play · new stops coming as Matthew travels','Café Basecamp']:L.kind==='story'?[`Chapter ${L.i+1}`,L.leg.title]:[L.leg.side?`Side quest: Baltic Hoops · stop ${L.leg.side} of 2`:(s=>`${s.name} · stop ${L.i-secIdx(s,'first')+1} of ${secIdx(s,'last')-secIdx(s,'first')+1}`)(sectionOf(L.i)),L.leg.name]}
 function chapterIndex(){return legAt(Math.min(stats().cleared,TOUR_AT-1)).i}
 const dailyDone=()=>!!SAVE.daily['d:'+todayKey()];
 function chapterHTML(ch,i){return `<div class="chapter"><div class="eyebrow">Chapter ${i+1} of ${CHAPTERS.length}</div><h3>${ch.title}</h3><p>${ch.text}</p></div>`}
@@ -1862,7 +1899,7 @@ const TRAVEL_LINES={
 function travelFor(L0,L1){
   let v;
   if(L1.kind==='story')v=['foot','bus','bus','train','train','foot'][L0.i]||'bus'; /* the trip grows up: on foot, bus, train, then flights */
-  else{const eu=i=>i>=COUNTRIES.findIndex(c=>c.id==='uk');v=L0.kind==='tour'&&eu(L0.i)&&eu(L1.i)&&![L0.leg.id,L1.leg.id].some(id=>['iceland','mexico','cuba'].includes(id))?'train':'plane'} /* Europe by rail, oceans by air */
+  else{const eu=i=>i>=COUNTRIES.findIndex(c=>c.id==='uk');v=L0.kind==='tour'&&eu(L0.i)&&eu(L1.i)&&![L0.leg.id,L1.leg.id].some(id=>['iceland','mexico','cuba','home'].includes(id))?'train':'plane'} /* Europe by rail, oceans by air */
   return{from:legTitle(L0)[1],to:legTitle(L1)[1],v,sky:SKIES[(L1.bg+(v==='plane'?1:0))%SKIES.length]};
 }
 function travelHTML(t){
@@ -2082,7 +2119,7 @@ function start(){
 let REPLAY_END=null;
 function openLevels(){
   let host=document.getElementById('lvlhost');if(!host){host=document.createElement('div');host.id='lvlhost';document.body.appendChild(host)}
-  const top=SAVE.level,cur=playLv(),stops=gearStops();
+  const frontier=SAVE.level,top=Math.max(frontier,SAVE.topEver||1),cur=playLv(),stops=gearStops();
   const starsIn=(a,len)=>{let t=0;for(let n=a+1;n<=a+len;n++)t+=SAVE.stars['j:'+n]||0;return t};
   const stopRow=g=>{
     const lv=Array.from({length:g.len},(_,i)=>g.start+i+1),open=cur>g.start&&cur<=g.start+g.len;
@@ -2099,11 +2136,11 @@ function openLevels(){
     <h2 id="lvlTitle" style="margin:0">Replay</h2>
     <p class="fine" style="margin:0">Replay a section, a country or one level. Tips still count and stars can improve. Stamps and gifts stay where you earned them.</p>
     <div style="max-height:58vh;overflow-y:auto">${rows}</div>
-    <div class="row"><button class="btn go" type="button" id="lvlLatest">Play my latest level (${top})</button><button class="btn" type="button" id="lvlClose">Close</button></div></div></div>`;
+    <div class="row"><button class="btn go" type="button" id="lvlLatest">Play my latest level (${frontier})</button><button class="btn" type="button" id="lvlClose">Close</button></div></div></div>`;
   const close=()=>{host.innerHTML=''};
-  const go=(n,to)=>{close();REPLAY=n>=top?null:n;REPLAY_END=REPLAY?to:null;if(mode!=='journey')setMode('journey');else start()};
+  const go=(n,to)=>{close();closeStart();REPLAY=n===frontier?null:n;REPLAY_END=REPLAY?to:null;if(mode!=='journey')setMode('journey');else start()};
   host.querySelectorAll('[data-from]').forEach(b=>b.onclick=()=>go(+b.dataset.from,+b.dataset.to));
-  document.getElementById('lvlLatest').onclick=()=>go(top,top);
+  document.getElementById('lvlLatest').onclick=()=>go(frontier,frontier);
   document.getElementById('lvlClose').onclick=close;
   host.querySelector('.helpov').onclick=e=>{if(e.target.classList.contains('helpov'))close()};
   host.querySelector('.helpov').onkeydown=e=>{if(e.key==='Escape')close()};
@@ -2342,7 +2379,7 @@ function win(){
   if(REPLAY){
     const Lv=REPLAY,key='j:'+Lv,L0=legAt(Lv-1);
     SAVE.stars[key]=Math.max(SAVE.stars[key]||0,k);if(!SAVE.best[key]||elapsed<SAVE.best[key])SAVE.best[key]=elapsed;save();
-    REPLAY=Lv+1>=SAVE.level||(REPLAY_END&&Lv>=REPLAY_END)?null:Lv+1;if(!REPLAY)REPLAY_END=null;
+    REPLAY=Lv+1===SAVE.level||(REPLAY_END&&Lv>=REPLAY_END)||Lv+1>Math.max(SAVE.level,SAVE.topEver||1)?null:Lv+1;if(!REPLAY)REPLAY_END=null;
     setTimeout(async()=>{
       if(SAVE.scenes&&L0.kind!=='free')await playScene(sceneFor(L0,'out'));
       tipJar({k,tips,total,Lv,got:[],replay:true});
@@ -2351,7 +2388,7 @@ function win(){
   }
   const c0=stats().cleared,L0=legAt(c0),st0=stageAt(c0),Lv=SAVE.level,key='j:'+Lv;
   SAVE.stars[key]=Math.max(SAVE.stars[key]||0,k);if(!SAVE.best[key]||elapsed<SAVE.best[key])SAVE.best[key]=elapsed;
-  SAVE.level=Lv+1;
+  SAVE.level=Lv+1;SAVE.topEver=Math.max(SAVE.topEver||1,SAVE.level);
   /* last level in a country: stamp the passport */
   let stamp=null;
   if(L0.kind==='tour'&&L0.k===L0.len-1&&!SAVE.stamps.includes(L0.leg.id)){SAVE.stamps.push(L0.leg.id);SAVE.stampLv=SAVE.stampLv||{};SAVE.stampLv[L0.leg.id]=Lv;stamp=L0.leg;SAVE.newItems=true}
@@ -2373,7 +2410,7 @@ function win(){
       if(stamp)await passportPop(stamp,SAVE.stamps.length);
       {const s=SECTIONS.find(x=>x.last===L0.leg.id&&x.next);if(s&&stamp)await sectionCard(s)}
       if(newLeg.kind==='free'){
-        await playScene({bg:CHAPTERS.length-1,party:true,title:['The Slow Pour complete',`${COUNTRIES.length} of ${COUNTRIES.length} stamps`],crowd:STORY_CAST,lines:[['m',`${NUMW[COUNTRIES.length]} countries. ${NUMW[COUNTRIES.length]} stamps. One very full passport.`],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Right. Time for a well-earned nap."]]});
+        await playScene({bg:CHAPTERS.length-1,party:true,title:['The Slow Pour complete',`${COUNTRIES.length} of ${COUNTRIES.length} stamps`],crowd:STORY_CAST,lines:[['m',`${NUMW[COUNTRIES.length-1]} countries, and one home. One very full passport.`],['m',"Every stop taught me the same thing: slow down, look after your regulars, keep it simple."],['m',"Right. Time for a well-earned nap."]]});
         SAVE.toured=true;save();await hammockEnding();holdLeg=null;start();return;
       }
     }
@@ -2685,7 +2722,7 @@ function endCard(){
     host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="endTitle"><div class="helpcard endcard">
       <div class="endart">${slothSVG(SAVE.equip)}</div><h2 id="endTitle">The café is open</h2>${endNote()}
       <button class="btn" type="button" id="endGo">Start the World Tour ✈</button>
-      <p class="fine">${COUNTRIES.length} countries, ${TOUR_LEN} levels each. This note stays in your Napsack.</p></div></div>`;
+      <p class="fine">${COUNTRIES.length-1} countries, ${TOUR_LEN} levels each. This note stays in your Napsack.</p></div></div>`;
     sfx.win&&sfx.win();burst(90);
     const close=()=>{host.innerHTML='';res()};
     host.querySelector('#endGo').onclick=close;host.querySelector('#endGo').focus();
@@ -2875,6 +2912,45 @@ function openTraining(){
   };
   menu();
 }
+/* ================= start screen: carry on, or hand it all back and start over ================= */
+function closeStart(){const h=document.getElementById('starthost');if(h)h.remove()}
+function openStart(){
+  let host=document.getElementById('starthost');if(!host){host=document.createElement('div');host.id='starthost';document.body.appendChild(host)}
+  const fresh=SAVE.level<=1&&!SAVE.seenIntro,L=legAt(SAVE.level-1),ownItems=SAVE.unlocked.length+SAVE.furs.length-1;
+  const menu=()=>{
+    host.innerHTML=`<div class="startov" role="dialog" aria-modal="true" aria-labelledby="stTitle"><div class="startcard">
+      <div class="startart">${slothSVG(SAVE.equip,null,furColor())}</div>
+      <h1 id="stTitle">Slothdoku</h1><p class="stsub">${fresh?'Quit the canopy. Open a café. Take your time.':`Level ${SAVE.level} · ${legTitle(L)[1]}`}</p>
+      <button class="btn go" type="button" id="stGo">${fresh?'Start the story':'Continue my journey'}</button>
+      ${fresh?'':'<button class="btn" type="button" id="stLevels">Levels</button>'}
+      <button class="btn" type="button" id="stTrain">🎓 Sloth Training</button>
+      <button class="btn" type="button" id="stHelp">How to play</button>
+      ${fresh?'':'<button class="linkbtn stover" type="button" id="stOver">Start the story over</button>'}</div></div>`;
+    host.querySelector('#stGo').onclick=()=>{closeStart();const was=REPLAY;REPLAY=null;REPLAY_END=null;if(!P||mode!=='journey'||was)setMode('journey');if(!SAVE.seenHelp)openHelp(true)};
+    host.querySelector('#stTrain').onclick=openTraining;host.querySelector('#stHelp').onclick=()=>openHelp(false);
+    if(!fresh){host.querySelector('#stLevels').onclick=openLevels;host.querySelector('#stOver').onclick=confirm}
+    host.querySelector('#stGo').focus();
+  };
+  const confirm=()=>{
+    const stamps=SAVE.stamps.length;
+    host.innerHTML=`<div class="startov" role="dialog" aria-modal="true" aria-labelledby="stTitle"><div class="startcard">
+      <div class="startart">${slothSVG(SAVE.equip,null,furColor())}</div><h2 id="stTitle">Hand it all back?</h2>
+      <p>Mocha goes back to the canopy with nothing but a stapler's worth of dreams. Starting over means handing back:</p>
+      <ul class="stlist"><li><b>${SAVE.coins}</b> coins</li><li><b>${ownItems}</b> outfits, gifts and furs</li><li><b>${stamps}</b> passport stamps</li></ul>
+      <p class="fine" style="margin:0">Your best stars stay, and so do the levels you've opened under Levels. This can't be undone.</p>
+      <button class="btn danger" type="button" id="stYes">Hand it all back</button>
+      <button class="btn go" type="button" id="stNo">Keep my stuff</button></div></div>`;
+    host.querySelector('#stNo').onclick=menu;host.querySelector('#stNo').focus();
+    host.querySelector('#stYes').onclick=()=>{
+      Object.assign(SAVE,{level:1,coins:10,unlocked:[],equip:{},fur:'classic',furs:['classic'],stamps:[],stampLv:{},chapter:0,newItems:false,finished:false,toured:false,maxCombo:0,pokes:0,seenIntro:false,bean:null,qi:0});
+      {const k='d:'+todayKey(),t=SAVE.daily[k];SAVE.daily=t?{[k]:t}:{}}
+      if(SAVE.train)SAVE.train.done=[];
+      REPLAY=null;REPLAY_END=null;save();refreshSloths();closeStart();setMode('journey');toast('Back to the canopy. Slowly.');
+    };
+  };
+  menu();
+}
+document.getElementById('home').onclick=openStart;
 /* ================= how to play: explainer + difficulty picker ================= */
 function openHelp(first){
   let host=document.getElementById('helphost');if(!host){host=document.createElement('div');host.id='helphost';document.body.appendChild(host)}
@@ -2885,7 +2961,7 @@ function openHelp(first){
     ${step(2,'Place the sloths','Every row, every column and every colour gets exactly one sloth. Sloths never touch, not even corners.')}
     ${step(3,'Controls','<b>Tap</b> a square to mark an X. <b>Hold</b> (or right-click) to place a sloth. <b>Swipe</b> to X lots of squares. Wrong sloths cost a leaf. Lose 3 leaves and you retry.')}
     ${step(4,'Earn tips','Clear a level to fill the tip jar. Spend coins on outfits in your <b>Napsack</b>. Answer the trivia for bonus tips.')}
-    ${step(5,'Travel',`The story takes Mocha to 7 stops. Then three trips: World Tour, Eurotrip and The Slow Pour. ${COUNTRIES.length} countries, ${TOUR_LEN} levels each. Finish one to get a passport stamp, travel notes and a piece of ancient wisdom.`)}
+    ${step(5,'Travel',`The story takes Mocha to 7 stops. Then three trips: World Tour, Eurotrip and The Slow Pour. ${COUNTRIES.length-1} countries, ${TOUR_LEN} levels each. Finish one to get a passport stamp, travel notes and a piece of ancient wisdom.`)}
     <div><h3 style="margin:0 0 8px;font-size:15.5px">Pick your mode</h3><div class="modes">${Object.entries(DIFFS).filter(([k])=>k!=='custom').map(([k,d])=>`<button type="button" data-diff="${k}" aria-pressed="${(SAVE.diff||'normal')===k}"><b>${d.name}</b><span>${d.blurb}</span></button>`).join('')}</div></div>
     <p class="fine">Want to fine-tune each rule, or turn off the piece shadow? Open <button type="button" class="linkbtn" id="helpSet">⚙ Settings</button>. Your level, coins and stamps never change.</p>
     <button class="btn" type="button" id="helpTrain">🎓 Sloth Training (optional)</button>
@@ -2901,7 +2977,6 @@ function openHelp(first){
   host.querySelector('.helpov').onkeydown=e=>{if(e.key==='Escape')close()};
   host.querySelector('.helpov').onclick=e=>{if(e.target.classList.contains('helpov'))close()};
 }
-document.getElementById('help').onclick=()=>openHelp(false);
 
 /* ================= Brother Bean: the secret monk =================
    Sit still for a minute (no taps, no keys, no dialog or scene open) and he wanders in,
@@ -3001,8 +3076,7 @@ if(SAVE.unlocked.includes('croissant')){SAVE.unlocked=SAVE.unlocked.filter(i=>i!
 if(checkUnlocks().length)SAVE.newItems=true;
 SAVE.chapter=Math.max(SAVE.chapter,chapterIndex());save();
 refreshSloths();
-setMode('journey');
-if(!SAVE.seenHelp)openHelp(true);
+openStart();
 </script>
 
 <!-- Install support: offline cache + "Add to Home Screen" hint for iPhone (Apple never prompts on its own) -->
