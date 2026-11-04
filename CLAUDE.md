@@ -26,12 +26,12 @@ Matthew's personal portfolio. Matthew is a beginner: explain changes simply, kee
 - To ship a new version of the game, replace `index.html` but keep everything from the first `<!doctype` down to the main `</style>`'s `</head><body>` and the install block at the end. Then bump `VERSION` in `sw.js`.
 - The Nomad Café house ad links with `utm_source=slothdoku`.
 - Trip order: story (50 levels), then `SECTIONS`: World Tour (Canada to Colombia), Eurotrip (UK to France), The Slow Pour (Denmark, Spain, Portugal, Mexico, Cuba, Sweden, Finland, the Baltic Hoops side quest in Lithuania and Latvia, Iceland, then Home to Canada, following Matthew's real trips). Each country in `COUNTRIES` has 5 beats and 5 `NOTES` quiz questions (`TOUR_LEN`). Keep Mocha's gender open: no pronouns or gendered words aimed at Mocha.
-- Quiz rules: wrong answers must be plausible and the same type as the right one, and the answer shouldn't appear in that stop's story.
+- Quiz rules: travel questions (`NOTES`) need plausible wrong answers of the same type as the right one, the answer shouldn't appear in that stop's story, and no guess-the-number or year questions. Marketing questions (`TRIVIA`) can be easy.
 - Levels: the `Levels` tab (`openLevels()`) replays a section, a country or chapter, or one level, but only what this game has reached. Your real progress never moves back.
 - Napsack: `renderCloset()` shows one category at a time (Head, Face, Neck, Paws, Fur, Gifts) in a compact grid.
 - Start screen: `openStart()` opens on launch and from the ⌂ button: continue, Levels, training, or start over. Starting over hands back coins, items, stamps and stars, and locks Levels again.
 - Sloth Training: `TRAIN` and `openTraining()`, optional, opened from the start screen or the How to Play card, outside the level count. Three Beginner and four Advanced lessons. Players only do the taught step, then the board finishes itself. The hooded teacher is revealed as Brother Bean after all seven lessons unless he's already been met.
-- Secret character: **Brother Bean**, an old monk sloth drawn in the game's own style (`beanSVG()`: Mocha's face with grey-brown fur, closed eyes, a rust robe and the mala). He visits once, ever, if the player sits still for 60 seconds with no dialog or scene open, and gives Mocha the secret `mala` neck item. `?bean=1` calls him anyway. Fortunes live only in the website's easter egg (`assets/brother-bean.png`, `assets/brother-bean-head.png`), not in the game.
+- Secret character: **Brother Bean**, an old monk sloth drawn in the game's own style (`beanSVG()`: Mocha's face with grey-brown fur, closed eyes, a rust robe and the mala). He visits once, ever, if the player sits still for 60 seconds with no dialog or scene open, and gives Mocha the secret `mala` neck item. `?bean=1` calls him anyway. Fortunes live only in the website's easter egg (`assets/brother-bean.png`), not in the game.
 
 ## Workflow
 1. Make the change.

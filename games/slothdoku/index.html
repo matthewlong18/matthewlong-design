@@ -266,7 +266,6 @@ h1{font-family:var(--f-display);font-weight:800;font-size:28px;margin:0;letter-s
 .wisdom{border-color:var(--forest)}
 .chapter .learned{font-size:14px;color:var(--ink);background:#fff8e8;border-radius:8px;padding:6px 10px}
 .chapter .learned b{color:var(--gold-dk)}
-.notes-list{display:flex;flex-direction:column;gap:10px}
 /* out-of-leaves pop-up */
 .sadpop{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(31,58,44,.55);animation:fadeIn .35s ease-out both}
 .sadcard{background:var(--tray);border-radius:20px;padding:22px 20px 18px;max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 20px 50px -20px rgba(0,0,0,.5);animation:sadIn .5s cubic-bezier(.2,1.2,.4,1) both}
@@ -387,7 +386,6 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .preview.mini{position:sticky;top:6px;z-index:5;padding:8px 12px;gap:10px;box-shadow:0 6px 14px -10px rgba(31,58,44,.6)}.preview.mini .big{width:68px}.preview.mini .big svg{animation:none}.preview.mini h2{font-size:20px}.preview.mini p{font-size:12.5px;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .naptabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;background:var(--tray);border-radius:12px;padding:4px}.naptabs button{border:0;border-radius:9px;padding:8px 0;background:transparent;font:700 12.5px var(--f-body);color:var(--ink);cursor:pointer}.naptabs button[aria-pressed="true"]{background:var(--forest);color:var(--tray)}
 .items.compact{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.compact .item{padding:5px 2px 6px;font-size:10.5px;line-height:1.15;gap:2px;border-width:1.5px;min-width:0}.compact .item svg{width:46px;height:46px}.compact .item span{overflow-wrap:anywhere}.compact .item small{font-size:10.5px;font-weight:700;color:var(--ink)}.compact .item small .coin{width:10px;height:10px}.naphint{margin:0;font-size:12px;color:var(--muted);text-align:center}
-.lvlstop{margin:0;font:800 15px var(--f-display);color:var(--ink)}.lvlstop small{font:600 12px var(--f-body);color:var(--muted);margin-left:6px}
 .pill{border:2px solid var(--ink);background:transparent;border-radius:999px;padding:6px 12px;font:700 13px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap;flex:none}
 .pill.done{border-color:var(--sage);color:var(--muted)}
 .pill:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
@@ -395,8 +393,6 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .stamp{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:12.5px;text-align:center}
 .stamp svg{width:92px;height:92px}
 .stamp small{font-weight:400;color:var(--muted);font-size:11.5px}
-.stampbig{display:flex;gap:12px;align-items:center}
-.stampbig svg{width:88px;height:88px;flex:none;animation:stampIn .55s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes stampIn{0%{transform:scale(1.9);opacity:0}100%{transform:none;opacity:1}}
 .notes{border-left:4px solid var(--forest);padding-left:12px;display:flex;flex-direction:column;gap:4px}
 /* tip-jar trivia */
@@ -450,10 +446,6 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .fold .chev{font-size:16px;transition:transform .2s}.fold[open] .chev{transform:rotate(180deg)}
 .fold[open]{padding-bottom:12px}
 .fold h4.slot{margin:12px 0 6px;font:700 14px var(--f-body);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
-.nsnav{position:sticky;top:6px;z-index:5;display:flex;flex-wrap:wrap;justify-content:center;gap:5px;padding:6px;border-radius:16px;background:rgba(239,233,218,.86);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 6px 14px -12px rgba(31,58,44,.6)}
-.nsnav button{flex:none;border:2px solid var(--ink);background:var(--tray);border-radius:999px;padding:4px 10px;font:700 12.5px var(--f-body);color:var(--ink);cursor:pointer;white-space:nowrap}
-.nsnav button:active{background:var(--forest);color:var(--tray);border-color:var(--forest)}
-.nsnav button:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .closet h3.sec{scroll-margin-top:88px;font-family:var(--f-display);font-weight:600;font-size:18px;margin:0}
 .closet .secnote{font-size:13px;color:var(--muted);margin:-10px 0 0}
 .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
@@ -490,7 +482,7 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes fadeOut{from{opacity:1}to{opacity:0}}
 @keyframes blink{50%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.cell.pop svg,.cell.bad,.board.won .cell svg,.hearts.hit,.mascot svg,.combo.bump,.coins.bump,.preview .big svg,.actor,.actor svg,.title-card,.stage.out,.cell.reveal,.board.hurt,.tray.hurt,.stampbig svg,.travel *,.sadface svg,.sadcard,.sadpop{animation:none!important}.cell .nope{animation-duration:.01s!important}.piece.back{transition:none}}
+@media (prefers-reduced-motion:reduce){.cell.pop svg,.cell.bad,.board.won .cell svg,.hearts.hit,.mascot svg,.combo.bump,.coins.bump,.preview .big svg,.actor,.actor svg,.title-card,.stage.out,.cell.reveal,.board.hurt,.tray.hurt,.travel *,.sadface svg,.sadcard,.sadpop{animation:none!important}.cell .nope{animation-duration:.01s!important}.piece.back{transition:none}}
 </style>
 <!-- PostHog analytics (EU) -->
 <script>
@@ -790,7 +782,6 @@ Object.assign(CUST,{
   aino:{name:"Aino",fur:"#a39684",eq:{head:"beanie",neck:"scarf"}},
   astrid:{name:"Astrid",fur:"#7d6a58",eq:{face:"readers",hand:"croissant"}},
   mette:{name:"Mette",fur:"#94765c",eq:{neck:"plaid",face:"blush"}},
-  /* parked countries */
   ines:{name:'Inês',fur:'#9b6b43',eq:{face:'readers',hand:'cup'}},
   lupe:{name:'Lupe',fur:'#6b4a33',eq:{head:'flowers',neck:'lei'}},
   ma:{name:'Ma',fur:'#8a7a6a',eq:{face:'readers',neck:'apron'}},
@@ -1131,7 +1122,6 @@ const COUNTRIES=[
    {i:[['c',"Take this lopapeysa. My amma knitted it. It keeps out every kind of weather."],['m',"So warm. I could nap in this for a whole winter."]],x:['c',"Home next. Your ma has been asking. Bring Freja."]}
   ]}
 ];
-const PARKED_COUNTRIES=[];
 /* the last stop goes back to Canada, so it shares the lake backdrop: Mocha brings Freja home */
 COUNTRIES.push({id:'home',name:"Home",cust:'ma',tease:"Lakes, pines and the smell of butter tarts. Home.",
   stamp:{ring:'#c0563f',motif:`<circle cx="78" cy="20" r="9" fill="#e9b949"/><path d="M4 92V66h92v26z" fill="#4f9fbf"/><path d="M20 66l14-34 14 34zM44 66l12-26 12 26z" fill="#2f5d44"/><path d="M60 92q18-10 36 0z" fill="#fbf8f0" opacity=".5"/>`},
@@ -1250,9 +1240,9 @@ function furOnShelf(id,c){const k=FUR_AT[id];return !k||c>=stopEnd(k)}
 function furArrivals(c0,c1){return FURS.filter(f=>FUR_AT[f.id]&&!SAVE.furs.includes(f.id)&&c0<stopEnd(FUR_AT[f.id])&&c1>=stopEnd(FUR_AT[f.id]))}
 function shopArrivals(c0,c1){return ITEMS.filter(i=>i.price!=null&&SHOP_AT[i.id]&&!SAVE.unlocked.includes(i.id)&&c0<stopEnd(SHOP_AT[i.id])&&c1>=stopEnd(SHOP_AT[i.id]))}
 /* gear that's no longer a gift moves to the shop, so nothing is lost (parked-country gear waits for its country) */
-{const gifts=new Set(),parked=new Set();Object.entries(GEAR).forEach(([k,v])=>v.forEach(id=>gifts.add(id)));
+{const gifts=new Set();Object.entries(GEAR).forEach(([k,v])=>v.forEach(id=>gifts.add(id)));
  const PRICE={head:45,face:45,neck:40,hand:35,paint:40};
- ITEMS.forEach(it=>{if(!gifts.has(it.id)&&!parked.has(it.id)&&it.price==null&&!it.need)it.price=PRICE[it.slot]||40});}
+ ITEMS.forEach(it=>{if(!gifts.has(it.id)&&it.price==null&&!it.need)it.price=PRICE[it.slot]||40});}
 /* level thresholds: halfway reward after ceil(len/2) levels at a stop, finish reward on its last level */
 function gearStops(){
   const out=[];
@@ -1552,7 +1542,6 @@ const WISDOM={
  canada:{say:'Etuaptmumk',en:'Learn to see with one eye the strengths of Indigenous ways of knowing, and with the other the strengths of Western ways of knowing, and use both eyes together.',from:'Two-Eyed Seeing, a teaching from Mi’kmaw Elder Albert Marshall',why:'Mix the old ways with new tools. You don’t have to pick one.'}
 };
 function wisdomCard(c){const w=WISDOM[c.id];return `<div class="lesson wisdom"><div class="tag">Ancient wisdom · ${c.name}</div>${w.say?`<p class="orig">${w.say}</p>`:''}<p>“${w.en}”</p><p class="where">${w.from}. ${w.why}</p></div>`}
-function lessonCard(i){return `<div class="lesson"><div class="tag">Lesson learned · Chapter ${i+1}</div><p>${LESSONS[i].lesson}</p></div>`}
 function notesCard(c,full=true){
   const n=NOTES[c.id];
   return `<div class="lesson notes-card"><div class="tag">Travel notes · ${c.name}</div>
@@ -1627,8 +1616,7 @@ const SAY={
   poke:["Hey. I was sleeping.","Five more minutes.","Boop received.","Please don't poke the barista.","I'm awake. Mostly."],
   win:["All sloths are home!","Nap time for everyone.","Beautiful. Truly restful."],
   lose:["Out of leaves. Let's try that again.","Too many crowded branches."],
-  hint:["Psst. Try there.","One little nudge."],
-  wild:["Wild mode. No safety net.","You're on your own now. Good luck."]
+  hint:["Psst. Try there.","One little nudge."]
 };
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 
@@ -2014,7 +2002,6 @@ function introScene(){const L=curLeg(),sc=sceneFor(L,'in');if(L.k===0||!SAVE.see
 /* ================= game state ================= */
 const boardEl=document.getElementById('board'),slip=document.getElementById('slip'),brew=document.getElementById('brew'),piecesEl=document.getElementById('pieces');
 let mode='journey',P,cells,hearts,history,done,t0,elapsed,timer,hintsLeft,usedHints,combo,mistakes,warmHints;
-let rush=null;
 let phase='sloths'; /* 'build' | 'sloths' */
 let revealed=new Set(),wrongs=new Set(),guessLock=0,lastTouch=0;
 const dz=()=>{const st=mode==='daily'?DAILY_STAGE:stageAt(playLv()-1);return Object.assign({name:stageName(st)},st)};
@@ -2228,18 +2215,18 @@ function render(pop){
   lv.innerHTML=mode==='daily'?`Today<small>${step}</small>`:`Level ${playLv()}${REPLAY?' · replay':''}<small>${step}</small>`;
   const h=document.getElementById('hearts');
   if(phase!=='sloths')h.hidden=true;
-  else if(d.check&&mode!=='rush'){h.hidden=false;h.innerHTML=[0,1,2].map(i=>`<span class="${i<hearts?'':'gone'}">❦</span>`).join('');h.setAttribute('aria-label',`${hearts} leaves left`)}
+  else if(d.check){h.hidden=false;h.innerHTML=[0,1,2].map(i=>`<span class="${i<hearts?'':'gone'}">❦</span>`).join('');h.setAttribute('aria-label',`${hearts} leaves left`)}
   else if(!d.check){h.hidden=false;h.innerHTML=`<span style="font-size:15px;color:var(--muted)">${cl.count}/${n} 🦥</span>`}
   else h.hidden=true;
   const c=document.getElementById('combo');c.hidden=combo<2||phase!=='sloths';c.textContent=`×${combo}`;
   document.getElementById('coinN').textContent=SAVE.coins;
-  if(mode!=='rush')document.getElementById('time').textContent=fmt(elapsed);
+  document.getElementById('time').textContent=fmt(elapsed);
 }
 function syncControls(){
   const d=dz();
   const hb=document.getElementById('hint');
   if(phase==='build'){hb.hidden=true}
-  else{hb.hidden=false;hb.disabled=hintsLeft<=0||mode==='rush';hb.textContent=d.hints?`Hint (${hintsLeft})`:'No hints'}
+  else{hb.hidden=false;hb.disabled=hintsLeft<=0;hb.textContent=d.hints?`Hint (${hintsLeft})`:'No hints'}
   const ax=document.getElementById('autox');ax.disabled=!d.autox||phase!=='sloths';ax.textContent=d.autox?'Auto-X':'Auto-X retired';ax.setAttribute('aria-pressed',autoxOn());
   document.getElementById('undo').disabled=phase!=='sloths';
   document.querySelector('.tray').classList.toggle('building',phase==='build');
@@ -2255,7 +2242,7 @@ function highlight(y,x){
   [...boardEl.children].forEach(b=>{const yy=+b.dataset.y,xx=+b.dataset.x;
     b.classList.toggle('hl',y!=null&&(yy===y||xx===x));b.classList.toggle('hlreg',y!=null&&P.g[yy][xx]===reg&&yy!==y&&xx!==x)});
 }
-function startClock(){if(mode!=='rush'&&t0===null)t0=Date.now()-elapsed}
+function startClock(){if(t0===null)t0=Date.now()-elapsed}
 function autoMark(y,x,group){
   if(!autoxOn())return;
   const n=P.n,reg=P.g[y][x];
@@ -2289,18 +2276,18 @@ function trySloth(y,x){
   }else{
     guessLock=Date.now()+450; /* brief pause after a mistake so one press can't cost twice */
     combo=0;mistakes++;sfx.bad();say('bad');if(navigator.vibrate)try{navigator.vibrate([80,40,80])}catch(e){}
-    if(mode==='rush')rush.end-=10000;else hearts--;
+    hearts--;
     /* the square becomes a permanent red X so you can see where you went wrong */
     if(cells[y][x]===0)history.push([[y,x,0]]);cells[y][x]=1;wrongs.add(y*P.n+x);render();
     const b=boardEl.children[y*P.n+x];
     b.classList.remove('bad');void b.offsetWidth;b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),500);
     b.insertAdjacentHTML('beforeend',`<span class="nope">${SAD}</span>`);setTimeout(()=>b.querySelector('.nope')?.remove(),1150);
     const tray=boardEl.parentElement,br=b.getBoundingClientRect(),tr=tray.getBoundingClientRect();
-    const f=document.createElement('span');f.className='float';f.textContent=mode==='rush'?'−10s':'−1 ❦';
+    const f=document.createElement('span');f.className='float';f.textContent='−1 ❦';
     f.style.left=(br.left-tr.left+br.width/2)+'px';f.style.top=(br.top-tr.top+br.height/2)+'px';tray.appendChild(f);setTimeout(()=>f.remove(),1150);
     [boardEl,tray].forEach(el=>{el.classList.remove('hurt');void el.offsetWidth;el.classList.add('hurt')});
     const h=document.getElementById('hearts');h.classList.remove('hit');void h.offsetWidth;h.classList.add('hit');
-    if(mode!=='rush'&&hearts<=0){done=true;setTimeout(lose,700)}
+    if(hearts<=0){done=true;setTimeout(lose,700)}
   }
 }
 
@@ -2453,46 +2440,49 @@ function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after,arrived=[
 /* ================= tip-jar trivia: one marketing question per level ================= */
 /* [question, [correct, wrong, wrong, wrong], why] — options get shuffled when shown */
 const TRIVIA=[
+ ["What does CTA stand for?",["Call to action","Click to advance","Customer target audience","Cost to acquire"],"The CTA is the one thing you want someone to do next: book, buy, sign up."],
+ ["What is a lead magnet?",["A free resource offered in exchange for contact details","A paid ad that targets competitors","A loyalty card for regulars","A sales script for cold calls"],"A checklist or guide that's useful enough that people swap their email for it."],
+ ["What does SEO stand for?",["Search engine optimization","Social engagement output","Sales enablement operations","Site exit overview"],"Making your pages easier to find in unpaid search results."],
  ["Pricing something at $19.99 instead of $20 is called…",["Charm pricing","Anchor pricing","Cost-plus pricing","Bundle pricing"],"Prices ending in 9 tend to feel noticeably cheaper than they are."],
- ["Showing a higher price first so the next one feels reasonable is called…",["Anchoring","Price skimming","Loss leading","Tiering"],"The first number people see shapes how they judge every number after it."],
- ["Adding a third option mainly to make another one look better is called…",["The decoy effect","The halo effect","The framing effect","The bandwagon effect"],"A pricey middle option can make the premium tier feel like the obvious deal."],
- ["Apple's famous 1984 Super Bowl ad was directed by…",["Ridley Scott","David Fincher","Steven Spielberg","Stanley Kubrick"],"He'd just made Blade Runner. The ad ran nationally only once and people still talk about it."],
- ["Nike's Just Do It slogan came from which ad agency?",["Wieden+Kennedy","Ogilvy","BBDO","Chiat/Day"],"Dan Wieden pitched the line in 1988. Nike's boss wasn't sold at first."],
+ ["What is social proof?",["Using other people's actions or reviews to build trust","Posting on every social platform","Proving you own your brand name","Fact-checking a social post"],"Testimonials, reviews and \"500 cafés use this\" all lean on it."],
+ ["What does CAC stand for?",["Customer acquisition cost","Content and copy","Campaign audience count","Client account credit"],"What it costs, on average, to win one new customer."],
+ ["Customer lifetime value (LTV) measures…",["The total revenue you expect from one customer over time","How long a customer has followed you","A customer's credit limit","The value of your best month"],"Compare it with CAC: if LTV is well above CAC, your marketing pays for itself."],
+ ["What is an A/B test?",["Comparing two versions to see which performs better","A test for accessibility","Checking a site on two browsers","Grading leads from A to B"],"Change one thing (headline, button, price) and let the numbers pick the winner."],
+ ["Retargeting means…",["Showing ads to people who already visited your site","Changing your target market","Re-sending the same email","Targeting a competitor's customers"],"People rarely buy on the first visit; retargeting brings them back."],
+ ["Bounce rate is the share of visitors who…",["Leave after viewing just one page","Click your ad twice","Unsubscribe from emails","Return within a week"],"A high bounce rate often means the page didn't match what the visitor expected."],
+ ["What does USP stand for?",["Unique selling proposition","Universal sales plan","User signup page","Upsell sequence path"],"The reason someone should pick you over every other option."],
+ ["Which of these is NOT one of the classic 4 Ps of marketing?",["People","Product","Price","Promotion"],"The original four are Product, Price, Place and Promotion. People was added later in the 7 Ps."],
+ ["What does ICP stand for?",["Ideal customer profile","Internal campaign plan","Instant conversion page","Inbound content pipeline"],"A clear picture of who you serve best, so your marketing speaks to them directly."],
+ ["Organic traffic is…",["Visitors from unpaid sources like search results","Traffic from health food sites","Visitors who arrive from paid ads","Traffic from your own team"],"It's slower to build than paid traffic, but it keeps coming without a daily ad budget."],
+ ["Churn rate measures…",["The share of customers who stop buying or cancel","How fast your site loads","How often you post content","Your number of new followers"],"For any subscription or retainer, keeping churn low is often cheaper than finding new customers."],
+ ["Showing a higher price first so the next one feels reasonable is called…",["Anchoring","Discounting","Bundling","Tiering down"],"The first number people see shapes how they judge every number after it."],
+ ["In marketing, a conversion is when someone…",["Takes the action you wanted, like buying or signing up","Switches to a competitor","Changes their email address","Converts your content to video"],"Conversion rate is just conversions divided by visitors."],
+ ["Adding a third option mainly to make another option look better is called…",["The decoy effect","The halo effect","The bandwagon effect","The scarcity effect"],"A pricey middle option can make the premium tier feel like the obvious deal."],
+ ["A landing page is best described as…",["A page built around one offer and one goal","Your website's home page","The last page of a checkout","A page listing all your services"],"Fewer choices on the page usually means more people take the one action you want."],
+ ["What does B2B mean?",["Business to business","Back to basics","Brand to buyer","Budget to break-even"],"Selling to companies rather than to individual consumers (B2C)."],
+ ["What does ROI stand for?",["Return on investment","Rate of interest","Reach of influence","Revenue over income"],"What you got back compared with what you put in."],
+ ["\"Above the fold\" refers to…",["The part of a page you see before scrolling","Content inside a printed brochure","Your most popular blog post","The top row of a pricing table"],"Your headline and main CTA usually belong here."],
+ ["A warm lead is someone who…",["Already knows you or has shown interest","Lives somewhere hot","Was found through cold calling","Just unsubscribed"],"Warm leads convert far more easily than cold ones, which is why referrals are gold."],
+ ["Offering a pricier, upgraded version of what someone is already buying is…",["An upsell","A cross-sell","A downsell","A loss leader"],"Cross-selling is adding a related extra, like fries with the burger."],
+ ["Evergreen content is content that…",["Stays useful long after it's published","Is about the environment","Only runs during holidays","Is always paid"],"How-to guides and FAQs keep pulling in visitors for years."],
+ ["In a short video, the hook is…",["The first few seconds that grab attention","The call to action at the end","The background music","The video's thumbnail text"],"If the opening doesn't stop the scroll, nothing after it gets seen."],
+ ["What does MRR stand for?",["Monthly recurring revenue","Marketing reach ratio","Minimum retail rate","Monthly referral report"],"Predictable revenue that renews every month, like subscriptions or retainers."],
+ ["A long-tail keyword is…",["A longer, more specific search phrase with less competition","A keyword about animals","A very popular one-word search","A keyword used only in ads"],"\"Coffee\" is crowded. \"Quiet café for remote work in Copenhagen\" is long-tail."],
+ ["A customer's pain point is…",["A specific problem they want solved","A bad review they left","A late payment","A complaint about price"],"Marketing that names the pain clearly makes people feel understood."],
+ ["Double opt-in means a new subscriber…",["Confirms their signup by clicking a link in an email","Signs up twice by accident","Joins two lists at once","Pays for two months upfront"],"It keeps your list cleaner and helps your emails land in inboxes."],
+ ["In AIDA, what does the D stand for?",["Desire","Discount","Data","Delivery"],"Attention, Interest, Desire, Action: a classic outline for persuasive copy."],
+ ["What does CRM stand for?",["Customer relationship management","Content review meeting","Conversion rate maximizer","Campaign reach metric"],"Software (or even a spreadsheet) that tracks your leads, clients and follow-ups."],
+ ["A value ladder is…",["A series of offers that rise in price and value","A ranking of your competitors","A list of company values","A pricing discount schedule"],"A small first purchase builds trust for the bigger offer later."],
+ ["Brand voice means…",["The consistent personality in how your brand writes and speaks","Your logo and colours","A jingle in your ads","The founder's podcast"],"Same voice everywhere makes you recognisable even without the logo."],
+ ["Email open rate is the share of recipients who…",["Opened the email","Clicked a link in it","Replied to it","Forwarded it"],"Clicks are measured separately, as click-through rate."],
+ ["Click-through rate (CTR) is…",["Clicks divided by the number of people who saw it","Total clicks in a month","The speed of your website","Clicks from mobile users only"],"Useful for comparing ads, emails or headlines against each other."],
+ ["A referral program…",["Rewards customers for bringing in new customers","Refers customers to a competitor","Tracks customer complaints","Lists your partner businesses"],"Happy customers are usually the cheapest marketing channel you have."],
+ ["Scarcity in marketing means…",["Limited availability makes something more desirable","Spending as little as possible on ads","Posting less often","Having few competitors"],"It works best when it's real: limited spots, a genuine deadline."],
+ ["A testimonial is…",["A customer's own words about their experience or results","A legal statement","A product spec sheet","A press release"],"Specific results (\"saved me 5 hours a week\") beat generic praise."],
+ ["What is a sales funnel?",["The path people take from first hearing of you to buying","A tool for pouring coffee","A list of sales targets","A team's org chart"],"Awareness at the top, purchase at the bottom, and every step can leak."],
  ["The Michelin restaurant guide started as a way to sell more…",["Tyres","Wine","Road maps","Cookware"],"More road trips meant more worn-out tyres. Best content marketing ever, really."],
  ["Guinness World Records was dreamed up to settle arguments in…",["Pubs","Schools","Courtrooms","Newsrooms"],"A Guinness brewery boss got stuck on which game bird was fastest, and figured every pub needed the answers. First edition: 1955."],
- ["In Google Analytics 4, bounce rate is the opposite of…",["Engagement rate","Conversion rate","Retention rate","Click-through rate"],"GA4 counts a bounce as any session that wasn't engaged."],
- ["In AIDA, what does the D stand for?",["Desire","Decision","Demand","Detail"],"Attention, Interest, Desire, Action: a classic outline for persuasive copy."],
- ["Which of these is NOT one of the original 4 Ps of marketing?",["People","Place","Promotion","Product"],"The original four are Product, Price, Place and Promotion. People came later, in the 7 Ps."],
- ["Suggesting fries at checkout when someone orders a burger is…",["A cross-sell","An upsell","A downsell","A bundle"],"An upsell would be a bigger burger. Cross-sells add something related."],
- ["Offering a cheaper option after someone says no is…",["A downsell","A cross-sell","An upsell","A tripwire"],"You keep the buyer instead of losing them over price."],
- ["A low-priced first offer that turns leads into buyers is…",["A tripwire","A lead magnet","A loss leader","An upsell"],"Once someone has bought once, the next purchase is much easier."],
- ["Selling something at a loss to bring in customers who buy other things is…",["A loss leader","A tripwire","A decoy","A rebate"],"Think cheap milk at the back of the supermarket."],
- ["Launching at a low price to win market share, then raising it, is…",["Penetration pricing","Price skimming","Cost-plus pricing","Anchor pricing"],"It's the opposite of skimming."],
- ["Launching at a high price and lowering it over time is…",["Price skimming","Penetration pricing","Dynamic pricing","Value-based pricing"],"Early adopters pay most, then the price falls to reach everyone else. Think new phones."],
- ["When a brand name gets so common it loses its trademark, it's called…",["Genericide","Brand drift","Name decay","Trademark fade"],"It happened to the escalator. It's why Xerox keeps begging you not to say xerox."],
- ["Who wrote Confessions of an Advertising Man?",["David Ogilvy","Bill Bernbach","Leo Burnett","Claude Hopkins"],"Published in 1963 and still on plenty of marketers' shelves."],
- ["Net Promoter Score asks customers…",["How likely they are to recommend you","How often they buy from you","How much they would pay you","How long they have known you"],"It's one question, scored from 0 to 10."],
- ["The legendary Think Small ad was selling which car?",["Volkswagen Beetle","Fiat 500","Austin Mini","Citroën 2CV"],"DDB's 1959 ad made a tiny car feel like the smart choice, in the land of giant ones."],
- ["What does MQL stand for?",["Marketing qualified lead","Most qualified lead","Monthly quota lead","Managed queue lead"],"Someone marketing thinks is ready to pass over to sales."],
- ["UTM tags on a link are used to…",["Track where clicks came from","Shorten long links","Stop links being blocked","Make pages load faster"],"They tell your analytics which post, email or ad sent the visitor."],
- ["The U in UTM stands for…",["Urchin","Universal","User","Unified"],"Urchin was the analytics company Google bought, which became Google Analytics."],
- ["Which law says more choices make people take longer to decide?",["Hick's law","Fitts's law","Parkinson's law","Moore's law"],"It's why a landing page should have one clear button."],
- ["The idea that about 80% of results come from 20% of causes is…",["The Pareto principle","The Peter principle","The Hawthorne effect","The Lindy effect"],"Often true of clients too: a few bring most of the revenue."],
- ["Who coined the term social proof in his book Influence?",["Robert Cialdini","David Ogilvy","Seth Godin","Philip Kotler"],"The book came out in 1984 and is still a marketing staple."],
- ["Who wrote the essay 1,000 True Fans?",["Kevin Kelly","Seth Godin","Tim Ferriss","Paul Graham"],"He argued a creator can make a living from just 1,000 devoted customers."],
- ["Giving something useful for free so people want to return the favour uses…",["Reciprocity","Commitment","Authority","Liking"],"It's one of Cialdini's principles of persuasion."],
- ["Double opt-in means a new subscriber…",["Confirms by clicking an email link","Ticks two separate signup boxes","Signs up to two lists at once","Confirms by replying to a text"],"It keeps your list cleaner and helps your emails land in inboxes."],
- ["A soft bounce is…",["A temporary delivery failure","A permanent delivery failure","An email nobody opened","A spam complaint"],"Usually a full inbox. A hard bounce is a dead address."],
- ["Apple's Mail Privacy Protection made which metric less reliable?",["Open rates","Click rates","Bounce rates","Unsubscribe rates"],"It loads images in advance, so emails can look opened when they weren't."],
- ["In SEO, position zero usually refers to…",["A featured snippet","A paid search ad","A knowledge panel","An image result"],"It's the answer box Google can show above the normal results."],
- ["A 301 redirect tells search engines a page has…",["Moved permanently","Moved temporarily","Been blocked","Gone missing"],"A 302 is the temporary one, and a 404 is missing."],
- ["A page's meta description mainly affects…",["Clicks from search results","Its Google ranking","How fast it loads","How often it's crawled"],"Google says it isn't a ranking factor, but good ones earn more clicks."],
- ["In copywriting, PAS stands for…",["Problem, Agitate, Solve","Product, Audience, Sell","Promise, Action, Sale","Pain, Ask, Solution"],"Name the problem, twist the knife, then offer the fix."],
- ["A frequency cap limits…",["How often one person sees an ad","How much you spend each day","How many ads you can run","How long an ad can run"],"It stops people getting sick of your ad."],
- ["The M in CPM stands for…",["Mille","Million","Marketing","Month"],"Latin for thousand, so it's the cost per 1,000 impressions."],
- ["A lookalike audience is…",["New people similar to your customers","People who visited your website","People on your email list","People who follow your competitors"],"You give the ad platform your best customers and it finds more like them."],
- ["The peak-end rule says we judge an experience by its best or worst moment and its…",["Ending","Beginning","Price","Length"],"It's why the last thing a customer experiences matters so much."],
- ["In the famous 2000 jam study, shoppers bought more when offered…",["6 flavours","24 flavours","12 flavours","48 flavours"],"More choice drew a crowd, but about 30% of tasters bought from 6 flavours versus 3% from 24. Later studies have struggled to repeat it."]
+ ["The legendary Think Small ad was selling which car?",["Volkswagen Beetle","Fiat 500","Austin Mini","Citroën 2CV"],"DDB's 1959 ad made a tiny car feel like the smart choice, in the land of giant ones."]
 ];
 /* marketing trivia during the story, fun facts about the country on the World Tour */
 function triviaHTML(L){
@@ -2659,7 +2649,6 @@ function renderCloset(){
       return own?`<button type="button" class="item" data-id="${id}" aria-pressed="${on}">${slothSVG(null,id)}${it.name}<small>${on?'Wearing':'Tap to wear'}</small></button>`
         :`<div class="item locked">${slothSVG(null,id)}${reached?it.name:'???'}<small>${k||g.items.length===1?'Finish':'Halfway'} · Lv ${g.at[k]}</small></div>`}).join('')}</div>`}).join('')}`;
   const met=id=>{const k=STORY_CAST.indexOf(id);if(k>=0)return k<=ci;const t=COUNTRIES.findIndex(x=>x.cust===id);return c>=TOUR_AT+t*TOUR_LEN};
-  const gearOut=gear+'</div>';
   if(mode==='closet'){
     const tabs=[['head','Head'],['face','Face'],['neck','Neck'],['hand','Paws'],['fur','Fur'],['gifts','Gifts']],cur=tabs.some(t=>t[0]===SAVE.napTab)?SAVE.napTab:'head';
     const tile=(it,sl)=>{const owned=SAVE.unlocked.includes(it.id),on=SAVE.equip[sl]===it.id;
