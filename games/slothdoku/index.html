@@ -368,6 +368,7 @@ button.sslot:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .lvlgrid button{min-width:42px;height:38px;border-radius:10px;border:2px solid var(--ink);background:var(--tray);font:800 14px var(--f-body);color:var(--ink);cursor:pointer;position:relative}
 .lvlgrid button[aria-current="true"]{background:var(--forest);color:var(--tray);border-color:var(--forest)}
 .lvlgrid button[disabled]{opacity:.35;border-style:dashed;cursor:default}
+.lvlgrid button.perf{background:#f6e7b0}
 .lvlgrid button .st{position:absolute;left:0;right:0;bottom:-1px;font-size:8px;color:var(--gold-dk);letter-spacing:-1px}
 .rsec{margin:0 0 14px}.rsec.locked{font:800 15px var(--f-display);color:var(--muted);margin:0 0 12px;opacity:.7}.rsec small{font:600 12px var(--f-body);color:var(--muted);margin-left:8px}
 .rsechd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}.rsechd p{margin:0;font:800 16px var(--f-display);color:var(--ink)}
@@ -1248,7 +1249,7 @@ function shelfAt(){
 const shelfLv=id=>{const v=shelfAt()[id];return v==null?Infinity:v};
 function onShelf(id,c){return !SHOP_AT[id]||c>=shelfLv(id)}
 const FUR_AT={honey:'s1',cocoa:'s2',ginger:'s3',cream:'s4',silver:'s5',midnight:'s6',strawberry:'japan',algae:'cambodia',gold:'colombia'};
-function furOnShelf(id,c){return !FUR_AT[id]||c>=shelfLv('fur:'+id)}
+function furOnShelf(id,c){return !FUR_AT[id]||c>=shelfLv('fur:'+id)||(id==='gold'&&SAVE.unlocked.includes('goldbar'))}
 /* new arrivals after a level */
 function furArrivals(c0,c1){return FURS.filter(f=>FUR_AT[f.id]&&!SAVE.furs.includes(f.id)&&c0<shelfLv('fur:'+f.id)&&c1>=shelfLv('fur:'+f.id))}
 function shopArrivals(c0,c1){return ITEMS.filter(i=>i.price!=null&&SHOP_AT[i.id]&&!SAVE.unlocked.includes(i.id)&&c0<shelfLv(i.id)&&c1>=shelfLv(i.id))}
@@ -1266,6 +1267,12 @@ function goldify(svg){
     .replace(/rgba?\((\d+),\s*(\d+),\s*(\d+)(,\s*[\d.]+)?\)/g,(m,r,g,b,a)=>{const c=ramp(lum(+r,+g,+b));return a?`rgba(${parseInt(c.slice(1,3),16)},${parseInt(c.slice(3,5),16)},${parseInt(c.slice(5,7),16)}${a})`:c});
 }
 const GOLD_OF={};
+function perfectIn(test){let v=0,g=0;gearStops().filter(test).forEach(x=>{g+=x.len;for(let n=x.start+1;n<=x.start+x.len;n++)if(SAVE.perfect['j:'+n])v++});return[v,g]}
+const hasBar=()=>SAVE.unlocked.includes('goldbar');
+[{id:'goldbar',slot:'hand',name:'Gold bar',how:'A perfect level (3 stars, no mistakes, no hints) on every level of the story',need:()=>perfectIn(g=>g.label.startsWith('Chapter')),
+  svg:`<path d="M3 56h11l3 9H0z" fill="#e0b53c" stroke="#7a5410" stroke-width="1"/><path d="M4.5 58.2h8" stroke="#f6dd7a" stroke-width="1.2"/><path d="M16 49l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z" fill="#f6dd7a"/>`},
+ {id:'goldpassport',slot:'hand',name:'Gold passport',how:'A perfect level (3 stars, no mistakes, no hints) on every level of the World Tour',need:()=>perfectIn(g=>g.label===SECTIONS[0].name),svg:goldify(ITEM.passport.svg)}
+].forEach(it=>{ITEMS.push(it);ITEM[it.id]=it});
 function stopStars(key){const g=gearStops().find(x=>x.key===key);let v=0;for(let n=g.start+1;n<=g.start+g.len;n++)if((SAVE.stars['j:'+n]||0)>=3)v++;return[v,g.len]}
 Object.entries(GEAR).forEach(([key,list])=>list.forEach(id=>{const it=ITEM[id];if(!it)return;
   const gold={...it,id:'gold-'+id,name:/gold/i.test(it.name)?`Solid ${it.name}`:`Gold ${it.name}`,svg:goldify(it.svg),gold:true,need:()=>stopStars(key),get how(){return `3 stars on every level of ${gearStops().find(g=>g.key===key).name}`}};
@@ -1766,7 +1773,7 @@ function hashStr(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Ma
 /* ================= saved progress (this browser only) ================= */
 const KEY='slothdoku-v3';
 function load(){
-  const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,seenHelp:false,diff:'normal',custom:{},shadow:true,chapter:0,newItems:false,
+  const b={levels:{chill:1,tricky:1,wild:1},level:1,stars:{},best:{},earned:{},perfect:{},daily:{},sound:true,autox:true,unlocked:[],equip:{},maxCombo:0,pokes:0,seenIntro:false,seenHelp:false,diff:'normal',custom:{},shadow:true,chapter:0,newItems:false,
     coins:10,fur:'classic',furs:['classic'],scenes:true,stamps:[],v:8};
   const sumL=o=>(o.levels.chill-1)+(o.levels.tricky-1)+(o.levels.wild-1);
   const backPay=o=>10+5*sumL(o);
@@ -1840,7 +1847,7 @@ function legTitle(L){return L.kind==='free'?['Free play · new stops coming as M
 function chapterIndex(){return legAt(Math.min(stats().cleared,TOUR_AT-1)).i}
 const dailyDone=()=>!!SAVE.daily['d:'+todayKey()];
 function chapterHTML(ch,i){return `<div class="chapter"><div class="eyebrow">Chapter ${i+1} of ${CHAPTERS.length}</div><h3>${ch.title}</h3><p>${ch.text}</p></div>`}
-function unlockHTML(list){return list.length?`<p><b>${list.some(i=>i.gold)?'Gold gift unlocked':list.some(i=>GEAR_AT[i.id])?'New gear for your Napsack':'New trophy'}</b></p><div class="unlocks">${list.map(it=>`<span class="unlock">${slothSVG(null,it.id)}${it.name}</span>`).join('')}</div>`:''}
+function unlockHTML(list){return list.length?`<p><b>${list.some(i=>i.gold)?'Gold gift unlocked':list.some(i=>GEAR_AT[i.id])?'New gear for your Napsack':'New trophy'}</b></p><div class="unlocks">${list.map(it=>`<span class="unlock">${slothSVG(null,it.id)}${it.name}</span>`).join('')}</div>${list.some(i=>i.id==='goldbar')?'<p>Trade it for the Solid gold fur any time, in your Napsack.</p>':''}`:''}
 function refreshSloths(){
   document.getElementById('mascot').innerHTML=slothSVG(SAVE.equip);
   [...document.getElementById('board').children].forEach(b=>b.dataset.v='');
@@ -2144,7 +2151,7 @@ function openLevels(){
     return `<details class="rstop"${open?' open':''}><summary><b>${g.name}</b><span class="rst">★ ${starsIn(g.start,g.len)}/${g.len*3}</span></summary>
       <button class="btn rbtn" type="button" data-from="${g.start+1}" data-to="${g.start+g.len}">Replay ${g.name}</button>
       <div class="lvlgrid">${lv.map(n=>{const st=SAVE.stars['j:'+n]||0;
-      return `<button type="button" data-from="${n}" data-to="${n}" ${n>top?'disabled':''} aria-current="${n===cur}" aria-label="Level ${n}${st?`, ${st} stars`:''}">${n}${st?`<span class="st">${'★'.repeat(st)}</span>`:''}</button>`}).join('')}</div></details>`};
+      return `<button type="button" data-from="${n}" data-to="${n}" ${n>top?'disabled':''} ${SAVE.perfect['j:'+n]?'class="perf"':''} aria-current="${n===cur}" aria-label="Level ${n}${st?`, ${st} stars`:''}${SAVE.perfect['j:'+n]?', perfect':''}">${n}${st?`<span class="st">${'★'.repeat(st)}</span>`:''}</button>`}).join('')}</div></details>`};
   const groups=[{name:'The Story',list:stops.filter(g=>g.label.startsWith('Chapter'))},...SECTIONS.map(s=>({name:s.name,list:stops.filter(g=>g.label===s.name)}))];
   const rows=groups.map(g=>{
     const a=g.list[0].start,len=g.list.reduce((t,x)=>t+x.len,0);
@@ -2152,7 +2159,7 @@ function openLevels(){
     return `<div class="rsec"><div class="rsechd"><p>${g.name}<small>★ ${starsIn(a,len)}/${len*3}</small></p><button class="pill" type="button" data-from="${a+1}" data-to="${a+len}">Replay all</button></div>${g.list.filter(x=>x.start<top).map(stopRow).join('')}</div>`}).join('');
   host.innerHTML=`<div class="helpov" role="dialog" aria-modal="true" aria-labelledby="lvlTitle"><div class="helpcard">
     <h2 id="lvlTitle" style="margin:0">Replay</h2>
-    <p class="fine" style="margin:0">Replay anything you've reached: a section, a country or one level. You only earn tips by beating your star score. Get 3 stars on every level of a stop to turn its gift gold.</p>
+    <p class="fine" style="margin:0">Replay anything you've reached: a section, a country or one level. You only earn the coins above your best total on a level. Get 3 stars on every level of a stop to turn its gift gold. Gold squares are perfect levels: 3 stars, no mistakes, no hints.</p>
     <div style="max-height:58vh;overflow-y:auto">${rows}</div>
     <div class="row"><button class="btn go" type="button" id="lvlLatest">Play my latest level (${frontier})</button><button class="btn" type="button" id="lvlClose">Close</button></div></div></div>`;
   const close=()=>{host.innerHTML=''};
@@ -2367,6 +2374,8 @@ function checkWin(){
   if(!dz().check&&clashes().count!==P.n)return;
   done=true;elapsed=Date.now()-t0;win();
 }
+/* best tips ever paid on a level. Saves from before this existed get a fair guess from their stars */
+function earnedAt(key){if(SAVE.earned[key]!=null)return SAVE.earned[key];const st=SAVE.stars[key];if(!st)return 0;const m=stageAt(+key.slice(2)-1).mult;return Math.round((3+st)*m)}
 function starsFor(){
   if(!dz().check)return 3-(elapsed>5*60000?1:0)-(elapsed>10*60000?1:0);
   return Math.max(1,hearts-(usedHints>1?1:0));
@@ -2391,7 +2400,10 @@ function win(){
   render();boardEl.classList.add('won');
   [...boardEl.querySelectorAll('.cell svg')].forEach((s,i)=>s.style.animationDelay=(i*70)+'ms');
   sfx.win();say('win');burst();
-  const k=starsFor(),same=REPLAY&&k<=(SAVE.stars['j:'+REPLAY]||0),tips=same?[['Replay, no new stars',0]]:tipsFor(k),total=tips.reduce((a,l)=>a+l[1],0);
+  const k=starsFor(),full=tipsFor(k),fullTotal=full.reduce((a,l)=>a+l[1],0),lvKey=mode==='daily'?null:'j:'+(REPLAY||SAVE.level),before=lvKey?earnedAt(lvKey):0;
+  /* each level has a cap: you only get paid for going above your best total there */
+  const tips=before>0?[...full,['Already earned',-Math.min(before,fullTotal)]]:full,total=Math.max(0,fullTotal-before);
+  if(lvKey){SAVE.earned[lvKey]=Math.max(before,fullTotal);if(k>=3&&mistakes===0&&usedHints===0)SAVE.perfect[lvKey]=1}
   addCoins(total);
   if(mode==='daily'){SAVE.daily['d:'+todayKey()]={ms:elapsed,stars:k};save();setTimeout(()=>tipJar({k,tips,total,daily:true,got:checkUnlocks()}),900);return}
   if(REPLAY){
@@ -2445,7 +2457,7 @@ function tipJar({k,tips,total,Lv,got,newLeg,notes=[],stamp,daily,after,arrived=[
   const L0done=legAt(daily?0:Lv-1);
   slip.innerHTML=`<div class="stars">${starHTML(k)}</div>
     <h2>${daily?"Today's puzzle, solved":`Level ${Lv} cleared in ${fmt(elapsed)}`}</h2>
-    <div id="jarArea" class="tipjar">${JAR}<div class="tally">${tips.map(([l,v])=>`<div><span>${l}</span><span>+${v}</span></div>`).join('')}<div class="tot"><span>Tips</span><span class="coins"><span class="coin"></span><span id="totN">0</span></span></div></div></div>
+    <div id="jarArea" class="tipjar">${JAR}<div class="tally">${tips.map(([l,v])=>`<div><span>${l}</span><span>${v<0?'−'+(-v):'+'+v}</span></div>`).join('')}<div class="tot"><span>Tips</span><span class="coins"><span class="coin"></span><span id="totN">0</span></span></div></div></div>
     ${stamp&&!SAVE.scenes?notesCard(stamp):''}
     ${newLeg&&newLeg.kind==='story'&&!SAVE.scenes?chapterHTML(newLeg.leg,newLeg.i):''}
     ${newLeg&&newLeg.kind!=='free'?`<p><b>Next stop:</b> ${legTitle(newLeg)[1]}.${newLeg.kind==='story'?' Read every chapter in your Napsack.':''}</p>`:''}
@@ -2687,6 +2699,7 @@ function renderCloset(){
     let body='';
     if(cur==='fur')body=FURS.filter(f=>SAVE.furs.includes(f.id)||furOnShelf(f.id,s.cleared)).map(f=>{const owned=SAVE.furs.includes(f.id),on=SAVE.fur===f.id,art=slothSVG({...SAVE.equip},null,f.color);
       if(owned)return `<button type="button" class="item" data-fur="${f.id}" aria-pressed="${on}">${art}<span>${f.name}</span></button>`;
+      if(f.id==='gold'&&hasBar())return `<button type="button" class="item shop" data-buyfur="${f.id}">${art}<span>${f.name}</span><small>Trade your gold bar</small></button>`;
       const poor=SAVE.coins<f.price;return `<button type="button" class="item shop${poor?' poor':''}" data-buyfur="${f.id}">${art}<span>${f.name}</span><small><span class="coin"></span>${f.price}</small></button>`}).join('');
     else if(cur==='gifts')body=gearStops().flatMap(g=>g.items.map((id,k)=>{const it=ITEM[id],reached=c>=g.start;
       const gold=GOLD_OF[id],goldTile=gold&&c>=g.start+g.len?tile(gold,gold.slot):'';
@@ -2727,9 +2740,9 @@ function renderCloset(){
   });
   closetEl.querySelectorAll('[data-fur]').forEach(b=>b.onclick=()=>{SAVE.fur=b.dataset.fur;save();refreshSloths();renderCloset();sfx.sloth();say('good','New look, same nap schedule.')});
   closetEl.querySelectorAll('[data-buyfur]').forEach(b=>b.onclick=()=>{
-    const f=FURS.find(x=>x.id===b.dataset.buyfur);
-    if(SAVE.coins<f.price){sfx.nope();toast(`Need ${f.price-SAVE.coins} more coins.`);say('bad',`Need ${f.price-SAVE.coins} more coins.`);return}
-    addCoins(-f.price);SAVE.furs.push(f.id);SAVE.fur=f.id;save();sfx.buy();burst(30);say('combo',`${f.name} fur! Very distinguished.`);refreshSloths();renderCloset();
+    const f=FURS.find(x=>x.id===b.dataset.buyfur),cost=f.id==='gold'&&hasBar()?0:f.price;
+    if(SAVE.coins<cost){sfx.nope();toast(`Need ${cost-SAVE.coins} more coins.`);say('bad',`Need ${cost-SAVE.coins} more coins.`);return}
+    addCoins(-cost);SAVE.furs.push(f.id);SAVE.fur=f.id;save();sfx.buy();burst(30);say('combo',`${f.name} fur! Very distinguished.`);refreshSloths();renderCloset();
   });
 }
 function setMode(m){
@@ -2981,7 +2994,7 @@ function openStart(){
       <button class="btn go" type="button" id="stNo">Keep my stuff</button></div></div>`;
     host.querySelector('#stNo').onclick=menu;host.querySelector('#stNo').focus();
     host.querySelector('#stYes').onclick=()=>{
-      Object.assign(SAVE,{level:1,coins:10,unlocked:[],equip:{},fur:'classic',furs:['classic'],stamps:[],stampLv:{},chapter:0,newItems:false,finished:false,toured:false,maxCombo:0,pokes:0,seenIntro:false,bean:null,qi:0,stars:{},best:{}});
+      Object.assign(SAVE,{level:1,coins:10,unlocked:[],equip:{},fur:'classic',furs:['classic'],stamps:[],stampLv:{},chapter:0,newItems:false,finished:false,toured:false,maxCombo:0,pokes:0,seenIntro:false,bean:null,qi:0,stars:{},best:{},earned:{},perfect:{}});
       SAVE.daily={};
       if(SAVE.train)SAVE.train.done=[];
       REPLAY=null;REPLAY_END=null;save();refreshSloths();closeStart();setMode('journey');toast('Back to the canopy. Slowly.');
