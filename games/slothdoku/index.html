@@ -1259,8 +1259,9 @@ function shopArrivals(c0,c1){return ITEMS.filter(i=>i.price!=null&&SHOP_AT[i.id]
 {const gifts=new Set();Object.entries(GEAR).forEach(([k,v])=>v.forEach(id=>gifts.add(id)));
  const PRICE={head:45,face:45,neck:40,hand:35,paint:40};
  ITEMS.forEach(it=>{if(!gifts.has(it.id)&&it.price==null&&!it.need)it.price=PRICE[it.slot]||40});
- /* tips outpaced the shop, so everything costs double */
- ITEMS.forEach(it=>{if(it.price)it.price*=2});FURS.forEach(f=>{f.price*=2});}
+ /* tips outpaced the shop, so everything costs 1.5x, rounded to the nearest 5 */
+ const up=n=>Math.round(n*1.5/5)*5;
+ ITEMS.forEach(it=>{if(it.price)it.price=up(it.price)});FURS.forEach(f=>{f.price=up(f.price)});}
 /* recolours an item's art in gold */
 function goldify(svg){
   const ramp=l=>l<.3?'#7a5410':l<.55?'#b8862a':l<.8?'#e0b53c':'#f6dd7a';
@@ -1295,7 +1296,7 @@ const hasBar=()=>SAVE.unlocked.includes('goldbar');
  ['finland','Sauna ladle',`<path d="M49 46l9 14" stroke="#b5703d" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="59" cy="62" rx="5.6" ry="4" fill="#a8703d" stroke="#6b3f1f" stroke-width=".9"/><ellipse cx="59" cy="60.8" rx="3.8" ry="2" fill="#6b3f1f"/>`],
  ['latvia','Rye loaf',`<path d="M46 66q-2-13 9-13t9 13z" fill="#5a3f2c" stroke="#3b2a1d" stroke-width=".9"/><path d="M50 56l2 5M55 54.5v6M60 56l-2 5" stroke="#8a6a4f" stroke-width="1.1"/>`],
  ['home','Maple syrup',`<rect x="52.5" y="44" width="5" height="3" fill="#6b3f1f"/><path d="M52 47h6v3q4 2 4 6v10H48V56q0-4 4-6z" fill="#c9722a" stroke="#7a3f1a" stroke-width=".9"/><rect x="50" y="56" width="10" height="7.5" fill="#fbf8f0"/><path d="M55 57l.8 1.6 1.6-.5-.6 1.7 1 .8-2.2.6.2 1.3h-1.6l.2-1.3-2.2-.6 1-.8-.6-1.7 1.6.5z" fill="#c0392b"/>`]
-].forEach(([id,name,svg])=>{const it={id,slot:'hand',name,price:60,svg};ITEMS.push(it);ITEM[id]=it});
+].forEach(([id,name,svg])=>{const it={id,slot:'hand',name,price:45,svg};ITEMS.push(it);ITEM[id]=it});
 /* level thresholds: halfway reward after ceil(len/2) levels at a stop, finish reward on its last level */
 function gearStops(){
   const out=[];
