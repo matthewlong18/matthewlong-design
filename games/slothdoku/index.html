@@ -2954,7 +2954,7 @@ function openStart(){
     host.querySelector('#stNo').onclick=menu;host.querySelector('#stNo').focus();
     host.querySelector('#stYes').onclick=()=>{
       Object.assign(SAVE,{level:1,coins:10,unlocked:[],equip:{},fur:'classic',furs:['classic'],stamps:[],stampLv:{},chapter:0,newItems:false,finished:false,toured:false,maxCombo:0,pokes:0,seenIntro:false,bean:null,qi:0,stars:{},best:{}});
-      {const k='d:'+todayKey(),t=SAVE.daily[k];SAVE.daily=t?{[k]:t}:{}}
+      SAVE.daily={};
       if(SAVE.train)SAVE.train.done=[];
       REPLAY=null;REPLAY_END=null;save();refreshSloths();closeStart();setMode('journey');toast('Back to the canopy. Slowly.');
     };
@@ -3082,6 +3082,8 @@ document.getElementById('settings').onclick=openSettings;
 SAVE.scenes=true;SAVE.scenery=true; /* settings removed: scenes and scenery always on */
 if(SAVE.unlocked.includes('doubledouble')){SAVE.unlocked=SAVE.unlocked.map(i=>i==='doubledouble'?'beaver':i);if(SAVE.equip.hand==='doubledouble')SAVE.equip.hand='beaver';save()} /* double-double swapped for beaver plush */
 if(SAVE.unlocked.includes('kettle')){SAVE.unlocked=SAVE.unlocked.filter(i=>i!=='kettle');if(!SAVE.unlocked.includes('grinder'))SAVE.unlocked.push('grinder');if(SAVE.equip.hand==='kettle')SAVE.equip.hand='grinder';save()} /* kettle swapped for grinder */
+/* older versions of Start over kept stars: drop any for levels this game hasn't cleared yet */
+['stars','best'].forEach(f=>Object.keys(SAVE[f]).forEach(k=>{const m=/^j:(\d+)$/.exec(k);if(m&&+m[1]>=SAVE.level)delete SAVE[f][k]}));save();
 if(SAVE.unlocked.includes('toque')){SAVE.unlocked=SAVE.unlocked.filter(i=>i!=='toque');if(SAVE.unlocked.includes('redtoque'))SAVE.coins+=45;else SAVE.unlocked.push('redtoque');if(SAVE.equip.head==='toque')SAVE.equip.head='redtoque';save()} /* two toques merged */
 if(SAVE.unlocked.includes('croissant')){SAVE.unlocked=SAVE.unlocked.filter(i=>i!=='croissant');SAVE.coins+=20;if(SAVE.equip.hand==='croissant')delete SAVE.equip.hand;save()} /* croissant retired: refund */
 if(checkUnlocks().length)SAVE.newItems=true;
