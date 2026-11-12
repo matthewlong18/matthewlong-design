@@ -64,6 +64,7 @@ document.head.appendChild(s)})();
         <li><b>Copy the recipe.</b> One button, just below.</li>
         <li><b>Paste it into a new Claude chat</b> and send it. Claude now knows the recipe for that chat.</li>
         <li><b>Paste your transcript or article</b> and say <kbd>extract the sauce</kbd>.</li>
+        <li><b>Liked it? Save it for good.</b> Pasting only lasts for one chat. <a href="#keep">Add it as a skill</a> and Claude keeps it.</li>
       </ol>
     </div>
   </section>
@@ -84,12 +85,12 @@ document.head.appendChild(s)})();
     </div>
     <p class="status" id="status" role="status" aria-live="polite"></p>
 
-    <details>
-      <summary>Want to keep it for good? Add it as a skill</summary>
+    <details id="keep" open>
+      <summary>Save it for good: add it as a skill</summary>
       <div class="in">
         <p>Pasting works for one chat. Adding it as a skill means Claude reaches for it on its own, in any chat.</p>
         <ol>
-          <li>Download the .zip above. Don't unzip it.</li>
+          <li><a href="/cookbook/downloads/sauce-extractor.zip" download data-track="cookbook_download">Download the skill (.zip)</a>. Don't unzip it.</li>
           <li>In Claude, open <b>Customize</b>, then <b>Skills</b>, and upload the .zip.</li>
           <li>Switch the skill on. Skills need code execution turned on in your Claude settings.</li>
         </ol>
