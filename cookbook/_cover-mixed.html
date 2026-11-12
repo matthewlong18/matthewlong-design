@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cover preview: mixed media (not linked from the site)</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@500;600&family=Caveat:wght@600;700&family=DM+Serif+Display&family=Special+Elite&family=Rubik+Mono+One&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ddd;display:grid;place-items:center;min-height:100vh}
+.book{--ink:#16130d;--orange:#ec6a26;--rust:#a8391a;--paper:#efe6d6;position:relative;container-type:inline-size;width:540px;aspect-ratio:4/5;overflow:hidden;background:var(--paper)}
+.book *{box-sizing:border-box}
+.grain{position:absolute;inset:0;z-index:20;pointer-events:none;mix-blend-mode:multiply;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .22  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")}
+.sh{filter:drop-shadow(.4cqw .6cqw 0 rgba(22,19,13,.28))}
+/* torn paper pieces */
+.graph{position:absolute;left:-4cqw;top:-3cqw;width:62cqw;height:44cqw;transform:rotate(-4deg);background-color:#fbf8f0;background-image:linear-gradient(rgba(60,110,160,.28) .25cqw,transparent .25cqw),linear-gradient(90deg,rgba(60,110,160,.28) .25cqw,transparent .25cqw);background-size:3.4cqw 3.4cqw;clip-path:polygon(0 0,100% 0,97% 14%,100% 30%,96% 47%,99% 63%,95% 80%,98% 100%,80% 96%,62% 100%,45% 95%,28% 99%,12% 94%,0 98%)}
+.blob{position:absolute;left:8cqw;top:40cqw;width:86cqw;height:74cqw;background:var(--orange);transform:rotate(5deg);clip-path:polygon(6% 12%,20% 4%,38% 8%,55% 1%,74% 6%,93% 3%,98% 20%,94% 38%,100% 56%,95% 74%,98% 93%,80% 97%,60% 92%,42% 99%,24% 94%,5% 98%,2% 78%,6% 60%,0 42%,4% 26%)}
+.news{position:absolute;right:-6cqw;top:52cqw;width:38cqw;height:40cqw;transform:rotate(9deg);background:#f7f1e3;padding:2.5cqw;font:400 1.75cqw/1.35 Georgia,serif;color:rgba(22,19,13,.55);text-align:justify;overflow:hidden;clip-path:polygon(3% 2%,30% 0,60% 4%,100% 0,97% 30%,100% 62%,96% 100%,66% 96%,34% 100%,0 97%,4% 64%,0 34%)}
+.kicker{position:absolute;left:7cqw;top:6.5cqw;transform:rotate(-2deg);background:#fffdf7;padding:.9cqw 2cqw .5cqw;font:400 2.6cqw 'Special Elite',monospace;letter-spacing:.06em;color:var(--ink)}
+.joy{position:absolute;left:9cqw;top:11.5cqw;font:700 12.5cqw/1 'Caveat',cursive;color:var(--ink);transform:rotate(-5deg)}
+.joy svg{position:absolute;left:-2%;bottom:-18%;width:104%;height:2.6cqw}
+.not{position:absolute;right:6cqw;top:10cqw;transform:rotate(6deg)}
+.not span{display:block;background:var(--rust);color:#fff6ea;font:400 14cqw/1 'Rubik Mono One',sans-serif;padding:1.6cqw 3cqw 1cqw;clip-path:polygon(2% 6%,30% 0,64% 5%,99% 1%,100% 40%,97% 96%,68% 100%,34% 94%,1% 99%,3% 52%)}
+.cooking{position:absolute;left:0;right:0;top:27.5cqw;display:flex;justify-content:center;gap:.7cqw;z-index:6}
+.cooking b{display:inline-block;font-weight:400;font-size:12.5cqw;line-height:1;padding:1.2cqw 1.7cqw .9cqw;box-shadow:.35cqw .5cqw 0 rgba(22,19,13,.28)}
+.cooking b:nth-child(1){font-family:'DM Serif Display',serif;background:#fffdf7;color:var(--ink);transform:rotate(-5deg)}
+.cooking b:nth-child(2){font-family:'Rubik Mono One',sans-serif;background:var(--ink);color:#fff6ea;transform:rotate(3deg) translateY(.8cqw);font-size:10cqw;padding-top:2cqw}
+.cooking b:nth-child(3){font-family:'Special Elite',monospace;background:#f3d36a;color:var(--ink);transform:rotate(-2deg) translateY(-.6cqw)}
+.cooking b:nth-child(4){font-family:'Space Grotesk',sans-serif;font-weight:700;background:#fffdf7;color:var(--rust);transform:rotate(4deg)}
+.cooking b:nth-child(5){font-family:'DM Serif Display',serif;background:var(--orange);color:var(--ink);transform:rotate(-3deg) translateY(.9cqw)}
+.cooking b:nth-child(6){font-family:'Rubik Mono One',sans-serif;background:#fffdf7;color:var(--ink);transform:rotate(2deg);font-size:10cqw;padding-top:2cqw}
+.cooking b:nth-child(7){font-family:'Special Elite',monospace;background:var(--ink);color:#f3d36a;transform:rotate(-4deg) translateY(-.4cqw)}
+/* chef */
+.chef{position:absolute;left:50%;bottom:13cqw;width:66cqw;margin-left:-36cqw;aspect-ratio:400/420;z-index:4}
+.chef svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.face{position:absolute;left:27%;top:14%;width:44%;transform:rotate(5deg);z-index:5}
+.face .cut{background:#fffdf7;padding:1.3cqw;clip-path:polygon(4% 9%,18% 2%,33% 5%,52% 0,70% 4%,88% 1%,98% 12%,95% 30%,100% 48%,96% 66%,99% 84%,90% 97%,72% 94%,55% 100%,36% 96%,18% 99%,3% 92%,6% 74%,0 56%,5% 38%,1% 22%)}
+.face img{display:block;width:100%;height:auto;clip-path:polygon(5% 8%,22% 3%,40% 6%,58% 2%,80% 5%,95% 11%,93% 32%,97% 50%,94% 70%,96% 88%,82% 95%,60% 97%,40% 94%,20% 97%,6% 90%,8% 70%,3% 52%,7% 34%,4% 20%)}
+.tape{position:absolute;height:4.6cqw;background:rgba(246,226,150,.86);box-shadow:0 .2cqw .4cqw rgba(22,19,13,.15);z-index:7}
+.tape::before,.tape::after{content:"";position:absolute;top:0;bottom:0;width:1cqw;background:repeating-linear-gradient(180deg,rgba(246,226,150,.86) 0 .5cqw,transparent .5cqw 1cqw)}
+.tape::before{left:-.9cqw}.tape::after{right:-.9cqw}
+.t1{left:22%;top:-5%;width:52%;transform:rotate(-12deg)}
+.t2{left:58%;top:88%;width:46%;transform:rotate(28deg)}
+.note{position:absolute;left:4.5cqw;top:55cqw;z-index:8;font:700 5.4cqw/1 'Caveat',cursive;color:var(--rust);transform:rotate(-8deg);text-align:center}
+.note svg{display:block;width:13cqw;height:8cqw;margin:.4cqw 0 0 6cqw}
+.stamp{position:absolute;right:4cqw;top:45cqw;width:25cqw;height:25cqw;z-index:8;transform:rotate(14deg);border-radius:50%;border:.8cqw solid var(--rust);outline:.3cqw solid var(--rust);outline-offset:-2.2cqw;color:var(--rust);display:flex;flex-direction:column;align-items:center;justify-content:center;font:400 3cqw/1.1 'Rubik Mono One',sans-serif;text-align:center;background:#fffdf7;box-shadow:.4cqw .6cqw 0 rgba(22,19,13,.28)}
+.stamp i{font-style:normal;font-size:9cqw;line-height:.95}
+.labels{position:absolute;left:0;right:0;bottom:5cqw;z-index:9;display:flex;flex-direction:column;align-items:center;gap:1.1cqw}
+.labels span{background:var(--ink);color:#fff6ea;font:600 3.2cqw 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:1.3cqw 2.4cqw 1.1cqw;border-radius:.4cqw;box-shadow:.3cqw .45cqw 0 rgba(22,19,13,.3)}
+.labels span:nth-child(1){transform:rotate(-1.5deg)}
+.labels span:nth-child(2){transform:rotate(1.2deg) translateX(-6cqw);background:var(--rust)}
+.by{position:absolute;right:5cqw;bottom:1.2cqw;z-index:9;font:700 4.6cqw 'Caveat',cursive;color:var(--ink);transform:rotate(-3deg)}
+.free{position:absolute;left:5cqw;bottom:1.4cqw;z-index:9;font:400 2.4cqw 'Special Elite',monospace;color:var(--ink);background:#f3d36a;padding:.7cqw 1.6cqw .3cqw;transform:rotate(-4deg)}
+</style></head>
+<body>
+<div class="book" id="book">
+  <div class="sh"><div class="graph"></div></div>
+  <div class="sh"><div class="blob"></div></div>
+  <div class="sh"><div class="news">Slow mornings, good coffee, and a laptop that does the boring part. Hand the recipe over once and ask for the dish by name. No chopping, no stirring, no washing up. Paste the transcript, keep the sauce, skip the rest. Serves one busy person, daily. Slow mornings, good coffee, and a laptop that does the boring part. Hand the recipe over once and ask for the dish by name. No chopping, no stirring, no washing up. Paste the transcript, keep the sauce, skip the rest. Serves one busy person, daily. Slow mornings, good coffee, and a laptop that does the boring part.</div></div>
+
+  <div class="kicker sh">mastering the art of doing less</div>
+  <div class="joy">The Joy of
+    <svg viewBox="0 0 200 12" preserveAspectRatio="none" fill="none" stroke="#ec6a26" stroke-width="3.5" stroke-linecap="round"><path d="M3 7 C30 2 48 11 76 6 S128 2 150 7 S186 9 197 4"/></svg>
+  </div>
+  <div class="not sh"><span>NOT</span></div>
+  <div class="cooking"><b>C</b><b>O</b><b>o</b><b>K</b><b>i</b><b>N</b><b>g</b></div>
+
+  <div class="chef">
+    <svg viewBox="0 0 400 420" aria-hidden="true" fill="none" stroke="#16130d" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <defs><filter id="wob" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="7"/></filter></defs>
+      <g filter="url(#wob)">
+        <path d="M30 424 C30 336 84 296 150 284 L250 284 C316 296 370 336 370 424 Z" fill="#fffdf7"/>
+        <path d="M150 284 C170 330 190 372 196 424 M250 284 C236 318 222 344 206 362"/>
+        <g fill="#16130d" stroke="none"><circle cx="170" cy="352" r="7"/><circle cx="178" cy="392" r="7"/><circle cx="232" cy="352" r="7"/><circle cx="228" cy="392" r="7"/></g>
+        <path d="M74 424 C78 396 82 372 92 352 M326 424 C322 396 318 372 308 352" stroke-width="3.5"/>
+        <rect x="172" y="236" width="56" height="58" fill="#efe6d6"/>
+        <path d="M160 282 L200 318 L240 282 L226 272 L200 290 L174 272 Z" fill="#f3d36a"/>
+        <path d="M192 312 L184 350 L200 340 L216 350 L208 312 Z" fill="#f3d36a"/>
+        <ellipse cx="128" cy="176" rx="14" ry="22" fill="#efe6d6"/><ellipse cx="272" cy="176" rx="14" ry="22" fill="#efe6d6"/>
+        <ellipse cx="200" cy="172" rx="72" ry="88" fill="#efe6d6"/>
+        <path d="M128 84 C82 70 92 6 148 18 C162 -16 238 -16 252 18 C308 6 318 70 272 84 Z" fill="#fffdf7"/>
+        <path d="M168 26 C164 44 164 60 168 76 M200 18 L200 76 M232 26 C236 44 236 60 232 76" stroke-width="3.5"/>
+        <rect x="126" y="80" width="148" height="34" rx="6" fill="#fffdf7"/>
+        <path d="M62 400 l26 -34 M80 408 l30 -40 M100 412 l30 -40 M290 372 l26 34 M270 372 l30 40" stroke="#ec6a26" stroke-width="4" opacity=".85"/>
+      </g>
+    </svg>
+    <div class="face sh">
+      <div class="cut"><img src="/cookbook/assets/matty-face-halftone.jpg" alt=""></div>
+      <div class="tape t1"></div><div class="tape t2"></div>
+    </div>
+  </div>
+
+  <div class="note">not a real chef
+    <svg viewBox="0 0 100 60" fill="none" stroke="#a8391a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8 C30 40 58 48 90 40 M72 28 L92 40 L74 54"/></svg>
+  </div>
+  <div class="stamp"><i>1</i>recipe<br>so far</div>
+
+  <div class="labels"><span class="sh">Claude skills I actually use</span><span>Copy, paste, done.</span></div>
+  <div class="free">FREE</div>
+  <div class="by">by Matthew Long</div>
+  <div class="grain"></div>
+</div>
+</body></html>
