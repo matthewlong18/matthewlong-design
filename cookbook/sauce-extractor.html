@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sauce Extractor | The Joy of Not Cooking</title>
+<meta name="description" content="A free Claude skill that turns an hour of podcast into the few ideas worth keeping, and what to do with them. Copy, paste, done.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://matthewlong.design/cookbook/sauce-extractor">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Matthew Long">
+<meta property="og:title" content="Sauce Extractor | The Joy of Not Cooking">
+<meta property="og:description" content="A free Claude skill that turns an hour of podcast into the few ideas worth keeping. Copy, paste, done.">
+<meta property="og:url" content="https://matthewlong.design/cookbook/sauce-extractor">
+<meta property="og:image" content="https://matthewlong.design/assets/matthew.jpg">
+<meta name="theme-color" content="#fbf8f3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/cookbook/cookbook.css">
+<!-- PostHog analytics (EU) -->
+<script>
+(function(){var s=document.createElement('script');s.async=true;s.src='https://eu-assets.i.posthog.com/static/array.js';
+s.onload=function(){window.posthog.init('phc_pv3DCGxzfxWojJ4Aufg7Ad2efhmTL8SZztxmJtunDiv5',{api_host:'https://eu.i.posthog.com',defaults:'2026-01-30',cookieless_mode:'always'})};
+document.head.appendChild(s)})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="bar" aria-label="Site">
+    <a class="home" href="/">Matthew Long</a>
+    <a href="/cookbook">← The cookbook</a>
+  </nav>
+
+  <header class="recipe-head">
+    <div class="label">Recipe no. 01 · The Joy of Not Cooking</div>
+    <h1>Sauce Extractor</h1>
+    <p class="promise">Turns an hour of podcast into the few ideas worth keeping, and what to do with them. It's the Claude skill I use most.</p>
+    <dl class="facts">
+      <div><dt>Prep time</dt><dd>2 minutes</dd></div>
+      <div><dt>Roast level</dt><dd><span class="beans" aria-hidden="true">●<i>●●</i></span> Light (easy)</dd></div>
+      <div><dt>Serves</dt><dd>Anyone who saves things "to read later"</dd></div>
+    </dl>
+  </header>
+
+  <section class="cols">
+    <div>
+      <div class="label">What you need</div>
+      <h2>Ingredients</h2>
+      <ul class="ing">
+        <li>Claude <small>Any plan works for the copy and paste version.</small></li>
+        <li>Something long to chew on <small>A podcast or video transcript, an article, a thread, or your own messy notes.</small></li>
+        <li>Three lines about you <small>Optional. Leave them blank and Claude uses what it already knows about you.</small></li>
+        <li>Notion <small>Optional. If it's connected, the skill offers to save each extraction there.</small></li>
+      </ul>
+    </div>
+    <div>
+      <div class="label">How to make it</div>
+      <h2>Method</h2>
+      <ol class="steps">
+        <li><b>Copy the recipe.</b> One button, just below.</li>
+        <li><b>Paste it into a new Claude chat</b> and send it. Claude now knows the recipe for that chat.</li>
+        <li><b>Paste your transcript or article</b> and say <kbd>extract the sauce</kbd>.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="recipe-card" aria-labelledby="recipe-title">
+    <div class="label">The recipe</div>
+    <h2 id="recipe-title">Copy, paste, done</h2>
+    <div class="card">
+      <div class="card-top">
+        <span class="file">sauce-extractor / SKILL.md</span>
+        <div class="btns">
+          <button class="btn primary" id="copy" type="button">Copy the recipe</button>
+          <a class="btn" href="/cookbook/downloads/sauce-extractor.zip" download data-track="cookbook_download">Download as a skill (.zip)</a>
+        </div>
+      </div>
+      <pre id="recipe" tabindex="0" aria-label="The Sauce Extractor skill text" data-src="/cookbook/recipes/sauce-extractor/SKILL.md" data-recipe="sauce-extractor">Loading the recipe…</pre>
+      <div class="card-foot">Free to use and change. Fill in the three "About me" lines near the top, or leave them as they are.</div>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+
+    <details>
+      <summary>Want to keep it for good? Add it as a skill</summary>
+      <div class="in">
+        <p>Pasting works for one chat. Adding it as a skill means Claude reaches for it on its own, in any chat.</p>
+        <ol>
+          <li>Download the .zip above. Don't unzip it.</li>
+          <li>In Claude, open <b>Customize</b>, then <b>Skills</b>, and upload the .zip.</li>
+          <li>Switch the skill on. Skills need code execution turned on in your Claude settings.</li>
+        </ol>
+        <p class="note">Menus move around. If yours looks different, <a href="https://support.claude.com/en/articles/12512198-how-to-create-custom-skills" target="_blank" rel="noopener">Anthropic's guide to custom skills</a> has the current steps.</p>
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <div class="label">Serving suggestion</div>
+    <h2>What comes out</h2>
+    <div class="serve">
+      <div class="in-side">
+        <div class="label">In</div>
+        <p>The transcript of an hour-long podcast episode about AI agents.</p>
+      </div>
+      <div class="out-side">
+        <div class="label">Out · key insights</div>
+        <ul>
+          <li><b>Chat vs. agent.</b> Chat is question → answer. An agent is goal → result: it keeps going until the job is done.</li>
+          <li><b>Skills are SOPs for AI.</b> Build the process once, then call it by name instead of explaining it again.</li>
+          <li><b>MCP is the translator.</b> It sits between Claude and your tools so they can talk to each other.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">From one of my real runs, trimmed. The full output also gives you action steps, quotes worth keeping, and tags.</p>
+  </section>
+
+  <section>
+    <div class="label">Chef's notes</div>
+    <h2>Two things worth knowing</h2>
+    <div class="notes">
+      <div><b>Paste the transcript, not the link.</b> In most setups Claude can't watch a YouTube video from a link. Use the "Show transcript" option under the video, copy it all, and paste that in.</div>
+      <div><b>Season it with you.</b> The more Claude knows about your work, the more useful the action steps get. Three lines is plenty.</div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="label">Rather not cook at all?</div>
+    <h2>Grab a (virtual) coffee.</h2>
+    <p>I build systems like this for solo business owners. A quick, no-pressure chat about your business and what's getting in the way.</p>
+    <a class="btn" href="https://calendly.com/matt-nomadcafe/coffee-chat?utm_source=cookbook&utm_medium=website&utm_campaign=steal-my-skill-sauce" target="_blank" rel="noopener" data-track="cookbook_cta">Grab a coffee →</a>
+  </section>
+
+  <footer>
+    <span>The Joy of Not Cooking, by <a href="/">Matthew Long</a></span>
+    <a href="/cookbook">All recipes</a>
+  </footer>
+</div>
+<script src="/cookbook/cookbook.js"></script>
+</body>
+</html>

@@ -35,6 +35,14 @@ Matthew's personal portfolio. Matthew is a beginner: explain changes simply, kee
 - Sloth Training: `TRAIN` and `openTraining()`, optional, opened from the start screen or the How to Play card, outside the level count. Three Beginner and four Advanced lessons. Players only do the taught step, then the board finishes itself. The hooded teacher is revealed as Brother Bean after all seven lessons unless he's already been met.
 - Secret character: **Brother Bean**, an old monk sloth drawn in the game's own style (`beanSVG()`: Mocha's face with grey-brown fur, closed eyes, a rust robe and the mala). He visits once, ever, if the player sits still for 60 seconds with no dialog or scene open, and gives Mocha the secret `mala` neck item. `?bean=1` calls him anyway. Fortunes live only in the website's easter egg (`assets/brother-bean.png`), not in the game.
 
+## The cookbook
+- `cookbook/` is "The Joy of Not Cooking", Matthew's free library of Claude skills. Plain HTML, not a Claude Design template, so it is safe to edit normally. Live at `/cookbook`.
+- `cookbook/index.html` is the cover plus the recipe list. Each recipe is its own page, e.g. `cookbook/sauce-extractor.html` (live at `/cookbook/sauce-extractor`). `cookbook.css` and `cookbook.js` are shared by every page. Always link with full paths starting `/cookbook/`.
+- The skill text lives in `cookbook/recipes/NAME/SKILL.md`. The recipe page loads it into the copy box by itself, so edit the `.md`, not the HTML. The download is `cookbook/downloads/NAME.zip`: after changing a `SKILL.md`, rebuild it from inside `cookbook/recipes/` with `zip -r ../downloads/NAME.zip NAME`.
+- A public recipe must work for a stranger: none of Matthew's names, clients or private IDs, an optional "About me" block that falls back to what Claude already knows, and no step that only works in his setup. Keep the frontmatter `description` under 200 characters.
+- To add a recipe: copy `sauce-extractor.html`, change the name, promise, facts, ingredients, method, example and the three `sauce-extractor` paths, then add a row to the list in `cookbook/index.html`. Recipe card order: name and promise, facts (prep time, roast level = difficulty, serves), ingredients, method, the recipe with its copy button, a real example, chef's notes, Coffee Chat button.
+- Tracking: PostHog events `cookbook_copy`, `cookbook_download`, `cookbook_cta`, `cookbook_open_recipe`, each with the recipe name. LinkedIn links to a recipe use `?utm_source=linkedin&utm_campaign=steal-my-skill-NAME`.
+
 ## Workflow
 1. Make the change.
 2. Preview locally: `npx serve .` then open http://localhost:3000 (needs internet for the unpkg scripts and Google Fonts).
