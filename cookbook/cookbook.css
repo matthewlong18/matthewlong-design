@@ -18,17 +18,34 @@ a{color:inherit}
 .bar a{text-decoration:none;border-bottom:1px solid var(--line-strong);padding-bottom:2px}
 .bar .home{border:0;font-weight:700;letter-spacing:-.01em}
 
-/* cover */
-.cover{position:relative;overflow:hidden;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:clamp(28px,6vw,64px);margin-top:8px}
-.cover .sun{position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:50%;background:var(--orange)}
-.cover h1{position:relative;font:700 clamp(44px,9vw,96px)/.95 var(--head);letter-spacing:-.035em;margin:18px 0 0;max-width:640px}
-.cover h1 em{font-style:normal;color:var(--rust)}
-.cover .sub{position:relative;font:500 clamp(18px,2.6vw,24px)/1.35 var(--head);margin:22px 0 0;max-width:520px}
-.cover .by{position:relative;margin-top:28px;font:500 13px var(--mono);letter-spacing:.08em;color:var(--muted)}
-.intro{max-width:620px;margin:36px 0 0;color:#4a4236}
+/* cover: a 4:5 "book". Every size inside is in cqw (percent of the book's width), so it scales as one piece. */
+.shelf{display:grid;grid-template-columns:minmax(0,440px) 1fr;gap:clamp(24px,5vw,56px);align-items:center;margin-top:8px}
+.book{position:relative;container-type:inline-size;aspect-ratio:4/5;width:100%;overflow:hidden;background:var(--paper);border:1.5px solid var(--ink);border-radius:6px 12px 12px 6px;box-shadow:inset 10px 0 0 rgba(22,19,13,.07),6px 8px 0 var(--ink)}
+.book .frame{position:absolute;inset:3.2cqw 3.2cqw 19cqw;border:.5cqw solid var(--ink);border-bottom:0;pointer-events:none;z-index:4}
+.book .sun{position:absolute;left:50%;top:44cqw;width:74cqw;height:74cqw;margin-left:-37cqw;border-radius:50%;background:var(--orange)}
+.book .kicker{position:absolute;left:0;right:0;top:8.5cqw;text-align:center;font:500 2.5cqw var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--rust)}
+.book h1{position:absolute;left:0;right:0;top:13cqw;margin:0;text-align:center;font:700 14.5cqw/.9 var(--head);letter-spacing:-.04em;color:var(--ink)}
+.book h1 small{display:block;font:600 6cqw/1.2 var(--head);letter-spacing:.02em;margin-bottom:1cqw}
+.book h1 em{font-style:normal;color:var(--rust)}
+.book .burst{position:absolute;right:5.5cqw;top:44cqw;width:24cqw;height:24cqw;transform:rotate(12deg);z-index:3}
+.book .burst svg{width:100%;height:100%;display:block}
+.book .burst span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font:700 3.4cqw/1.05 var(--head);color:var(--cream)}
+.book .burst b{font-size:8cqw;line-height:.9}
+.book .chef{position:absolute;left:50%;bottom:17cqw;width:70cqw;margin-left:-35cqw;aspect-ratio:400/420;z-index:2}
+.book .chef svg{position:absolute;inset:0;width:100%;height:100%}
+.book .face{position:absolute;left:31%;top:18.5%;width:38%;transform:rotate(-6deg);filter:drop-shadow(.5cqw .7cqw 0 rgba(22,19,13,.3))}
+.book .face .cut{background:#fff;padding:1.2cqw;clip-path:polygon(4% 9%,18% 2%,33% 5%,52% 0,70% 4%,88% 1%,98% 12%,95% 30%,100% 48%,96% 66%,99% 84%,90% 97%,72% 94%,55% 100%,36% 96%,18% 99%,3% 92%,6% 74%,0 56%,5% 38%,1% 22%)}
+.book .face img{display:block;width:100%;height:auto;clip-path:polygon(5% 8%,22% 3%,40% 6%,58% 2%,80% 5%,95% 11%,93% 32%,97% 50%,94% 70%,96% 88%,82% 95%,60% 97%,40% 94%,20% 97%,6% 90%,8% 70%,3% 52%,7% 34%,4% 20%)}
+.book .tape{position:absolute;left:28%;top:-4%;width:44%;height:9%;background:rgba(255,236,170,.82);border-left:.3cqw dashed rgba(22,19,13,.2);border-right:.3cqw dashed rgba(22,19,13,.2);transform:rotate(-9deg)}
+.book .band{position:absolute;left:0;right:0;bottom:0;height:19cqw;background:var(--ink);color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 7cqw;z-index:3}
+.book .band .sub{font:600 3.9cqw/1.2 var(--head);margin:0}
+.book .band .by{font:500 2.4cqw var(--mono);letter-spacing:.16em;margin-top:1.6cqw;color:#ffb98f}
+.blurb .label{margin-bottom:10px}
+.blurb p{margin:0 0 14px;color:#4a4236;max-width:460px}
+.blurb .lede{font:500 clamp(20px,2.6vw,26px)/1.3 var(--head);color:var(--ink)}
 
 /* recipe index */
-.menu{margin:44px 0 0;padding:0;list-style:none;border-top:1.5px solid var(--ink)}
+.menu{margin:48px 0 0;padding:0;list-style:none;border-top:1.5px solid var(--ink)}
 .menu li{border-bottom:1px solid var(--line)}
 .menu a{display:grid;grid-template-columns:auto 1fr auto;gap:8px 20px;align-items:baseline;padding:22px 0;text-decoration:none}
 .menu .no{font:500 13px var(--mono);color:var(--rust);letter-spacing:.08em}
@@ -116,6 +133,7 @@ footer a{text-decoration:none;border-bottom:1px solid var(--line-strong);padding
   .menu a{grid-template-columns:auto 1fr}
   .menu .go{grid-column:2}
   .btns,.btns .btn{width:100%}
-  .cover .sun{width:150px;height:150px;right:-60px;top:-60px}
+  .shelf{grid-template-columns:1fr}
+  .book{max-width:420px;margin:0 auto}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
