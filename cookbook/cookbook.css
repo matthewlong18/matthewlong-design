@@ -30,7 +30,8 @@ a{color:inherit}
 .book .burst{position:absolute;right:4cqw;top:42cqw;width:29cqw;height:29cqw;transform:rotate(12deg);z-index:3}
 .book .burst svg{width:100%;height:100%;display:block}
 .book .burst span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font:700 3.5cqw/1.05 var(--head);color:var(--cream)}
-.book .burst small{display:block;margin-top:.5cqw;font:500 2.5cqw/1.1 var(--head);color:#ffd9c2}
+.book .burst u{text-decoration:none;font-size:4cqw}
+.book .burst small{display:block;margin-top:.4cqw;font:500 2.23cqw/1.1 var(--head);white-space:nowrap;color:#ffd9c2}
 .book .burst b{font-size:8cqw;line-height:.9}
 .book .chef{position:absolute;left:50%;bottom:17cqw;width:70cqw;margin-left:-35cqw;aspect-ratio:400/420;z-index:2}
 .book .chef svg{position:absolute;inset:0;width:100%;height:100%}
