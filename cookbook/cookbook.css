@@ -39,6 +39,7 @@ a{color:inherit}
 .book .face .cut{background:#fff;padding:1.2cqw;clip-path:polygon(4% 9%,18% 2%,33% 5%,52% 0,70% 4%,88% 1%,98% 12%,95% 30%,100% 48%,96% 66%,99% 84%,90% 97%,72% 94%,55% 100%,36% 96%,18% 99%,3% 92%,6% 74%,0 56%,5% 38%,1% 22%)}
 .book .face img{display:block;width:100%;height:auto;clip-path:polygon(5% 8%,22% 3%,40% 6%,58% 2%,80% 5%,95% 11%,93% 32%,97% 50%,94% 70%,96% 88%,82% 95%,60% 97%,40% 94%,20% 97%,6% 90%,8% 70%,3% 52%,7% 34%,4% 20%)}
 .book .tape{position:absolute;left:28%;top:-4%;width:44%;height:9%;background:rgba(255,236,170,.82);border-left:.3cqw dashed rgba(22,19,13,.2);border-right:.3cqw dashed rgba(22,19,13,.2);transform:rotate(-9deg)}
+.book .tape.low{left:34%;top:90%;width:44%;transform:rotate(8deg)}
 .book .band{position:absolute;left:0;right:0;bottom:0;height:19cqw;background:var(--ink);color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 7cqw;z-index:3}
 .book .band .sub{font:600 3.9cqw/1.2 var(--head);margin:0}
 .book .band .by{font:500 2.4cqw var(--mono);letter-spacing:.16em;margin-top:1.6cqw;color:#ffb98f}
