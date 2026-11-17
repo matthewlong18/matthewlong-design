@@ -4,6 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Super Start-up Adventure Time</title>
+<meta name="description" content="A tiny tactics game: digital nomads vs. the suits in Canggu, Bali. Save The Sloppy Sloth in about 5 minutes.">
+<link rel="canonical" href="https://matthewlong.design/games/super-startup-adventure-time">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Matthew Long">
+<meta property="og:title" content="Super Start-up Adventure Time">
+<meta property="og:description" content="Digital nomads vs. the suits. A tiny tactics game you can finish in about 5 minutes.">
+<meta property="og:url" content="https://matthewlong.design/games/super-startup-adventure-time">
+<meta property="og:image" content="https://matthewlong.design/assets/game-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<script>
+// "solo" = the game is open on its own page (not inside the homepage). Used for layout and analytics.
+var SOLO = (function(){ try { return window.top === window; } catch(e){ return true; } })();
+if(SOLO){
+  document.documentElement.classList.add("solo");
+  // PostHog analytics (EU), same project as the homepage. Skipped when embedded: the homepage already loads it.
+  (function(){var s=document.createElement('script');s.async=true;s.src='https://eu-assets.i.posthog.com/static/array.js';
+  s.onload=function(){window.posthog.init('phc_pv3DCGxzfxWojJ4Aufg7Ad2efhmTL8SZztxmJtunDiv5',{api_host:'https://eu.i.posthog.com',defaults:'2026-01-30',cookieless_mode:'always'})};
+  document.head.appendChild(s)})();
+}
+</script>
 <style>
   :root{
     --bg:#f4ede4; --panel:#fffaf3; --ink:#3b2a20; --muted:#8a7565;
@@ -36,7 +57,7 @@
   #townCv,.tile,.battle,.wrap button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   #townCv{outline:none}
   input{-webkit-user-select:text;user-select:text}
-  .tile{position:relative;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;}
+  .tile{position:relative;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-shadow:inset -1px -1px 0 rgba(59,36,23,.16)}   /* faint grid lines */
   .tile.alt{background:transparent}
   .tile.water{background:var(--water);cursor:default}
   .tile.rack{background:transparent;cursor:default}
@@ -44,8 +65,8 @@
   .tile.disco::after{animation:disco .3s steps(1) infinite}
   @keyframes disco{0%{background:rgba(255,80,160,.35)}33%{background:rgba(80,200,255,.35)}66%{background:rgba(255,220,80,.35)}}
   .tile::after{content:"";position:absolute;inset:0;pointer-events:none}
-  .tile.move::after{background:color-mix(in srgb,var(--hero) 30%,transparent);box-shadow:inset 0 0 0 1px var(--hero)}
-  .tile.danger::after{background:color-mix(in srgb,var(--enemy) 18%,transparent)}
+  .tile.move::after{background:rgba(110,190,255,.6);box-shadow:inset 0 0 0 2px #1f6fe0}
+  .tile.danger::after{background:rgba(214,60,46,.34);box-shadow:inset 0 0 0 1px #c23a2c}   /* where a tapped suit can hit next turn */
   .tile.range::after{background:color-mix(in srgb,var(--fight) 14%,transparent)}
   .tile.target::after{background:color-mix(in srgb,var(--enemy) 40%,transparent);box-shadow:inset 0 0 0 2px var(--enemy);animation:pulse 1s infinite}
   .tile.healt::after{background:color-mix(in srgb,var(--heal) 40%,transparent);box-shadow:inset 0 0 0 2px var(--heal);animation:pulse 1s infinite}
@@ -67,9 +88,9 @@
   .unit.hit .spr{animation:shake .3s}
   .zz{position:absolute;top:0;right:8%;font-size:12px;font-weight:800;color:var(--magic);z-index:2}
   @keyframes shake{25%{translate:-4px 0;filter:brightness(2)}75%{translate:4px 0}}
-  .hp{position:absolute;left:15%;right:15%;bottom:2px;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
-  .hp i{display:block;height:100%;background:var(--heal)}
-  .foe .hp i{background:var(--enemy)}
+  .hp{position:absolute;left:10%;right:10%;bottom:1px;height:8px;border-radius:4px;background:#3b2417;border:1px solid #3b2417;overflow:hidden}
+  .hp i{display:block;height:100%;border-radius:3px;background:#62c46f}
+  .foe .hp i{background:#e8594a}
   .fx{position:absolute;inset:0;pointer-events:none}
   .float{position:absolute;width:calc(100%/8);text-align:center;font-weight:800;font-size:18px;animation:up .9s forwards;text-shadow:0 1px 0 var(--panel),0 -1px 0 var(--panel),1px 0 0 var(--panel),-1px 0 0 var(--panel)}
   @keyframes up{from{transform:translateY(0);opacity:1}to{transform:translateY(-28px);opacity:0}}
@@ -200,7 +221,14 @@
   .sw.on{outline:3px solid var(--ink);outline-offset:1px}
   .chip{padding:6px 11px;font-size:12px;border-radius:99px;text-align:center}
   .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-  .cr-go{margin-top:16px;width:100%;padding:12px;font-size:15px;text-align:center}
+  .cr-go{margin-top:16px;width:100%;padding:12px;font-size:15px;text-align:center;position:sticky;bottom:10px;box-shadow:0 0 0 6px var(--panel)}   /* stays in reach on a phone */
+  /* ── on its own page: fit the fight on one screen, centre the title ── */
+  .solo body{min-height:100vh;min-height:100dvh}
+  .solo #cg[data-screen="title"]{margin-block:auto}
+  .solo .cg{--cell:min(68px,calc((100vw - 32px)/8),max(40px,calc((100dvh - 436px)/6)))}
+  .solo #cg[data-screen="battle"] h1,.solo #cg[data-screen="battle"] .sub{display:none}
+  .solo .log{height:44px}
+  .share{margin-top:2px}
 
   /* ── town (Canggu): a pixel-art canvas with a scrolling camera ── */
   #cg[data-screen="town"] .wrap{height:calc(var(--cell)*8)}   /* square view while exploring */
@@ -326,7 +354,6 @@
       {name:"Hustle",            kind:"fight", type:"dmg",  pow:14, rng:[1,1], recoil:4},                         // big hit, but it costs you: running on no sleep
       {name:"Cold DM Blast",     kind:"fight", type:"dmg",  pow:7,  rng:[2,3]},                                    // mass outreach, low reply rate
       {name:"Do It All Yourself",kind:"magic", type:"dmg",  pow:9,  rng:[1,3], mp:6, color:"#c96f8a", area:1, icons:["🎩","📊","📧","🧾","💼","📱"], sfx:"hustle"},     // hits everything nearby, but burns through your MP
-      {name:"Doom-Scroll Break", kind:"magic", type:"heal", pow:6,  rng:[0,0], mp:4, color:"#74b383"},              // "rest" that barely helps
     ]});
 
   const FOES = [
@@ -374,26 +401,24 @@
     "Ate and left no crumbs. 💅 Heaps good.", "Touch grass? We're literally on a beach, mate."];
   const STARTS = [[1,2],[6,1],[7,2],[7,3],[6,4],[7,5],[3,0]];   // your hero, then FOES in order, then Gaz
 
-  // ── BACKUP ── Matt joins at the start of turn 2. Each move is one of the services he delivers, and does what it says for the team.
+  // ── BACKUP ── Matt joins at the start of turn 2. Four moves, one job each: hit, stun, heal, boost.
   const BACKUP = {name:"Matt", spr:"matthew", team:"hero", hp:30, mp:12, def:4, mov:4, backup:true,
     blurb:"Builds the done-for-you business infrastructure solo founders wish they had a team for.",
     moves:[
       {name:"Brand + Site Launch",    kind:"fight", type:"dmg",  pow:13, rng:[1,2]},                                // ships the brand and website in one hit
       {name:"Automate the Admin",     kind:"magic", type:"stun", pow:0,  rng:[1,3], mp:4, color:"#8fd3ff", stun:70, area:1, icons:["⚙️","🤖","⚙️","✅"], sfx:"systems"},   // busywork on autopilot: the suits lose their turn
-      {name:"Take It Off Your Plate", kind:"magic", type:"heal", pow:12, rng:[0,3], mp:3, color:"#74b383", cleanse:true},      // heals an ally, clears stun, gives back 3 MP
-      {name:"Systems Setup",          kind:"magic", type:"buff", pow:3,  rng:[0,3], mp:4, color:"#e5b340"},                    // a back-office that runs itself: an ally gets +3 power and +1 move
-      {name:"Summon Claude", kind:"magic", type:"summon", pow:0,  rng:[1,1], mp:5, color:"#e0782b"},
+      {name:"Take It Off Your Plate", kind:"magic", type:"heal", pow:12, rng:[0,3], mp:3, color:"#74b383", cleanse:true},      // heals an ally and wakes them if stunned
+      {name:"Systems Setup",          kind:"magic", type:"buff", pow:3,  rng:[0,3], mp:4, color:"#e5b340"},                    // a back-office that runs itself: an ally gets +3 power and +1 move (once per ally)
     ]};
   const RALLY_HEAL = 8;
 
-  // ── CLAUDE ── summoned once by Matt. French-Canadian lumberjack, Canadian moves.
+  // ── CLAUDE ── Matt calls him in automatically at the start of turn 3. French-Canadian lumberjack, Canadian moves.
   const CLAUDE = {name:"Claude", spr:"claude", team:"hero", hp:30, mp:12, def:3, mov:3, summoned:true,
     blurb:"Lumberjack from Trois-Rivières. Says sorry, hits hard.",
     moves:[
       {name:"Slapshot",         kind:"fight", type:"dmg",  pow:11, rng:[2,3]},
       {name:"Timber!",          kind:"fight", type:"dmg",  pow:14, rng:[1,1]},
       {name:"Maple Syrup Flood", kind:"magic", type:"stun", pow:0, rng:[1,3], mp:5, color:"#c26a1b", stun:60, area:1, icons:["🍁","🥞","🍁"], sfx:"maple"},
-      {name:"Poutine Break",    kind:"magic", type:"heal", pow:12, rng:[0,2], mp:3, color:"#e5b340"},
     ]};
 
   // ── CHARACTER CREATOR ── options shown on the first screen. Add colours or styles freely.
@@ -584,7 +609,7 @@
         if(inR(Math.abs(x-pos.x)+Math.abs(y-pos.y),mv.rng) && foes.some(f=>Math.abs(f.x-x)+Math.abs(f.y-y)<=mv.area)) out.push({x,y});
       return out;
     }
-    const pool = mv.type==="heal" ? alive(u.team).filter(a=>a.hp<a.maxHp || (mv.cleanse && a.stun)) : mv.type==="buff" ? alive(u.team) : alive(u.team==="hero"?"foe":"hero");
+    const pool = mv.type==="heal" ? alive(u.team).filter(a=>a.hp<a.maxHp || (mv.cleanse && a.stun)) : mv.type==="buff" ? alive(u.team).filter(a=>!a.setup) : alive(u.team==="hero"?"foe":"hero");
     return pool.filter(t => inR(md(pos,t), mv.rng));
   }
   function areaTiles(cx,cy,r){   // the "+" blast: target square plus everything within r steps
@@ -605,7 +630,7 @@
   function showInfo(u){
     info.innerHTML=`<img src="${SPRITE_URL[u.spr]}" style="width:32px;height:32px;image-rendering:pixelated;vertical-align:middle;margin-right:6px"><b>${u.name}</b> · HP ${u.hp}/${u.maxHp} · MP ${u.mp}/${u.maxMp}${u.boost?` · 🍺 +${u.boost} ATK`:""}${u.stun?" · 💤 stunned":""}
       <div class="stats">DEF ${u.def} · MOVE ${u.mov} · ${u.blurb}</div>
-      ${u.team==="foe" ? `<div class="stats">${u.moves.map(m=>`${m.kind==="magic"?"✨":"⚔️"} ${m.name}`).join(" · ")}</div>` : ""}`;
+      ${u.team==="foe" ? `<div class="stats">${u.moves.map(m=>`${m.kind==="magic"?"✨":"⚔️"} ${m.name}`).join(" · ")}</div><div class="stats"><b style="color:var(--enemy)">Red squares</b>: where it can hit you next turn.</div>` : ""}`;
   }
 
   function renderBoard(){
@@ -653,18 +678,21 @@
       let any=false;
       for(const m of u.moves){
         const tg=targetsFor(u,m), ok=canUse(u,m)&&tg.length; if(ok) any=true;
-        const eff = (m.type==="heal" ? `HEAL ${m.pow}${m.cleanse?" · UN-STUN · +3 MP":""}` : m.type==="buff" ? `+${m.pow} POWER · +1 MOVE` : m.type==="stun" ? `STUN ${m.stun}%` : m.type==="summon" ? "ONCE" : `PWR ${m.pow}${m.stun?` · STUN ${m.stun}%`:""}${m.recoil?` · COSTS ${m.recoil} HP`:""}`) + (m.area ? " · AREA" : "");
-        const why = !canUse(u,m) ? " · low MP" : !tg.length ? (m.type==="summon" && S.claudeIn ? " · already here" : " · out of range") : "";
-        const b=btn(`<b>${m.type==="summon"?"🍁":m.area?"💥":m.kind==="magic"?"✨":"⚔️"} ${m.name}</b><small>${eff} · RNG ${rngTxt(m.rng)}${m.mp?` · ${m.mp} MP`:""}${why}</small>`,
+        const reach = m.rng[1]===0 ? "self" : "reach "+rngTxt(m.rng);
+        const eff = (m.type==="heal" ? `Heals ${m.pow}${m.cleanse?" · wakes the stunned":""}` : m.type==="buff" ? `+${m.pow} power, +1 move · once per ally` : m.type==="stun" ? `${m.stun}% to stun` : m.type==="summon" ? "once" : `Power ${m.pow}${m.stun?` · ${m.stun}% to stun`:""}${m.recoil?` · costs you ${m.recoil} HP`:""}`) + (m.area ? " · hits a + shape" : "");
+        const inReach = !tg.length && (m.type==="heal"||m.type==="buff") && alive(u.team).some(a=>inR(md(u,a),m.rng));
+        const why = !canUse(u,m) ? " · not enough MP" : !tg.length ? (m.type==="summon" && S.claudeIn ? " · already here" : inReach ? (m.type==="heal" ? " · everyone's at full HP" : " · already set up") : " · nobody in reach") : "";
+        const b=btn(`<b>${m.type==="summon"?"🍁":m.area?"💥":m.kind==="magic"?"✨":"⚔️"} ${m.name}</b><small>${eff} · ${reach}${m.mp?` · ${m.mp} MP`:""}${why}</small>`,
           "mv "+m.kind, ()=>pickMove(m), !ok);
         b.onmouseenter=()=>{ S.range=rangeTiles(u,m); renderBoard(); };
         b.onmouseleave=()=>{ S.range=new Set(); renderBoard(); };
       }
       for(const [k,it] of Object.entries(ITEMS)) if(S.inv[k]>0)
         btn(`<b>${it.icon} ${it.name} ×${S.inv[k]}</b><small>ITEM · ${it.desc}</small>`, "mv item", ()=>useItem(u,k));
+      const mvs=menu.querySelectorAll("button.mv"); if(mvs.length%2) mvs[mvs.length-1].style.gridColumn="1/-1";   // odd number of moves: the last one takes the full row
       btn("Wait","aux", ()=>{ log(`${u.name} holds position.`); finish(u); });
       btn("↩ Undo move","aux", ()=>{ [u.x,u.y]=S.origin; select(u); });
-      if(!any){ const h=document.createElement("div"); h.className="hint"; h.textContent="Nothing in range from here. Wait, or undo and move closer."; menu.appendChild(h); }
+      if(!any){ const h=document.createElement("div"); h.className="hint"; h.textContent="Nothing in reach from here. Wait, or undo and move closer."; menu.appendChild(h); }
     } else if(S.mode==="target"){
       const h=document.createElement("div"); h.className="hint";
       h.textContent = S.move.area ? `${S.move.name}: tap a square to aim (the purple + is the blast), tap it again to cast.` : `${S.move.name}: tap a highlighted target.`;
@@ -676,6 +704,13 @@
   function rangeTiles(u,m){
     const s=new Set();
     for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) if(inR(Math.abs(x-u.x)+Math.abs(y-u.y),m.rng)) s.add(K(x,y));
+    return s;
+  }
+
+  function threatTiles(e){   // every square this suit could hit next turn (walk, then attack)
+    const s=new Set();
+    for(const k of reachable(e).keys()){ const [px,py]=k.split(",").map(Number);
+      for(const m of e.moves) for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) if(!blocked(x,y) && inR(Math.abs(x-px)+Math.abs(y-py),m.rng)) s.add(K(x,y)); }
     return s;
   }
 
@@ -702,7 +737,7 @@
       S.origin=[S.sel.x,S.sel.y]; S.sel.x=x; S.sel.y=y; S.mode="menu"; S.moveSet=new Map(); showInfo(S.sel); render(); return;
     }
     if(u && u.team==="hero" && !u.acted){ select(u); return; }
-    if(u){ clearSel(); if(u.team==="foe") S.danger=new Set(reachable(u).keys()); showInfo(u); render(); return; }
+    if(u){ clearSel(); if(u.team==="foe") S.danger=threatTiles(u); showInfo(u); render(); return; }
     clearSel(); render();
   }
 
@@ -710,8 +745,8 @@
   function resolve(a,t,m){
     const r={};
     a.mp -= (m.mp||0);
-    if(m.type==="heal"){ r.heal=Math.min(m.pow, t.maxHp-t.hp); t.hp+=r.heal; if(m.cleanse){ if(t.stun){ t.stun=false; r.cleansed=true; } t.mp=Math.min(t.maxMp,t.mp+3); } return r; }
-    if(m.type==="buff"){ t.boost=(t.boost||0)+m.pow; t.mov+=1; r.buff=m.pow; return r; }
+    if(m.type==="heal"){ r.heal=Math.min(m.pow, t.maxHp-t.hp); t.hp+=r.heal; if(m.cleanse && t.stun){ t.stun=false; r.cleansed=true; } return r; }
+    if(m.type==="buff"){ t.boost=(t.boost||0)+m.pow; t.mov+=1; t.setup=true; r.buff=m.pow; return r; }   // once per ally (see targetsFor)
     if(m.recoil){ r.recoil=Math.min(m.recoil, a.hp-1); a.hp-=r.recoil; }   // hustle hurts you too (never knocks you out)
     if(m.pow){
       let dmg = m.kind==="magic" ? m.pow + Math.floor(Math.random()*3) - 1 : Math.max(1, m.pow + (a.boost||0) - t.def + Math.floor(Math.random()*3));
@@ -719,7 +754,10 @@
       r.dmg=dmg; t.hp=Math.max(0,t.hp-dmg);
     }
     if(t.hp===0){ t.alive=false; r.ko=true; }
-    else if(m.stun){ r.stunned = Math.random()*100 < m.stun; if(r.stunned) t.stun=true; else r.resisted=true; }
+    else if(m.stun){   // nobody can be stunned two turns running: after losing a turn they are "wide awake" for the next one
+      if(t.guard){ r.resisted=true; r.awake=true; }
+      else { r.stunned = Math.random()*100 < m.stun; if(r.stunned) t.stun=true; else r.resisted=true; }
+    }
     return r;
   }
 
@@ -1201,7 +1239,7 @@
     if(r.buff) lines.push(`${t.name} gets +${r.buff} power and +1 move for the rest of the fight!`);
     if(r.recoil) lines.push(`${a.name} took ${r.recoil} damage too. Running on no sleep.`);
     if(r.stunned) lines.push(`${t.name} is stunned! 💤`);
-    if(r.resisted) lines.push(`${t.name} shrugged off the stun.`);
+    if(r.resisted) lines.push(r.awake ? `${t.name} is wide awake. No stunning them twice in a row.` : `${t.name} shrugged off the stun.`);
     if(r.ko) lines.push(t.team==="foe" ? `${t.name} was defeated!` : `${t.name} is out of the fight!`);
     for(let i=0;i<lines.length;i++){
       const l=lines[i];
@@ -1251,21 +1289,26 @@
   }
 
   function checkEnd(){
+    const foes=alive("foe");
+    if(foes.length && foes.every(f=>f.intern)){   // only the Intern left: he's unpaid, he's out
+      for(const f of foes){ f.alive=false; float(f,"👋","var(--muted)"); }
+      S.internQuit=true; log("Intern: “Yeah nah, I'm unpaid. I quit. Filming my exit, but.”"); render();
+    }
     if(!alive("foe").length){ gameOver(true); return true; }
     if(!alive("hero").length){ gameOver(false); return true; }
     return false;
   }
 
-  // cryptic on purpose: one nudge toward the hidden snacks, one toward summoning Claude early
+  // one nudge toward the hidden snacks, one about how the fight works
   const TREAT_HINTS=[
     "Canggu rewards a sweet tooth. Not every treat sits in plain sight.",
     "A hungry hero is a short-lived hero. Look under, behind and inside things.",
     "The town hides more than it shows. Wander before you fight."
   ];
-  const CLAUDE_HINTS=[
-    "Help from the north is a short summon away. Don't make them wait.",
-    "Those who save their one call for later often never get to make it.",
-    "Someone friendly is waiting to be invited. Early is polite."
+  const FIGHT_HINTS=[
+    "Tap a suit to see red squares: where it can hit you next turn. Stay out of them on turn 1.",
+    "You're alone for one turn. Matt arrives on turn 2 and Claude on turn 3.",
+    "A stunned suit wakes up alert. You can't stun the same one twice in a row."
   ];
   // the closing cutscene: everyone says their piece, and Gord raises a beer either way
   async function endingScene(win){
@@ -1300,17 +1343,28 @@
     S.phase="over"; clearSel(); render();
     info.innerHTML = win ? "<b>Victory.</b>" : "<b>Defeat.</b>";
     try { await endingScene(win); } catch(e){ console.warn("ending scene skipped:", e); Sound.play(win?"victory":"defeat"); }
-    const cta = `<a href="/#sec-contact" target="_top">Let's talk →</a>`;
+    const cta = `<a href="/#sec-contact" target="_top" id="cta">Let's talk →</a>`;
+    const rank = S.turn<=4 ? "Sloth Legend 🦥" : S.turn<=5 ? "Head Barista ☕" : S.turn<=7 ? "Beach Regular 🌴" : "Survivor 🍺";
+    track("game_over", {win, turns:S.turn, snacks:Object.values(INV).reduce((a,b)=>a+b,0)});
     const assist = S.backupIn ? ` Matt dealt ${S.backupDmg} damage${S.claudeIn?`, Claude ${S.claudeDmg}`:""}.` : "";
-    const btns = `<div class="row2"><button class="primary" id="again">${win?"Play again":"Try again"}</button><button id="newHero">New hero</button></div>`;
-    const hints = [TREAT_HINTS[Math.floor(Math.random()*TREAT_HINTS.length)], CLAUDE_HINTS[Math.floor(Math.random()*CLAUDE_HINTS.length)]];
+    const btns = `<div class="row2"><button class="primary" id="again">${win?"Play again":"Try again"}</button><button id="newHero">New hero</button>${win?'<button id="share">Share result</button>':""}</div>`;
+    const hints = [TREAT_HINTS[Math.floor(Math.random()*TREAT_HINTS.length)], FIGHT_HINTS[Math.floor(Math.random()*FIGHT_HINTS.length)]];
     const tips = win ? "" : `<p style="text-align:left"><b>A whisper for next time</b><br>${hints.map(t=>"• "+t).join("<br>")}</p>`;
     overlay.innerHTML = win
-      ? `<h2>Sloth saved 🦥</h2><p>Won in ${S.turn} turn${S.turn>1?"s":""}. The Sloppy Sloth stays sloppy.${assist}</p><p>Running your own thing? You don't have to hold the line alone. ${cta}</p>${btns}`
+      ? `<h2>Sloth saved 🦥</h2><p>Won in ${S.turn} turn${S.turn>1?"s":""}. Rank: <b>${rank}</b>. The Sloppy Sloth stays sloppy.${assist}</p><p>Running your own thing? You don't have to hold the line alone. ${cta}</p>${btns}`
       : `<h2>Acquired.</h2><p>The Sloppy Sloth is now a co-working space with a kombucha tap.</p>${tips}<p>Some fights need a plan, not just backup. ${cta}</p>${btns}`;
     overlay.classList.remove("hidden");
     $("again").onclick=()=>{ overlay.classList.add("hidden"); reset(); Sound.play("battle"); };
     $("newHero").onclick=()=>{ Sound.stop(); showCreator(); };
+    $("cta").onclick=()=>track("game_cta", {win});
+    if(win) $("share").onclick=async e=>{   // phone: the share sheet. Laptop: copies the line to paste anywhere.
+      const text=`I saved The Sloppy Sloth from the suits in ${S.turn} turns. Rank: ${rank}. Can you beat that?`;
+      const url="https://matthewlong.design/games/super-startup-adventure-time?utm_source=share&utm_campaign=sloppy-sloth";
+      track("game_share", {turns:S.turn});
+      try { if(navigator.share){ await navigator.share({title:"Super Start-up Adventure Time", text, url}); return; } } catch(err){ if(err && err.name==="AbortError") return; }
+      try { await navigator.clipboard.writeText(text+" "+url); e.target.textContent="Copied ✓"; }
+      catch(err){ prompt("Copy your result:", text+" "+url); }
+    };
   }
 
   // ── items (snacks found in town) ── using one takes the hero's turn
@@ -1340,7 +1394,7 @@
       if(r.ko) Sound.sfx("ko");
       if(a.backup) S.backupDmg+=r.dmg||0;
       if(a.summoned) S.claudeDmg+=r.dmg||0;
-      parts.push(`${t.name}${r.dmg!=null?` −${r.dmg}`:""}${r.stunned?" 💤":r.resisted?" (shrugged it off)":""}${r.ko?" defeated!":""}`);
+      parts.push(`${t.name}${r.dmg!=null?` −${r.dmg}`:""}${r.stunned?" 💤":r.awake?" (wide awake)":r.resisted?" (shrugged it off)":""}${r.ko?" defeated!":""}`);
     }
     if(hit.length) Sound.sfx("hit");
     S.boom=new Set(); render();
@@ -1439,14 +1493,26 @@
       $("pTop").className="plat top hidden"; $("bTop").classList.add("hidden"); pBot.className="plat bot"; bt.classList.remove("quake");
       pBot.querySelector("img").src=SPRITE_URL[u.spr]; $("bBot").innerHTML=boxHTML(u,u.hp);
       S.fast=false; S.speed=1; bt.classList.remove("hidden");
-      await typeMsg(`${a.name} used Summon Claude!`, 500);
+      await typeMsg(`${a.name} calls in Claude!`, 500);
       await playFx("maple", pBot, pBot);
       await dialogue("Claude: « Allô! Sorry I'm late, eh. On y va! »");
       bt.classList.add("hidden"); S.fast=false;
     } else await sleep(400);
     float(u,"🍁","var(--fight)");
-    log(`${a.name} summoned Claude! 🍁`);
+    log(`${a.name} called in Claude! 🍁`);
     render();
+  }
+
+  // Claude turns up on his own (no move to spend): next to Matt if he's standing, otherwise next to whoever is
+  async function callClaude(){
+    const heroes=alive("hero"); if(!heroes.length) return;
+    const by=heroes.find(h=>h.backup) || heroes[0];
+    let spot=null, best=Infinity;
+    for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+      if(blocked(x,y) || unitAt(x,y)) continue;
+      const d=Math.abs(x-by.x)+Math.abs(y-by.y); if(d<best){ best=d; spot=[x,y]; }
+    }
+    if(spot) await summonClaude(by, spot[0], spot[1], {mp:0});
   }
 
   // ── backup arrives ──
@@ -1527,7 +1593,8 @@
     for(const e of enemyOrder()){
       if(!e.alive) continue;
       if(!alive("hero").length) break;
-      if(e.stun){ e.stun=false; log(`${e.name} is stunned and loses a turn.`); float(e,"💤","var(--magic)"); render(); await wait(500); continue; }
+      if(e.stun){ e.stun=false; e.guard=true; log(`${e.name} is stunned and loses a turn.`); float(e,"💤","var(--magic)"); render(); await wait(500); continue; }
+      e.guard=false;
       if(e.intern){ await internTurn(e); await wait(120); continue; }
       const p=planEnemy(e);
       if(p && (p.x!==e.x||p.y!==e.y)){ e.x=p.x; e.y=p.y; render(); await wait(250); }
@@ -1540,9 +1607,11 @@
     const stunned=[];
     for(const h of alive("hero")){
       h.mp=Math.min(h.maxMp,h.mp+1); h.acted=false;
-      if(h.stun){ h.stun=false; h.acted=true; stunned.push(h.name); log(`${h.name} is stunned and loses a turn.`); }
+      if(h.stun){ h.stun=false; h.acted=true; h.guard=true; stunned.push(h.name); log(`${h.name} is stunned and loses a turn.`); }
+      else h.guard=false;
     }
     if(!S.backupIn) await callBackup();   // Matt joins at the start of turn 2
+    else if(!S.claudeIn) await callClaude();   // …and calls in Claude at the start of turn 3
     S.busy=false;
     info.innerHTML = stunned.length ? `${stunned.join(" & ")} ${stunned.length>1?"are":"is"} stunned this turn. Pick another hero.` : "Your turn. Pick a hero.";
     render();
@@ -1553,7 +1622,17 @@
   $("end").onclick=()=>{ if(S.phase==="player"&&!S.busy){ alive("hero").forEach(h=>h.acted=true); clearSel(); enemyPhase(); } };
   $("restart").onclick=()=>{ if(S.busy) return; overlay.classList.add("hidden"); reset(); Sound.play("battle"); };
   // ── SCREENS ── title → create a hero → explore Canggu → fight in The Sloppy Sloth
-  function setScreen(s){ $("cg").dataset.screen=s; overlay.classList.add("hidden"); fitFrame(); }
+  function track(name, props){   // PostHog event (the homepage's copy when embedded, our own when on its own page)
+    try { const ph = SOLO ? window.posthog : window.parent.posthog; if(ph && ph.capture) ph.capture(name, props||{}); } catch(e){}
+  }
+  function toTop(){   // a new screen starts at the top, wherever you had scrolled to
+    try {
+      if(SOLO){ scrollTo(0,0); return; }
+      const fe=window.frameElement, top=fe.getBoundingClientRect().top;
+      if(top<0 || top>window.parent.innerHeight*0.5) window.parent.scrollBy({top:top-76, behavior:"smooth"});   // 76px: clears the homepage's sticky menu
+    } catch(e){}
+  }
+  function setScreen(s){ const was=$("cg").dataset.screen; $("cg").dataset.screen=s; overlay.classList.add("hidden"); fitFrame(); if(was!==s && s!=="title") toTop(); }
 
   // character creator
   const cleanName = s => s.replace(/[<>&"'`]/g,"").trim().slice(0,14);
@@ -1588,7 +1667,7 @@
     const vs=document.createElement("span"); vs.className="lineup-vs"; vs.textContent="VS"; l.appendChild(vs);
     add("manager",1); add("ceo",1); add("consultA",1);
   }
-  $("tStart").onclick=()=>{ Sound.init(); Sound.sfx("select"); showCreator(); };
+  $("tStart").onclick=()=>{ Sound.init(); Sound.sfx("select"); track("game_start"); showCreator(); };
   $("crName").oninput=e=>{ P.name=cleanName(e.target.value); };
   // names for 🎲 Randomise: drawn from a shuffled bag, so you see them all before any repeats
   const NAMES=[
@@ -1653,11 +1732,11 @@
 
   const PEOPLE=[
     {name:"Ibu Ketut", x:4, y:9, look:{skin:3,hair:2,hairColor:0,facial:0,outfit:2,outfitColor:2,hat:0,eyes:0},
-      lines:["Selamat pagi! Beautiful day, ya?","Nasi goreng is ready at noon. Don't be late this time."]},
+      lines:["Selamat pagi! Beautiful day, ya?","Nasi goreng is ready at noon. Don't be late this time.","Somebody left an iced kopi susu in the bushes behind Kopi Kita. Such a waste."]},
     {name:"Chad, Crypto Founder", x:13, y:9, look:{skin:0,hair:0,hairColor:3,facial:1,outfit:1,outfitColor:7,hat:2,eyes:2},
-      lines:["Bro. I'm building a DAO for dog yoga.","We're pre-revenue, pre-product, pre-idea. Super early. Wanna get in?"]},
+      lines:["Bro. I'm building a DAO for dog yoga.","We're pre-revenue, pre-product, pre-idea. Super early. Wanna get in?","Also I left a craft IPA by the villa pool, up in the north-east. It's yours, bro. Call it equity."]},
     {name:"Wayan, Surf Instructor", x:12, y:17, look:{skin:4,hair:1,hairColor:0,facial:0,outfit:1,outfitColor:1,hat:0,eyes:0},
-      lines:["Waves are pumping today! 🏄","Want a lesson sometime? First one's free. Second one's also free. I'm bad at business."]},
+      lines:["Waves are pumping today! 🏄","Want a lesson sometime? First one's free. Second one's also free. I'm bad at business.","Hungry? Fish tacos, far west end of the beach, by the rocks. Still warm."]},
     {name:"Saffron, Breathwork Coach", x:4, y:15, look:{skin:1,hair:2,hairColor:6,facial:0,outfit:3,outfitColor:4,hat:4,eyes:0},
       lines:["Breathe in… breathe out…","Your aura is very… morning. Namaste. 🙏"]},
     {name:"Matt", x:23, y:17, spr:"matthew",
@@ -2061,7 +2140,7 @@
     }
   }
   function renderHud(){
-    $("hud").innerHTML=Object.entries(ITEMS).map(([k,it])=>`<span class="${INV[k]?"":"zero"}" title="${it.name}">${it.icon} ${INV[k]}</span>`).join("");
+    $("hud").innerHTML=Object.entries(ITEMS).map(([k,it])=>`<span class="${INV[k]?"":"zero"}" title="${it.name}">${it.icon} ${INV[k]?"✓":"?"}</span>`).join("");
   }
 
   // dialogue box (people, signs, found items)
@@ -2124,7 +2203,7 @@
     Object.assign(TOWN,{x:1,y:9,px:1,py:9,dir:1,face:[0,1],walk:0,path:[],onArrive:null,talk:null});
     SPR_CV.player=makeSprite(P); STRIDE.clear();
     sizeTown(); buildLabels(); renderHud(); showTalk();
-    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap the map to walk (or arrow keys). Tap someone or something to walk up to it, then tap it again to talk, look or pick it up (or press Space).</div>`;
+    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap the map to walk (or arrow keys). Tap someone or something to walk up to it, then tap it again to talk, look or pick it up (or press Space).</div><div class="stats">🎒 Three snacks are hidden in town. Each one helps in the fight. Ask around, then head to The Sloppy Sloth.</div>`;
     if(!TOWN.raf){ TOWN.last=0; TOWN.raf=requestAnimationFrame(townLoop); }
     // (music starts in the opening scene)
     openingScene();
@@ -2146,7 +2225,7 @@
     // a quick blink, and you're up: standing in front of the hammock
     await fade(true,350); TOWN.sleeping=false; Object.assign(TOWN,{px:7,py:8,dir:1,face:[0,1]}); townCam(); TOWN.dirty=true;
     await sleep(200); await fade(false,350);
-    await talkP(P.name||"You", ["*Yaaawn*… Right. Let's see what today brings."]);
+    await talkP(P.name||"You", ["*Yaaawn*… Right. Let's see what today brings.", "Breakfast first. There are three snacks around town: a coffee ☕, a beer 🍺 and tacos 🌮. The locals know where."]);
     Sound.play("cafe"); TOWN.cut=false; updateAct();
   }
 
@@ -2206,7 +2285,8 @@
     await vsSplash("player","ceo");
     flashFx(); await banner("FIGHT!");
     Sound.play("battle"); S.busy=false; TOWN.cut=false;
-    info.innerHTML=`Tap <b>${me}</b> → tap a <b style="color:var(--hero)">blue</b> tile to move → pick a move → tap a target. Snacks you found are in the move list.`;
+    track("game_fight_start", {snacks:Object.values(INV).reduce((a,b)=>a+b,0)});
+    info.innerHTML=`Tap <b>${me}</b> → tap a <b style="color:#1f6fe0">blue</b> square to move → pick a move → tap a target.<div class="stats">Tap a suit to see where it can hit you. Help arrives on turn 2.</div>`;
     render();
   }
 
