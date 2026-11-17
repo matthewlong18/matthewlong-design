@@ -269,6 +269,9 @@ if(SOLO){
   .talk b{display:block;margin-bottom:2px;font-size:12px;color:#a8391a}
   .talk .more{position:absolute;right:8px;bottom:5px;font-size:11px;animation:blink 1s steps(2) infinite}
   button.mv.item{border-left-color:var(--heal)}
+  .talk .opt{display:block;width:100%;margin-top:6px;padding:7px 10px;text-align:left;background:#f4ede4;color:#3b2a20;border:1px solid #3b2a20;border-radius:8px}
+  .talk .opt b{display:inline;margin:0;font-size:13px;color:#3b2a20}
+  .talk .opt small{display:block;font-size:11px;color:#8a7565;font-weight:500}
 </style>
 </head>
 <body>
@@ -381,7 +384,7 @@ if(SOLO){
       {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
       {name:"Synergy Beam",    kind:"magic", type:"dmg", pow:9, rng:[2,3], mp:4, color:"#6fb6d9"},
      ]},
-    // The Intern attacks by taking a selfie with you in the background (with a comment). Sometimes he dances instead, which hurts his own team.
+    // The Intern (man bun, obviously) attacks by taking a selfie with you in the background (with a comment). Sometimes he dances instead, which hurts his own team.
     {name:"Intern", spr:"intern", team:"foe", hp:40, mp:0, def:1, mov:2, intern:true,
      blurb:"Unpaid. Extremely online. An Aussie on a working holiday. Attacks by taking selfies at you. Sometimes dances and hurts his own team.",
      moves:[ {name:"Selfie Flash", kind:"magic", type:"dmg", pow:5, rng:[1,3], color:"#ff6fae", get quips(){ return SELFIE_LINES; }} ]},
@@ -537,7 +540,7 @@ if(SOLO){
     consultW:{skin:0, hair:1, hairColor:4, facial:0, outfit:4, topHex:"#7d8a98", accentHex:"#3a6ea5", hat:0, eyes:1, eyeColor:0},
     consultA:{skin:1, hair:2, hairColor:0, facial:0, outfit:4, topHex:"#2f4a7a", accentHex:"#d96fa8", hat:0, eyes:0},
     gord:   {skin:0, hair:5, hairColor:1, facial:2, outfit:6, topHex:"#2fa7a0", hat:0, eyes:1, eyeColor:0, shorts:true, pantsHex:"#c9a36a"},   // bald, beard, glasses, beach shirt + shorts
-    intern: {skin:0, hair:3, hairColor:3, facial:0, outfit:0, outfitColor:6, hat:0, eyes:2, eyeColor:4},
+    intern: {skin:0, hair:2, hairColor:3, facial:0, outfit:0, outfitColor:6, hat:0, eyes:2, eyeColor:4},
   };
   const SPRITE_URL = {};
   for (const [key, look] of Object.entries(CAST)) SPRITE_URL[key] = makeSprite(look).toDataURL();
@@ -755,7 +758,7 @@ if(SOLO){
     }
     if(t.hp===0){ t.alive=false; r.ko=true; }
     else if(m.stun){   // nobody can be stunned two turns running: after losing a turn they are "wide awake" for the next one
-      if(t.guard){ r.resisted=true; r.awake=true; }
+      if(t.guard || t.awake){ r.resisted=true; r.awake=true; }   // (awake = drank the double espresso)
       else { r.stunned = Math.random()*100 < m.stun; if(r.stunned) t.stun=true; else r.resisted=true; }
     }
     return r;
@@ -1370,7 +1373,9 @@ if(SOLO){
   // ── items (snacks found in town) ── using one takes the hero's turn
   async function useItem(u,k){
     S.busy=true; S.inv[k]--; render();
-    if(k==="coffee"){ u.mp+=5; u.maxMp=Math.max(u.maxMp,u.mp); u.mov+=1; float(u,"+5 MP","var(--magic)"); }
+    if(k==="coffee"){ u.mp+=6; u.maxMp=Math.max(u.maxMp,u.mp); float(u,"+6 MP","var(--magic)"); }
+    if(k==="espresso"){ u.awake=true; float(u,"WIDE AWAKE","var(--magic)"); }
+    if(k==="latte"){ u.mov+=2; float(u,"+2 MOVE","var(--hero)"); }
     if(k==="beer"){ u.boost=(u.boost||0)+3; float(u,"+3 ATK","var(--fight)"); }
     if(k==="tacos"){ const amt=Math.min(16,u.maxHp-u.hp); u.hp+=amt; float(u,"+"+amt,"var(--heal)"); }
     Sound.sfx("heal"); log(`${u.name} used ${ITEMS[k].name} ${ITEMS[k].icon}`);
@@ -1711,7 +1716,7 @@ if(SOLO){
 
   const TOWN_OBJS=[
     {k:"bld", x:1, y:6, w:4,h:3, style:"warung", label:"Warung Ibu Ketut", door:[2,8], say:"Closed for lunch. Ibu Ketut is out front."},
-    {k:"bld", x:10,y:6, w:4,h:3, style:"cafe",   label:"Kopi Kita", door:[11,8], say:"Kopi Kita. Smells amazing. Closed for a staff surf break."},
+    {k:"bld", x:10,y:6, w:4,h:3, style:"cafe",   label:"Kopi Kita", door:[11,8], say:"Kopi Kita. Smells amazing. Kadek is taking orders out front."},
     {k:"bld", x:23,y:5, w:5,h:3, style:"villa",  label:"Villa Santai", door:[25,7], say:"A fancy villa. Nobody's home. Somebody's living their best life."},
     {k:"bld", x:11,y:12,w:4,h:3, style:"surf",   label:"Swell Surf", door:[12,14], say:"Swell Surf. The sign says: GONE SURFING 🏄"},
     {k:"bld", x:2, y:12,w:4,h:3, style:"shala",  label:"Yoga Shala", say:"An open-air yoga shala. It smells like incense and ambition."},
@@ -1733,7 +1738,10 @@ if(SOLO){
 
   const PEOPLE=[
     {name:"Ibu Ketut", x:4, y:9, look:{skin:3,hair:2,hairColor:0,facial:0,outfit:2,outfitColor:2,hat:0,eyes:0},
-      lines:["Selamat pagi! Beautiful day, ya?","Nasi goreng is ready at noon. Don't be late this time.","Somebody left an iced kopi susu in the bushes behind Kopi Kita. Such a waste."]},
+      lines:["Selamat pagi! Beautiful day, ya?","Nasi goreng is ready at noon. Don't be late this time.","Thirsty? Kadek is taking orders outside Kopi Kita. Best coffee in Canggu."]},
+    // the barista: talking to her opens a menu (COFFEE_MENU). You get one coffee, and the one you pick changes your fight.
+    {name:"Kadek, Barista", x:11, y:9, barista:true, look:{skin:3,hair:2,hairColor:1,facial:0,outfit:1,outfitColor:7,hat:0,eyes:1,eyeColor:0},
+      lines:["Enjoy! One per customer, ya. We're on Bali time.","Go get them. And tell the suits we don't do oat-milk synergy."]},
     {name:"Chad, Crypto Founder", x:13, y:9, look:{skin:0,hair:0,hairColor:3,facial:1,outfit:1,outfitColor:7,hat:2,eyes:2},
       lines:["Bro. I'm building a DAO for dog yoga.","We're pre-revenue, pre-product, pre-idea. Super early. Wanna get in?","Also I left a craft IPA by the villa pool, up in the north-east. It's yours, bro. Call it equity."]},
     {name:"Wayan, Surf Instructor", x:12, y:17, look:{skin:4,hair:1,hairColor:0,facial:0,outfit:1,outfitColor:1,hat:0,eyes:0},
@@ -1746,12 +1754,16 @@ if(SOLO){
 
   // ── ITEMS ── hidden around town; carried into battle and used from a hero's move list (uses their turn)
   const ITEMS={
-    coffee:{icon:"☕", name:"Kopi Susu",  desc:"+5 MP · +1 MOVE", found:"Iced kopi susu. Sweet, strong, very Bali. Might come in handy."},
+    coffee:  {icon:"☕", name:"Kopi Susu",       desc:"+6 MP",                       found:"Iced kopi susu. Sweet, strong, very Bali. More energy for your big moves."},
+    espresso:{icon:"☕", name:"Double Espresso", desc:"Can't be stunned this fight", found:"A double espresso. You will be wide awake for a while."},
+    latte:   {icon:"☕", name:"Iced Latte To Go", desc:"+2 MOVE this fight",          found:"An iced latte to go. You feel light on your feet."},
     beer:  {icon:"🍺", name:"Craft IPA",  desc:"+3 fight power",  found:"A cold craft IPA, abandoned by a pool. Might come in handy."},
     tacos: {icon:"🌮", name:"Fish Tacos", desc:"Heal 16 HP",       found:"Beach-shack fish tacos, still warm. Might come in handy."},
   };
-  const PICKUPS=[{item:"coffee",x:12,y:5},{item:"beer",x:28,y:3},{item:"tacos",x:1,y:17}];
-  const INV={coffee:0, beer:0, tacos:0};
+  const PICKUPS=[{item:"beer",x:28,y:3},{item:"tacos",x:1,y:17}];   // the coffee comes from the barista instead
+  const COFFEE_MENU=["coffee","espresso","latte"];   // what Kadek offers (keys of ITEMS)
+  const INV={coffee:0, espresso:0, latte:0, beer:0, tacos:0};
+  const hasCoffee=()=>COFFEE_MENU.some(k=>INV[k]>0);
 
   const TOWN={x:1,y:9,px:1,py:9,dir:1,face:[0,1],walk:0,path:[],onArrive:null,taken:new Set(),talk:null,raf:0,last:0,now:0,frame:0,dirty:true,
     cam:{x:0,y:0}, vw:176, vh:132, scale:2, cv:$("townCv"), ctx:null, labels:[]};
@@ -1822,7 +1834,7 @@ if(SOLO){
   // ── action button ── what's in front of you?
   function actionTarget(){
     const fx=TOWN.x+TOWN.face[0], fy=TOWN.y+TOWN.face[1];
-    const person=personAt(fx,fy); if(person) return {label:"Talk", run:()=>{ person.dir = TOWN.x<person.x?-1:1; talk(person.name, person.lines); }};
+    const person=personAt(fx,fy); if(person) return {label:"Talk", run:()=>{ person.dir = TOWN.x<person.x?-1:1; if(person.barista && !hasCoffee()) orderCoffee(person); else talk(person.name, person.lines); }};
     const p=pickupAt(fx,fy); if(p) return {label:"Pick up", run:()=>{
       TOWN.taken.add(p.item); INV[p.item]++; Sound.sfx("heal"); renderHud(); TOWN.dirty=true;
       const it=ITEMS[p.item]; talk(`You found ${it.name}! ${it.icon}`, [it.found]); }};
@@ -2140,8 +2152,9 @@ if(SOLO){
       l.style.left=x+"px"; l.style.top=y+"px"; l.hidden = x<-80 || x>TOWN.vw*TOWN.scale+80 || y<10 || y>TOWN.vh*TOWN.scale;
     }
   }
-  function renderHud(){
-    $("hud").innerHTML=Object.entries(ITEMS).map(([k,it])=>`<span class="${INV[k]?"":"zero"}" title="${it.name}">${it.icon} ${INV[k]?"✓":"?"}</span>`).join("");
+  function renderHud(){   // three slots: ☕ is whichever coffee you ordered
+    $("hud").innerHTML=[["☕",hasCoffee(),"Coffee"],["🍺",INV.beer>0,ITEMS.beer.name],["🌮",INV.tacos>0,ITEMS.tacos.name]]
+      .map(([icon,got,name])=>`<span class="${got?"":"zero"}" title="${name}">${icon} ${got?"✓":"?"}</span>`).join("");
   }
 
   // dialogue box (people, signs, found items)
@@ -2153,8 +2166,23 @@ if(SOLO){
     const m=document.createElement("span"); m.className="more"; m.textContent=t.i<t.lines.length-1?"▼":"✕";
     if(t.name) el.append(b); el.append(p,m); el.classList.remove("hidden"); updateAct();
   }
+  // the barista's menu: a question with buttons (tap one, or press 1–3)
+  function orderCoffee(person){
+    TOWN.talk={name:person.name, choice:COFFEE_MENU, lines:[""], i:0};
+    const el=$("talk"); el.innerHTML="";
+    const b=document.createElement("b"); b.textContent=person.name;
+    const p=document.createElement("div"); p.textContent="Selamat pagi! What can I get you? One coffee, on the house.";
+    el.append(b,p);
+    COFFEE_MENU.forEach((k,i)=>{ const it=ITEMS[k], o=document.createElement("button"); o.className="opt"; o.innerHTML=`<b>${i+1}. ${it.name}</b><small>${it.desc}</small>`;
+      o.onclick=e=>{ e.stopPropagation(); pickCoffee(k); }; el.appendChild(o); });
+    el.classList.remove("hidden"); updateAct();
+  }
+  function pickCoffee(k){
+    INV[k]++; TOWN.talk=null; Sound.sfx("heal"); renderHud(); TOWN.dirty=true; track("game_coffee", {coffee:k});
+    const it=ITEMS[k]; talk(`You got ${it.name}! ${it.icon}`, [it.found]);
+  }
   function advanceTalk(){
-    const t=TOWN.talk; if(!t) return; Sound.sfx("blip");
+    const t=TOWN.talk; if(!t || t.choice) return; Sound.sfx("blip");
     if(++t.i>=t.lines.length){ TOWN.talk=null; showTalk(); if(t.done) t.done(); } else showTalk();
   }
   $("talk").onclick=advanceTalk;
@@ -2169,6 +2197,7 @@ if(SOLO){
   };
   document.addEventListener("keydown", e=>{
     if($("cg").dataset.screen!=="town" || !overlay.classList.contains("hidden")) return;
+    if(TOWN.talk && TOWN.talk.choice){ const k=TOWN.talk.choice[+e.key-1]; if(k){ e.preventDefault(); pickCoffee(k); } return; }   // 1–3 picks a coffee
     if([" ","Enter","e","E","z","Z"].includes(e.key)){ e.preventDefault(); doAction(); return; }   // the A button
     if(TOWN.talk || TOWN.cut) return;
     const d=DIRS[e.key];
@@ -2204,7 +2233,7 @@ if(SOLO){
     Object.assign(TOWN,{x:1,y:9,px:1,py:9,dir:1,face:[0,1],walk:0,path:[],onArrive:null,talk:null});
     SPR_CV.player=makeSprite(P); STRIDE.clear();
     sizeTown(); buildLabels(); renderHud(); showTalk();
-    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap the map to walk (or arrow keys). Tap someone or something to walk up to it, then tap it again to talk, look or pick it up (or press Space).</div><div class="stats">🎒 Three snacks are hidden in town. Each one helps in the fight. Ask around, then head to The Sloppy Sloth.</div>`;
+    info.innerHTML=`<b>Canggu, Bali 🌴</b><div class="stats">Tap the map to walk (or arrow keys). Tap someone or something to walk up to it, then tap it again to talk, look or pick it up (or press Space).</div><div class="stats">🎒 Order a coffee at Kopi Kita, and find the hidden beer and tacos. Each one helps in the fight. Then head to The Sloppy Sloth.</div>`;
     if(!TOWN.raf){ TOWN.last=0; TOWN.raf=requestAnimationFrame(townLoop); }
     // (music starts in the opening scene)
     openingScene();
@@ -2226,7 +2255,7 @@ if(SOLO){
     // a quick blink, and you're up: standing in front of the hammock
     await fade(true,350); TOWN.sleeping=false; Object.assign(TOWN,{px:7,py:8,dir:1,face:[0,1]}); townCam(); TOWN.dirty=true;
     await sleep(200); await fade(false,350);
-    await talkP(P.name||"You", ["*Yaaawn*… Right. Let's see what today brings.", "Breakfast first. There are three snacks around town: a coffee ☕, a beer 🍺 and tacos 🌮. The locals know where."]);
+    await talkP(P.name||"You", ["*Yaaawn*… Right. Let's see what today brings.", "Breakfast first. Coffee from Kopi Kita ☕, and I hear there's a beer 🍺 and tacos 🌮 hidden around town. The locals know where."]);
     Sound.play("cafe"); TOWN.cut=false; updateAct();
   }
 
