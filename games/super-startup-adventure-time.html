@@ -357,25 +357,25 @@ if(SOLO){
     ]});
 
   const FOES = [
-    {name:"Middle Manager", spr:"manager", team:"foe", hp:18, mp:6, def:2, mov:3,
+    {name:"Middle Manager", spr:"manager", team:"foe", hp:24, mp:6, def:2, mov:3,
      blurb:"Wants to circle back. Right now.",
      moves:[
-      {name:"Reply-All",    kind:"fight", type:"dmg", pow:10, rng:[1,1]},
+      {name:"Reply-All",    kind:"fight", type:"dmg", pow:11, rng:[1,1]},
       {name:"Micromanage",  kind:"magic", type:"dmg", pow:4,  rng:[1,2], mp:3, color:"#34507a", stun:50},
      ]},
-    {name:"The CEO", spr:"ceo", team:"foe", hp:32, mp:10, def:4, mov:2,
+    {name:"The CEO", spr:"ceo", team:"foe", hp:40, mp:10, def:4, mov:2,
      blurb:"Slow, tough, golden parachute.",
      moves:[
-      {name:"Golden Parachute", kind:"fight", type:"dmg", pow:11, rng:[1,1]},
+      {name:"Golden Parachute", kind:"fight", type:"dmg", pow:12, rng:[1,1]},
       {name:"Hostile Takeover", kind:"magic", type:"dmg", pow:11, rng:[1,2], mp:5, color:"#e5b340"},
      ]},
-    {name:"Brooke, Consultant", spr:"consultW", team:"foe", hp:15, mp:8, def:1, mov:2,
+    {name:"Brooke, Consultant", spr:"consultW", team:"foe", hp:20, mp:8, def:1, mov:2,
      blurb:"Bills by the hour. Attacks from range.",
      moves:[
       {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
       {name:"Synergy Beam",    kind:"magic", type:"dmg", pow:9, rng:[2,3], mp:4, color:"#6fb6d9"},
      ]},
-    {name:"Grace, Consultant", spr:"consultA", team:"foe", hp:15, mp:8, def:1, mov:2,
+    {name:"Grace, Consultant", spr:"consultA", team:"foe", hp:20, mp:8, def:1, mov:2,
      blurb:"Three frameworks deep before breakfast.",
      moves:[
       {name:"Slide Deck Toss", kind:"fight", type:"dmg", pow:8, rng:[2,2]},
@@ -1344,7 +1344,7 @@ if(SOLO){
     info.innerHTML = win ? "<b>Victory.</b>" : "<b>Defeat.</b>";
     try { await endingScene(win); } catch(e){ console.warn("ending scene skipped:", e); Sound.play(win?"victory":"defeat"); }
     const cta = `<a href="/#sec-contact" target="_top" id="cta">Let's talk →</a>`;
-    const rank = S.turn<=4 ? "Sloth Legend 🦥" : S.turn<=5 ? "Head Barista ☕" : S.turn<=7 ? "Beach Regular 🌴" : "Survivor 🍺";
+    const rank = S.turn<=5 ? "Sloth Legend 🦥" : S.turn<=7 ? "Head Barista ☕" : S.turn<=9 ? "Beach Regular 🌴" : "Survivor 🍺";
     track("game_over", {win, turns:S.turn, snacks:Object.values(INV).reduce((a,b)=>a+b,0)});
     const assist = S.backupIn ? ` Matt dealt ${S.backupDmg} damage${S.claudeIn?`, Claude ${S.claudeDmg}`:""}.` : "";
     const btns = `<div class="row2"><button class="primary" id="again">${win?"Play again":"Try again"}</button><button id="newHero">New hero</button>${win?'<button id="share">Share result</button>':""}</div>`;
@@ -1595,12 +1595,13 @@ if(SOLO){
       if(!alive("hero").length) break;
       if(e.stun){ e.stun=false; e.guard=true; log(`${e.name} is stunned and loses a turn.`); float(e,"💤","var(--magic)"); render(); await wait(500); continue; }
       e.guard=false;
-      if(e.intern){ await internTurn(e); await wait(120); continue; }
+      if(e.intern){ await internTurn(e); await wait(120); if(checkEnd()){ S.busy=false; return; } continue; }   // (his selfie can land the last hit too)
       const p=planEnemy(e);
       if(p && (p.x!==e.x||p.y!==e.y)){ e.x=p.x; e.y=p.y; render(); await wait(250); }
       if(p && p.t){ await perform(e,p.t,p.m); await wait(120); }
       if(checkEnd()){ S.busy=false; return; }
     }
+    if(checkEnd()){ S.busy=false; return; }
     const gord=S.units.find(u=>u.team==="neutral" && u.alive);   // Gord gets a turn every round: a beer and a comment
     if(gord && alive("hero").length) await gordTurn(gord);
     S.turn++; S.phase="player"; S.fast=false;
